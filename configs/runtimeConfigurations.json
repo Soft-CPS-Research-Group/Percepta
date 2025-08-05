@@ -1,29 +1,29 @@
 {
     "internalAMQPServer": {
-        "host": "rabbitmq",
+        "host": "localhost",
         "port": 5672,
         "credentials": {
             "username": "dataprovider",
             "password": "dataprovidermq"
         },
-        "vhost": "private_docker_vhost"
+        "vhost": "private_docker_vhost",
+        "heartbeat": 660
     },
-    "mongoDB":{
-        "host":"vsgate-s1.dei.isep.ipp.pt",
-        "port":10246,
-        "credentials": {
-            "username": "softCPS",
-            "password": "softCPSBD"
-        }
+    "cw_server": "https://ks.innov.cleanwatts.energy/api/2.0/consumptions/instant?from=2025-01-05T08:48:00.0&tags=",
+    "cw_login": {
+        "session_url": "https://ks.innov.cleanwatts.energy/api/2.0/sessions",
+        "refresh_url": "https://ks.innov.cleanwatts.energy/api/2.0/session/refresh?",
+        "login": "OPEVA-demo-09",
+        "password": "bx7J658W"
     },
-    "CWserver": "https://ks.innov.cleanwatts.energy/api/2.0/consumptions/instant?from=2025-01-05T08:48:00.0&tags=",
-    "ICserver": {
+    "ic_server": {
         "host": "193.136.62.78",
         "port": 5672,
         "credentials": {
             "username": "dataprovider",
             "password": "dataprovidermq"
-        }
+        },
+        "heartbeat": 660
     },
     "PCserver": {
         "host": "193.136.62.78",
@@ -37,34 +37,51 @@
             "response": "freq_resp"
         }
     },
-    "electricity_pricing": "https://ks.innov.cleanwatts.energy/api/2.0/consumptions/instant?from=2025-01-05T08:48:00.0&tags=13389",
+    "electricity_pricing": "https://ks.innov.cleanwatts.energy/api/2.0/data/lastvalue/Instant?tags=13389&from=2003-06-11",
     "frequency": {
         "value": 1,
         "unit": "minutes"
     },
     "maxReconnectAttempts": 3,
+    "repositories" : {
+        "environment_repository" : {
+            "repository_type": "file",
+            "parameters" : {
+                "environment_files": "./environment_files"
+            }
+        },
+        "time_series_repository" : {
+            "repository_type": "mongo",
+            "parameters" : {
+                "connection_parameters" : {
+                    "host":"vsgate-s1.dei.isep.ipp.pt",
+                    "port":10246,
+                    "credentials": {
+                        "username": "softCPS",
+                        "password": "softCPSBD"
+                    }
+                }
+            }
+        }
+    },
     "ICfile":{
-        "path": "./house_files/ICData.json"
+        "path": "./environment_files/ICData.json"
     },
     "CWfile":{
-        "path": "./house_files/CWData.json"
-    },
-    "Users":{
-        "path": "./house_files/others/Users.json"
+        "path": "./environment_files/CWData.json"
     },
     "PCfile":{
-        "path": "./house_files/PCData.json"
+        "path": "./environment_files/PCData.json"
     },
     "AlgorithmAtributes": {
         "timestamp": "",
         "non_shiftable_load": 0,
         "solar_generation": 0,
         "electricity_pricing": 0,
-        "charging_sessions": [],
+        "charging_sessions": {},
         "generated": 0
     },
     "ChargingSessionsFormat": {
-        "charger_id": "",
         "soc": 0,
         "power": 0,
         "user_id": "",
@@ -92,11 +109,14 @@
     "LogFiles":{
         "maxSize": "10MB",
         "fileNames": {
+            "entrypoint": "entrypoint/entrypoint.log",
             "accumulator": "accumulator/accumulator.log",
-             "pulsecharge": "pulsecharge/pulsecharge.log",
-             "cleanwatts": "cleanwatts/cleanwatts.log",
-             "icharging": "icharging/icharging.log",
-            "energyprice": "energyprice/energyprice.log"
+            "pulsecharge": "pulsecharge/pulsecharge.log",
+            "cleanwatts": "cleanwatts/cleanwatts.log",
+            "icharging": "icharging/icharging.log",
+            "energyprice": "energyprice/energyprice.log",
+            "manager": "manager/manager.log",
+            "predictor": "predictor/predictor.log"
         }
     }
 }

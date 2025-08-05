@@ -1,0 +1,581 @@
+{
+    "R-H-09": {
+        "group": "living lab",
+        "entities": {
+            "GR09" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "29720",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV09" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "29725",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-08": {
+        "group": "living lab",
+        "entities": {
+            "GR08" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "28387",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    },
+    "R-H-15": {
+        "group": "living lab",
+        "entities": {
+            "GR15" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "30634",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV15" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "30642",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-14": {
+        "group": "living lab",
+        "entities": {
+            "GR14" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "28375",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV14" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "29658",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-13": {
+        "group": "living lab",
+        "entities": {
+            "GR13" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "33423",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV13" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "31139",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            },
+            "B13" :  {
+                "parameters" : {
+                    "state_of_charge" : {
+                        "id" : "31031",
+                        "type": "Battery State of charge",
+                        "measurementUnit": "Percentage",
+                        "cumulative": false
+                    }
+                },
+                "label": "battery"
+            }
+        }
+    },
+    "R-H-07": {
+        "group": "living lab",
+        "entities": {
+            "GR07": {
+                "parameters": {
+                    "energy_in": {
+                        "id": "31093",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    },
+    "R-H-05": {
+        "group": "living lab",
+        "entities": {
+            "GR05" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "39291",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV05" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "39286",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-10": {
+        "group": "living lab",
+        "entities": {
+            "GR10" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "29851",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    },
+    "R-H-11": {
+        "group": "living lab",
+        "entities": {
+            "GR11" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "39641",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV11" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "39330",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-12": {
+        "group": "living lab",
+        "entities": {
+            "GR12" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "29660",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    },
+    "R-H-04": {
+        "group": "living lab",
+        "entities": {
+            "GR04" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "36766",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV04" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "36769",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    },
+    "R-H-02": {
+        "group": "living lab",
+        "entities": {
+            "GR02" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "39437",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "EV02" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "37687",
+                        "type": "Session status",
+                        "measurementUnit": "Status",
+                        "cumulative": false
+                    },
+                    "energy_in" : {
+                        "id" : "39442",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "actuations" : {
+                    "current_mod" : {
+                        "id" : "39053",
+                        "type": "Allowed current setting",
+                        "measurementUnit": "Ampere"
+                    }
+                },
+                "label": "ev_charger"
+            }
+        }
+    },
+    "R-H-01": {
+        "group": "living lab",
+        "entities": {
+            "GR01" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "33682",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 15,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "33711",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            },
+            "B01" :  {
+                "parameters" : {
+                    "battery_charging_energy" : {
+                        "id" : "35927",
+                        "type": "Battery charging energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    },
+                    "state_of_charge" : {
+                        "id" : "33690",
+                        "type": "Battery State of charge",
+                        "measurementUnit": "Percentage",
+                        "cumulative": false
+                    }
+                },
+                "label": "battery"
+            },
+            "EV01" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "37507",
+                        "type": "Session status",
+                        "measurementUnit": "Status",
+                        "cumulative": false
+                    },
+                    "power" : {
+                        "id" : "41836",
+                        "type": "Power",
+                        "measurementUnit": "Kilowatt",
+                        "cumulative": false
+                    }
+                },
+                "label": "ev_charger"
+            }
+        }
+    },
+    "R-H-03": {
+        "group": "living lab",
+        "entities": {
+            "GR03" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "37208",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "PV03" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "37214",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            },
+            "EV03" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "37497",
+                        "type": "Session status",
+                        "measurementUnit": "Status",
+                        "cumulative": false
+                    },
+                    "power" : {
+                        "id" : "37698",
+                        "type": "Power",
+                        "measurementUnit": "Kilowatt",
+                        "cumulative": false
+                    }
+                },
+                "actuations" : {
+                    "current_mod" : {
+                        "id" : "39050",
+                        "type": "Allowed current setting",
+                        "measurementUnit": "Ampere"
+                    }
+                },
+                "label": "ev_charger"
+            },
+            "B03" :  {
+                "parameters" : {
+                    "battery_charging_energy" : {
+                        "id" : "42149",
+                        "type": "Battery charging energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    },
+                    "state_of_charge" : {
+                        "id" : "42104",
+                        "type": "Battery State of charge",
+                        "measurementUnit": "Percentage",
+                        "cumulative": false
+                    }
+                },
+                "label": "battery"
+            }
+        }
+    },
+    "R-H-19": {
+        "group": "living lab",
+        "entities": {
+            "GR19" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "29590",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 5,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "EV19" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "39055",
+                        "type": "Session status",
+                        "measurementUnit": "Status",
+                        "cumulative": false
+                    },
+                    "energy_in" : {
+                        "id" : "37503",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "cumulative": true,
+                        "periodicity": {
+                            "value" : 10,
+                            "unity" : "min"
+                        }
+                    }
+                },
+                "label": "ev_charger"
+            }
+        }
+    },
+    "provider": "Cleanwatts"
+}

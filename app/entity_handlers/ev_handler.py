@@ -1,0 +1,59 @@
+import time
+from app.entity_handlers.entity_handler_base import EntityHandlerBase
+
+class EVHandler(EntityHandlerBase):
+    label = "electric_vehicle"
+
+    # TODO: Consider relocating this threshold—might make more sense to define it per device, not globally by label
+    data_deadline_seconds = 7200  # Time limit in seconds (2 hours)
+
+    def __init__(self, repository, entities_ids, configurations, logger):
+        super().__init__(repository, entities_ids, configurations, logger)
+
+    def process(self, message, all_data):
+        ev_entities = self._entity_ids.get(EVHandler.label)
+        # List to collect data from ev entities
+        evs = []
+
+        if ev_entities:
+            # Loop through all configured ev IDs
+            for ev_id in ev_entities:
+                ev = all_data.get(ev_id)
+
+                if ev:
+                    # Add ev data to the results list
+                    evs.append(ev.get('data'))
+
+                    # If data was generated (and not directly measured), mark the message accordingly
+                    if ev.get('generated') == 1:
+                        message["generated"] = 1
+
+        # Attach ev data to the outgoing message
+        message["electric_vehicles"] = evs
+
+
+    def fallback(self, device_id, substitute_dict):
+        # Capture current timestamp in seconds
+        current_time = int(time.time())
+
+        # Attempt to retrieve substitute data for the given device
+        device_substitute = substitute_dict.get(device_id)
+
+        if device_substitute:
+            timestamp = device_substitute.get('timestamp', 0)
+
+            # Validate if the substitute data falls within the acceptable freshness window
+            if (current_time - timestamp) <= EVHandler.data_deadline_seconds:
+                return device_substitute
+
+        # Log a warning if fallback data is unavailable or outdated
+        self._logger.warning(f"Device not found in substitute_dict: {device_id}. Default data will be used instead.")
+
+        # Provide default fallback structure if no suitable substitute exists
+        return {
+            'timestamp': 0,
+            'data': {
+                "flexibility": {},
+            },
+            'generated': 1
+        }
