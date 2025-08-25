@@ -1,8 +1,7 @@
 FROM python:3.9-slim
-WORKDIR /data_provider
-COPY ./runtime /data_provider/runtime
-COPY runtime/utils /data_provider/utils
-COPY requirements.txt /data_provider
+WORKDIR /percepta
+COPY ./app /percepta/app
+COPY requirements.txt /percepta
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
