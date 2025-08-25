@@ -25,5 +25,18 @@
                 "label": "electric_vehicle"
             }
         }
+    },
+   "escritorio" : {
+    "group": "pulsecharge",
+    "entities": {
+            "pctesolate" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    }
+                },
+                "label": "electric_vehicle"
+            }
+        }
     }
 }

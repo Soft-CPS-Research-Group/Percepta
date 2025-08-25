@@ -30,6 +30,9 @@
                         }
                     }
                 },
+                "attributes" : {
+
+                },
                 "label": "pv_panel"
             }
         }
