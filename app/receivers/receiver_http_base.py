@@ -72,7 +72,7 @@ class ReceiverHTTPBase(ReceiverBase):
         try:
             self._job()
         except Exception as e:
-            self._logger.error(f"HTTP Receiver - {self._environment}: Scheduled job failed: {e}", exc_info=True)
+            self._logger.error(f"Scheduled job failed: {e}", exc_info=True)
             # Optionally propagate as a custom exception
             raise general_exceptions.SchedulerJobError(f"Scheduled job error: {e}") from e
 

@@ -1,9 +1,7 @@
-from apscheduler.schedulers.background import BlockingScheduler
 from app.translators.cw_translator import CWTranslator
 from app.utils.cwlogin import CWSession
 from app.receivers.receiver_http_base import ReceiverHTTPBase
 from app.utils.logger import LoggingUtils
-
 
 class CWReceiver(ReceiverHTTPBase):
     """
@@ -65,11 +63,11 @@ class CWReceiver(ReceiverHTTPBase):
                         data = self.retrieve_data(f"{self._server.get('resources').get('data')}{tag_id}")
 
                         if data:
-                            self._logger.info(f"CWReceiver: Tag {tag_id} successfully retrieved!")
+                            self._logger.info(f"Tag {tag_id} successfully retrieved!")
                             all_entity_parameter_data.update({param_name: data})
                         else:
                             # Data is empty, treat as a failure
-                            self._logger.warning(f"CWReceiver: Tag {tag_id} returned empty data.")
+                            self._logger.warning(f"Tag {tag_id} returned empty data.")
                             all_entity_parameter_data.update({param_name: []})
 
                 # Pass raw data to translator; translation is not performed here
@@ -86,7 +84,7 @@ class CWReceiver(ReceiverHTTPBase):
         token = CWSession.get_token()
 
         if token is None:
-            raise RuntimeError(f"CWReceiver - {self._environment}: Token is None.")
+            raise RuntimeError(f"Token is None.")
 
         self._header = {'Authorization': f"CW {token}"}
 

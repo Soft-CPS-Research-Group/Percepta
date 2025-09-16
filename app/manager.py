@@ -108,7 +108,7 @@ class Manager:
     #TODO se o handler não existir fazer formatação normal
     def _format_data(self):
         # Get the current timestamp in UTC without microseconds
-        timestamp = datetime.datetime.now(datetime.UTC).replace(microsecond=0)
+        timestamp = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
 
         # Deep copy the algorithm format template to prepare the message
         self._message = copy.deepcopy(self._algorithm_format)
