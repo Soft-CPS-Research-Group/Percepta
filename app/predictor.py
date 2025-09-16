@@ -25,5 +25,5 @@ class Predictor():
         pass
 
     def _save_data(self,message,result):
-       # TODO CHAMAR AQUI QUALQUER COISA
+        self._time_series_repository.write(message)
         return 0
