@@ -1,0 +1,63 @@
+import time
+from app.entity_handlers.entity_handler_base import EntityHandlerBase
+
+
+class BatteryHandler(EntityHandlerBase):
+    label = "battery"
+
+    # TODO: Consider relocating this setting—might make more sense to associate with a specific device rather than a general label
+    data_deadline_seconds = 7200  # Threshold in seconds (2 hours)
+
+    def __init__(self, repository, entities_ids, configurations, logger):
+        super().__init__(repository, entities_ids, configurations, logger)
+
+    def process(self, message, all_data):
+        batteries_entities = self._entity_ids.get(BatteryHandler.label)
+        # List to collect data from battery entities
+        batteries = []
+
+        if batteries_entities:
+            # Loop through all configured battery IDs
+            for battery_id in batteries_entities:
+                battery = all_data.get(battery_id)
+
+                if battery:
+                    # Add battery data to the results list
+                    batteries.append(battery.get('data'))
+
+                    # If data was generated (and not directly measured), mark the message accordingly
+                    if battery.get('generated') == 1:
+                        message["generated"] = 1
+
+        # Attach battery data to the outgoing message
+        message["batteries"] = batteries
+
+    def fallback(self, device_id, substitute_dict):
+        # Capture current timestamp
+        current_time = int(time.time())
+
+        # Attempt to retrieve substitute data for the missing device
+        device_substitute = substitute_dict.get(device_id)
+
+        if device_substitute:
+            timestamp = device_substitute.get('timestamp', 0)
+
+            # Validate freshness of substitute data against the deadline
+            if (current_time - timestamp) <= BatteryHandler.data_deadline_seconds:
+                return device_substitute
+
+        # Log warning if no substitute found or if data is outdated
+        self._logger.warning(f"Device not found in substitute_dict: {device_id}. Using default fallback data.")
+
+        # Return default fallback data if substitute is unavailable or expired
+        return {
+            'timestamp': 0,
+            'data': {
+                "battery_charging_energy": 0,
+                "state_of_charge": 0
+            },
+            'generated': 1
+        }
+
+    # TODO: For batteries, does it make sense to send values like 0,0? Even if the data is a day old,
+    # would using older values be more meaningful than defaulting to zero?
