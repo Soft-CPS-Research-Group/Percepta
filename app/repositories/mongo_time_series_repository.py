@@ -28,10 +28,10 @@ class MongoTimeSeriesRepository(TimeSeriesRepository):
         """
         Inserts a single time series value into the collection.
         """
-        if not self._collection:
+        if self._collection is None:
             self._connect()
 
-        if self._collection:
+        if self._collection is not None:
             try:
                 self._collection.insert_one(value)
                 self._logger.info("Value successfully written to MongoDB.")
