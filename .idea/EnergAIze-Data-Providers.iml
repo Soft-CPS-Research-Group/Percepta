@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/edp" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (EnergAIze-Data-Providers)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12.3 WSL (Ubuntu): (/mnt/c/Users/clari/Documents/EnergAIze_Data_Providers/penv/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

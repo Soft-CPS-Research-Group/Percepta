@@ -1,19 +1,39 @@
-import pika
 import json
 import uuid
 import time
+import threading
+from typing import Dict, Any
+from app.connectors.rabbitmq_connector import RabbitMQConnector
 from app.utils.data import DataSet
+from app.utils.logger import LoggingUtils
+from app.utils.retry import with_retries
 
 
 class ICRuntimeRequest:
-    def __init__(self, environments, configurations, logger):
-        _ic_server = configurations.get('ic_server')
+    """
+    Handles the creation and dispatch of runtime requests via RabbitMQ.
+    This class manages initialization of the messaging service, sending requests,
+    and handling responses from RabbitMQ.
+    """
+
+    _server: dict # Server configuration dictionary containing environment-specific settings
+    _rabbitmq_connector: RabbitMQConnector  # RabbitMQ connector instance for handling messaging
+    _logger: LoggingUtils  # Logger instance
+    _message: dict  # Runtime request message, stored as dict before serialization
+    _return_queue_name: str  # Name of the return queue created for responses
+
+    def __init__(self, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
+        """
+        Initialize the ICRuntimeRequest instance.
+
+        Args:
+            environments (dict): Dictionary of environment identifiers.
+            configurations (dict): Configuration dictionary including server and frequency settings.
+            logger (LoggingUtils): Logger instance for logging messages.
+        """
+        self._server = configurations.get('i-charging').get('receiver_server')
+
         self._logger = logger
-        self._connection_params = pika.ConnectionParameters(host=_ic_server.get('host'), port=_ic_server.get('port'),credentials=pika.PlainCredentials(_ic_server.get('credentials').get('username'), _ic_server.get('credentials').get('password')), heartbeat=_ic_server.get('heartbeat'))
-        self._max_reconnect_attempts = configurations.get('maxReconnectAttempts')
-        self._connection = None
-        self._channel = None
-        self._completed = False
 
         self._message = {
             "type": "runtime",
@@ -23,57 +43,70 @@ class ICRuntimeRequest:
             }
         }
 
-    def init(self):
+        # Start the messaging service by establishing a connection to RabbitMQ with retries
+        with_retries(self._start_messaging_service, logger=self._logger)
+
+    def _start_messaging_service(self) -> None:
+        """
+        Establish connection to RabbitMQ with retry logic.
+        Declares the environment-specific queue and logs connection status.
+
+        Raises:
+            Exception: If maximum reconnection attempts are reached.
+        """
+        self._rabbitmq_connector: RabbitMQConnector = RabbitMQConnector(self._server)
+        self._rabbitmq_connector.connect()
+        self._rabbitmq_connector.declare_queue('RPC')
+        self._return_queue_name: str = self._rabbitmq_connector.declare_queue(exclusive=True)
+
+        self._logger.info("IC Runtime Request: Connection successfully established.")
+
+    def init(self) -> None:
+        """
+        Initialize the runtime request by sending the initial message.
+        Uses retry logic to ensure the message is delivered.
+        """
+        with_retries(self._send_message, logger=self._logger)
+
+    def _start_service(self) -> None:
+        """
+        Start the runtime request service.
+
+        - Launches a separate thread to send the initial message.
+        - Begins consuming messages from the return queue to process responses.
+        """
+        sender_thread: threading.Thread = threading.Thread(target=self._send_message, daemon=True)
+        sender_thread.start()
+
+        self._rabbitmq_connector.consume(self._return_queue_name, self._on_response)
+
+    def _send_message(self) -> None:
+        """
+        Send the prepared runtime request message to the RabbitMQ broker.
+
+        - Serializes the message into JSON format.
+        - Sets message properties including reply queue and unique message ID.
+        - Waits briefly before publishing to ensure readiness of the consumer.
+        """
         self._message = json.dumps(self._message)
 
-        self._send_message()
+        _properties: Dict[str, str] = {
+            "reply_to": self._return_queue_name,
+            "message_id": str(uuid.uuid4())
+        }
 
-    def _connect(self):
-        # Get connection parameters
-        self._connection = pika.BlockingConnection(self._connection_params)
-        self._channel = self._connection.channel()
-        self._channel.queue_declare(queue='RPC', durable=True)
-        self._returnQueueName = self._channel.queue_declare(queue='', exclusive=True)
+        time.sleep(1)
+        self._rabbitmq_connector.publish(self._message, _properties)
 
-    # TODO talvez tornar esta tentativa infinita
-    def _send_message(self):
-        while self._max_reconnect_attempts > 0 and self._completed == False:
-            try:
-                self._connect()
-                self._channel.basic_publish(
-                    exchange='',
-                    routing_key='RPC',
-                    body=self._message,
-                    properties=pika.BasicProperties(
-                        reply_to=self._returnQueueName.method.queue,
-                        message_id=str(uuid.uuid4())
-                    )
-                )
+    def _on_response(self, ch: Any, method: Any, properties: Any, body: bytes) -> None:
+        """
+        Callback function to handle responses received from RabbitMQ.
 
-                self._channel.basic_consume(
-                    queue=self._returnQueueName.method.queue,
-                    on_message_callback=self._on_response,
-                    auto_ack=True
-                )
-
-                # Start consuming
-                self._channel.start_consuming()
-
-                self._completed = True
-            except pika.exceptions.AMQPConnectionError:
-                if self._max_reconnect_attempts == 0:
-                    self._logger.error(f"Thread ICRuntimeRequest reached maximum reconnection attempts. Stopping thread.")
-                else:
-                    self._logger.warning(f"Thread ICRuntimeRequest lost connection, attempting to reconnect...")
-                    time.sleep(5)
-
-                self._max_reconnect_attempts -= 1
-            except Exception as e:
-                self._logger.error(f"Thread ICRuntimeRequest encountered an error: {e}")
-
-
-
-    def _on_response(self, ch, method, properties, body):
-            self._logger.info(f"Received response: {body.decode()}")
-            ch.stop_consuming()
-            ch.close()
+        Args:
+            ch (Any): The channel object.
+            method (Any): Delivery method information.
+            properties (Any): Message properties.
+            body (bytes): The response payload received from RabbitMQ.
+        """
+        self._logger.info(f"Received response: {body.decode()}")
+        self._rabbitmq_connector.close()

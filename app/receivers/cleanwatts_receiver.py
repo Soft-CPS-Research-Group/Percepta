@@ -1,104 +1,104 @@
-from threading import Event
 from apscheduler.schedulers.background import BlockingScheduler
-import requests
-import time
-import datetime
-from app.repositories.irepositories.environment_repository import EnvironmentRepository
 from app.translators.cw_translator import CWTranslator
 from app.utils.cwlogin import CWSession
-from app.receivers.receiver_base import ReceiverBase
+from app.receivers.receiver_http_base import ReceiverHTTPBase
+from app.utils.logger import LoggingUtils
 
-class CWReceiver(ReceiverBase):
-    provider = "Cleanwatts"
 
-    def __init__(self, environment, environment_specs, configurations, logger):
+class CWReceiver(ReceiverHTTPBase):
+    """
+    CWReceiver is responsible for retrieving raw data from the Cleanwatts API
+    for configured entities and parameters, and maintaining session management
+    using CWSession.
+
+    Note:
+        Translation of provider-specific data into system-specific format
+        is handled by CWTranslator.
+    """
+    provider = "cleanwatts"     # Provider ID
+
+    _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into System-specific format
+
+    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
+        """
+        Initializes the CWReceiver instance.
+
+        Args:
+            environment (str): Environment name.
+            environment_specs (dict): Environment-specific configurations.
+            configurations (dict): General configurations for the receiver.
+            logger (LoggingUtils): Logger instance for logging events.
+        """
         super().__init__(environment, environment_specs, configurations, logger)
 
-        self._translator = CWTranslator(environment, environment_specs, configurations, logger)
-
-        self._connection_params = configurations.get('cw_server')
-        self._session_time = 0
-        self._stop_event = Event()
-        self._count = 0
+        # Translator instance is prepared but the receiver only collects raw data
+        self._translator = CWTranslator(environment, configurations, logger)
 
     def stop(self):
+        """
+        Stops the receiver and gracefully stops the Cleanwatts token refresher.
+        """
+        self._logger.info(f"Stopping thread {self._environment}...")
+        super().stop()
         CWSession.stop_token_refresher()
-        self._stop_event.set()
-        self._scheduler.shutdown()
 
     def _job(self):
+        """
+        Executes the main data retrieval job:
+            - Ensures a valid session.
+            - Retrieves raw data for all configured entities and parameters.
+            - Passes collected data to CWTranslator (does not perform translation itself).
 
-        self._login()
-        for entity_id, values in self._entities.items():
-            all_entity_parameter_data = {}
-            all_success = True
+        Logs errors and warnings for empty data or failures.
+        """
+        try:
+            self._header_updater()
 
-            for param_name, param_attr in values.get('parameters', {}).items():
-                if param_attr:
-                    tag_id = param_attr.get('id')
-                    try:
-                        # Build the API URL (TODO: replace this hardcoded URL with config)
-                        url = f"https://ks.innov.cleanwatts.energy/api/2.0/data/lastvalue/Instant?from=2024-06-11&tags={tag_id}"
+            for entity_id, values in self._entities.items():
+                all_entity_parameter_data = {}
 
-                        # Make the GET request with specified timeout (TODO: review timeout settings)
-                        response = requests.get(url, headers=self._header, timeout=(3, 10))
+                for param_name, param_attr in values.get('parameters', {}).items():
+                    if param_attr:
+                        tag_id = param_attr.get('id')
 
-                        # Check if the response status code is 200 (OK)
-                        if response.status_code == 200:
-                            data = response.json()
-                            # Proceed only if the returned data is not empty (non-empty array or dict)
-                            if data:
-                                self._logger.info(f"CWReceiver: Tag {tag_id} successfully retrieved!")
-                                all_entity_parameter_data.update({param_name: data})
-                            else:
-                                # Data is empty, treat as a failure
-                                self._logger.warning(f"CWReceiver: Tag {tag_id} returned empty data.")
-                                all_success = False
-                                break
+                        # Make the GET request with specified timeout
+                        data = self.retrieve_data(f"{self._server.get('resources').get('data')}{tag_id}")
+
+                        if data:
+                            self._logger.info(f"CWReceiver: Tag {tag_id} successfully retrieved!")
+                            all_entity_parameter_data.update({param_name: data})
                         else:
-                            # Status code is not 200, log a warning and mark failure
-                            self._logger.warning(f"CWReceiver: Error getting data from tag {tag_id}: {response.status_code}")
-                            all_success = False
-                            break
+                            # Data is empty, treat as a failure
+                            self._logger.warning(f"CWReceiver: Tag {tag_id} returned empty data.")
+                            all_entity_parameter_data.update({param_name: []})
 
-                    except requests.exceptions.Timeout:
-                        self._logger.error("CWReceiver: Connection timeout.")
-                        all_success = False
-                        break
-
-                    except requests.exceptions.ConnectionError as e:
-                        self._logger.error(f"CWReceiver: {e}")
-                        all_success = False
-                        break
-
-                    except requests.exceptions.RequestException as e:
-                        self._logger.error(f"CWReceiver: Unexpected error - {e}")
-                        all_success = False
-                        break
-                else:
-                    all_success = False
-                    break
-
-            if all_success:
+                # Pass raw data to translator; translation is not performed here
                 self._translator.translate(all_entity_parameter_data, values.get('label'), entity_id)
 
-    def _login(self):
-        try: 
-            token = CWSession.get_token()
         except Exception as e:
-            print(e)
-            exit()
+            self._logger.error(e)
+
+    def _header_updater(self):
+        """
+        Sets the authorization header using the current CWSession token.
+
+        """
+        token = CWSession.get_token()
+
+        if token is None:
+            raise RuntimeError(f"CWReceiver - {self._environment}: Token is None.")
+
         self._header = {'Authorization': f"CW {token}"}
-        if token is not None:
-            self._session_time = datetime.datetime.now().timestamp()
 
-    def run(self):
-        self._scheduler = BlockingScheduler()
-        self._scheduler.add_job(self._job, 'interval', seconds=self._time_interval, misfire_grace_time=10, coalesce=True)
-
-        self._job()
-        self._scheduler.start()
-
+    # TODO: Verificar se isto é a melhor alternativa
     @classmethod
-    def pre_start(cls):
-        CWSession.start_token_refresher()
+    def pre_start(cls, configurations : dict, logger : LoggingUtils):
+        """
+        Performs pre-start initialization for the receiver by starting the
+        CWSession token refresher.
+
+        Args:
+            logger (LoggingUtils): Logger instance.
+            configurations (dict): General configurations for CWSession.
+        """
+        CWSession.start_token_refresher(logger, configurations)

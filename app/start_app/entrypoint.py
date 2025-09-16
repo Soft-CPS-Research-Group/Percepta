@@ -4,14 +4,13 @@ from datetime import datetime, timedelta
 from app.utils.data import DataSet
 from app.utils.logger import LoggingUtils
 from app.repositories.repository_factory import RepositoryFactory
-# Direct imports from app modules
-from .accumulator_entrypoint import launch_accumulator as accumulator_entrypoint
+from .accumulator_entrypoint import launch_accumulator_service as accumulator_entrypoint
 from .receiver_entrypoint import launch_receivers as receivers_entrypoint
 
 # Load configuration from file once at startup
-configurations = DataSet.get_schema('./configs/runtimeConfigurations.json')
+configurations = DataSet.get_schema('./configs/runtime_configurations.json')
 # Initialize logger once for main process
-logger = LoggingUtils("entrypoint", configurations)
+logger = LoggingUtils(component_name="entrypoint", configurations=configurations)
 
 def wait_for_next_interval_start(time_interval):
     """
@@ -46,6 +45,7 @@ def launch_app():
     - Waits for the next aligned interval start
     - Starts the data requester processes
     """
+
     frequency = configurations.get('frequency')
 
     time_interval = DataSet.calculate_interval(frequency)
@@ -63,6 +63,7 @@ def launch_app():
 
     # Wait until next aligned time interval before starting requesters
     wait_for_next_interval_start(time_interval)
+
 
     # Start data requesters after the wait
     start_data_requesters(environment_repository)

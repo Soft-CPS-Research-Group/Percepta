@@ -23,9 +23,6 @@ def discover_subclasses(package: str, base_class: Type[T], required_suffix: str)
 
     # Iterate over all files in the package directory
     for filename in os.listdir(package_path):
-        # Skip non-Python files
-        if not filename.endswith(".py"):
-            continue
 
         # Enforce required suffix (e.g., "_handler.py")
         if not filename.endswith(required_suffix + ".py"):
@@ -37,11 +34,17 @@ def discover_subclasses(package: str, base_class: Type[T], required_suffix: str)
         try:
             module = importlib.import_module(full_module)
 
-            # Iterate through all classes in the module
+            # Inspect all classes in the module
             for _, obj in inspect.getmembers(module, inspect.isclass):
-                # Register only subclasses of the base class (excluding the base itself)
+                # Only keep classes actually defined in this module (ignore imported ones)
+                if obj.__module__ != full_module:
+                    continue
+
+                # Must be a subclass of the base_class, but not the base itself
                 if issubclass(obj, base_class) and obj is not base_class:
-                    registry[module_name] = obj
+                    # Ignore abstract classes (those still declaring abstract methods)
+                    if not getattr(obj, "__abstractmethods__", False):
+                        registry[module_name] = obj
 
         except Exception as e:
             print(f"[registry] Failed to import {full_module}: {e}")

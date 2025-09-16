@@ -1,27 +1,26 @@
-import pika
 import datetime
 import json
-import time
+from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
+from app.utils.logger import LoggingUtils
 
-class ICTranslator:
-    def __init__(self, environment, environment_specs, configurations, logger):
-        self._environment = environment
+class ICTranslator(TranslatorRabbitMQBase):
+
+    _entities : dict
+    _labels_functions_mapper : dict
+
+    def __init__(self, environment : str, environment_specs : dict, configurations : dict, logger : LoggingUtils):
+        super().__init__(environment, configurations, logger)
+
         self._entities = environment_specs.get('entities')
-        self._internal_message_hub_server = configurations.get('internalAMQPServer')
-        self._max_reconnect_attempts = configurations.get('maxReconnectAttempts')
-        self._logger = logger
 
-    def _message_creator(self, value, device_id, timestamp):
-
-        new_message = {
-            "id": device_id,
-            "value": value,
-            "timestamp": timestamp
+        self._labels_functions_mapper = {
+            "pv.production": self._pv_panel,
+            "battery.soc": self._battery,
+            "meter.values": self._meter,
+            "charging.session": self._ev_charger
         }
 
-        return new_message
-
-    def _ev_charger(self, charging_sessions_list, devices, timestamp):
+    def _ev_charger(self, charging_sessions_list, timestamp):
 
         messages = []
 
@@ -38,7 +37,7 @@ class ICTranslator:
 
             # Build the device key (e.g., "AC000001_1")
             device_id = f"{serial}_{plug}"
-            device_data = devices.get(device_id)
+            device_data = self._entities.get(device_id)
 
             if device_data:
                 # Check if the label matches "charging_session"
@@ -61,12 +60,12 @@ class ICTranslator:
         return messages
 
     # TODO e se tiver mais do que um PV Panel? Neste momento a ic envia os dados como se só existisse um...
-    def _pv_panel(self, pv_production, devices, timestamp):
+    def _pv_panel(self, pv_production, timestamp):
 
         pv_label = "pv_panel"
 
         # Iterate over devices dictionary (key=device_id, value=device_data)
-        for device_id, device_data in devices.items():
+        for device_id, device_data in self._entities.items():
             # Check if this device has the label "pv_panel"
             if device_data.get("label") == pv_label:
                 # Create and return a message using pv_production data and timestamp
@@ -77,12 +76,12 @@ class ICTranslator:
 
         return []
 
-    def _battery(self, battery_soc, devices, timestamp):
+    def _battery(self, battery_soc, timestamp):
 
         pv_label = "battery"
 
         # Iterate over devices dictionary (key=device_id, value=device_data)
-        for device_id, device_data in devices.items():
+        for device_id, device_data in self._entities.items():
             # Check if this device has the label "battery"
             if device_data.get("label") == pv_label:
                 # Create and return a message using battery_soc data and timestamp
@@ -95,7 +94,7 @@ class ICTranslator:
 
         return []
 
-    def _meter(self, meters_list, devices, timestamp):
+    def _meter(self, meters_list, timestamp):
 
         messages = []
 
@@ -109,7 +108,7 @@ class ICTranslator:
             if device_id is None:
                 continue
 
-            device_data = devices.get(device_id)
+            device_data = self._entities.get(device_id)
 
             if device_data:
                 # Check if the label matches "grid_meter"
@@ -130,52 +129,45 @@ class ICTranslator:
 
         return messages
 
-    labels_functions_mapper = {
-        "pv.production": _pv_panel,
-        "battery.soc": _battery,
-        "meter.values": _meter,
-        "charging.session": _ev_charger
-    }
-
     def translate(self, message):
+        """
+        Translate incoming device messages into a standardized format.
+        Handles both generic translation and label-specific logic.
 
+        Args:
+        message (dict): Dictionary containing i-charging-format environment data.
+
+        Returns:
+        None: The method sends the translated message to the environment queue.
+        """
         message = json.loads(message.decode('utf-8')).get('observation')
 
-        while self._max_reconnect_attempts > 0:
-            try:
-                connection = pika.BlockingConnection(pika.ConnectionParameters(
-                    host=self._internal_message_hub_server.get('host'),
-                    port=self._internal_message_hub_server.get('port'), virtual_host=self._internal_message_hub_server.get('vhost'), credentials=pika.PlainCredentials(self._internal_message_hub_server.get('credentials').get('username'), self._internal_message_hub_server.get('credentials').get('password'))
-                ))
-                channel = connection.channel()
-                channel.queue_declare(queue=self._environment, durable=True)
 
-                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-                message_list = []
+        message_list = []
 
-                for attr in message:
-                    if attr in ICTranslator.labels_functions_mapper:
-                        func = ICTranslator.labels_functions_mapper[attr]
-                        attr_processed = func(message.get(attr), self._entities, timestamp)
-                        # Only append to message_list if attr_processed is not empty (e.g., not an empty list or dict)
-                        if attr_processed:
-                            message_list.extend(attr_processed)
+        for attr in message:
+            if attr in self._labels_functions_mapper:
+                func = self._labels_functions_mapper[attr]
+                attr_processed = func(message.get(attr), timestamp)
+                # Only append to message_list if attr_processed is not empty (e.g., not an empty list or dict)
+                if attr_processed:
+                    message_list.extend(attr_processed)
 
-                message_bytes = json.dumps(message_list).encode('utf-8')
-                channel.basic_publish(exchange='', routing_key=self._environment, body=message_bytes)
+        # Send the message to the environment queue
+        self.send_message_to_environment_queue(message_list)
 
-                break
+    @staticmethod
+    def _message_creator(value, device_id, timestamp):
 
-            except pika.exceptions.AMQPConnectionError as e:
-                self._max_reconnect_attempts -= 1  # Decrement the retry counter
-                if self._max_reconnect_attempts == 0:
-                    self._logger.error(f"ICTranslator: {self._environment} translator reached maximum reconnection attempts. The message was not sent.")
-                else:
-                    self._logger.warning(f"ICTranslator: {self._environment} translator lost connection, attempting to reconnect...")
-                    time.sleep(5) 
-            except Exception as e:
-                self._logger.error(f"ICTranslator: An unexpected error occurred: {e}")
-                break
+        new_message = {
+            "id": device_id,
+            "value": value,
+            "timestamp": timestamp
+        }
+
+        return new_message
+
 
 # Em caso de erro corro o risco da mensagem ser enviada duas vezes, mas não é um problema

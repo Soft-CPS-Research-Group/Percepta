@@ -4,7 +4,7 @@ from app.repositories.repository_factory import RepositoryFactory
 from app.accumulator_context_factory import AccumulatorContextFactory
 
 # TODO estudar melhor esta divisão de repositórios
-def launch_accumulator(environment_repository : EnvironmentRepository, repository_factory : RepositoryFactory, configurations: dict, logger):
+def launch_accumulator_service(environment_repository : EnvironmentRepository, repository_factory : RepositoryFactory, configurations: dict, logger):
 
     logger.info("Starting Accumulator...")
 

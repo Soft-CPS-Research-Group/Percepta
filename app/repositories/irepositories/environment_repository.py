@@ -12,7 +12,7 @@ class EnvironmentRepository(ABC):
             dict -> A dictionary where each key is an environment name, and the value is a structure
                     containing all related entities and their attributes, regardless of the provider.
         """
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def get_environments_by_provider(self, provider: str) -> dict:
@@ -28,4 +28,4 @@ class EnvironmentRepository(ABC):
             dict -> A dictionary of environments with their respective entities and attributes,
                     limited to those provided by the specified provider.
         """
-        pass
+        raise NotImplementedError()

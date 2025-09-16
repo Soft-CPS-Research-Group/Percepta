@@ -3,13 +3,11 @@ import datetime
 import copy
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.predictor import Predictor
 from threading import Lock
-from app.energy_price import EnergyPrice
 from app.utils.data import DataSet
 
 #
-class Manager():
+class Manager:
     def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, predictor, entities_handlers, configurations, logger):
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
         self._start_sched()
@@ -21,21 +19,14 @@ class Manager():
         self._dict = {}
         self._entities_handlers = entities_handlers
         self._time_series_repository = time_series_repository
-        self._algorithm_format = configurations.get('AlgorithmAtributes')
-        self._charger_session_format = configurations.get('ChargingSessionsFormat')
+
+        # TODO será que isto é mesmo necessário? Isto garante que todos os campos estão presentes mesmo que a zero
+        self._algorithm_format = configurations.get('algorithm_attributes')
         self._logger = logger
 
         self._timer_ended = Lock()
 
-        self._message = ''
-
-        # TODO: Remove from here, use case specific
-        self._energy_price_service = EnergyPrice(configurations, logger)
-
-    # TODO: Remove from here, use case specific
-    def energy_price(self):
-        energy_price = self._energy_price_service.get_energy_price()
-        self._message['electricity_pricing'] = energy_price
+        self._message = {}
 
     def new_message(self, messages):
         # Decode the incoming message bytes to a UTF-8 string
@@ -95,6 +86,7 @@ class Manager():
         self._timer_ended.release()
 
 
+    #TODO se o handler não existir fazer substituição normal
     def _verify_and_replace_missing_data(self):
         # Iterate over all known entities
         for entity_id, values in self._entities.items():
@@ -113,7 +105,7 @@ class Manager():
                 # Mark this data as not generated (i.e., valid real data)
                 self._substitute_dict[entity_id]['generated'] = 1
 
-
+    #TODO se o handler não existir fazer formatação normal
     def _format_data(self):
         # Get the current timestamp in UTC without microseconds
         timestamp = datetime.datetime.now(datetime.UTC).replace(microsecond=0)
@@ -134,16 +126,11 @@ class Manager():
                 # Pass the current message, the data dictionary, and the list of entity IDs for this label
                 handler.process(self._message, self._dict)
 
-        # TODO: Remove from here, use case specific
-        self.energy_price()
-
         # Print the final message prepared for the AI model (for debugging)
         print(f"Message to the AI Model: {self._message}\n")
 
 
     def stop(self):
-        # TODO: Remove from here, use case specific
-        self._energy_price_service.stop()
         # Shutdown the scheduler to stop any scheduled jobs gracefully
         self._scheduler.shutdown()
 
