@@ -37,18 +37,11 @@ class GridMeterHandler(EntityHandlerBase):
         message["non_shiftable_load"] = non_shiftable_load - battery_energy
 
     def fallback(self, device_id, substitute_dict):
-        # Get current time
-        current_time = int(time.time())
-
         # Try to get substitute data for the device
         device_substitute = substitute_dict.get(device_id)
 
         if device_substitute:
-            timestamp = device_substitute.get('timestamp', 0)
-
-            # Check if the timestamp is within the last `data_deadline_seconds`
-            if (current_time - timestamp) <= GridMeterHandler.data_deadline_seconds:
-                return device_substitute
+            return device_substitute
 
         self._logger.warning(f"Device not found in substitute_dict: {device_id}. Default data will be used instead.")
 

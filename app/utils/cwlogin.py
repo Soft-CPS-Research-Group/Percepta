@@ -18,6 +18,8 @@ class CWSession:
     _cw_configurations: dict        # Cleanwatts-specific configurations.
     _max_reconnect_attempts : int   # Maximum number of attempts to reconnect on failure.
     _logger: LoggingUtils           # Logger instance for logging session activity.
+    _refresh_resource : str
+    _login_resource : str
 
     @classmethod
     def start_token_refresher(cls, logger : LoggingUtils, configurations : dict):
@@ -41,6 +43,8 @@ class CWSession:
                 "Login": cls._auth.get('username'),
                 "Password": cls._auth.get('password')
             }
+        cls._refresh_resource = cls._server.get('resources').get("refresh")
+        cls._login_resource = cls._server.get('resources').get("login")
 
         cls._start_http_service()
 
@@ -89,12 +93,11 @@ class CWSession:
             cls._start_http_service()
 
         def _login_auxiliar():
-            login_resource = cls._server.get('resources').get("login")
-            response = cls._http_connector.post(endpoint=login_resource, data=cls._credentials)
+            response = cls._http_connector.post(endpoint=cls._login_resource, data=cls._credentials)
 
             if response.status_code != 201:
                 raise HTTPErrorWrapper(
-                    f"Failed to retrieve data from {login_resource}: "
+                    f"Failed to retrieve data from {cls._login_resource}: "
                     f"HTTP {response.status_code}, response: {response.text[:500]}"
                 )
 
@@ -114,11 +117,10 @@ class CWSession:
         if cls._http_connector.is_connected() is False:
             cls._start_http_service()
 
-
-        refresh_resource = cls._server.get('resources').get("refresh")
+        refresh_resource_with_tokens = f"{cls._refresh_resource}token={cls.token}&refresh_token={cls.refresh_token}"
 
         try:
-            response = cls._http_connector.put(endpoint=refresh_resource, data=cls._credentials)
+            response = cls._http_connector.put(endpoint=refresh_resource_with_tokens)
 
             if response.status_code != 201:
                 raise HTTPErrorWrapper(
@@ -129,7 +131,7 @@ class CWSession:
             cls.refresh_token = response.json().get('RefreshToken')
 
         except Exception as e:
-            cls._logger.error(f"Failed to retrieve data from {refresh_resource}: {e}. Failed to refresh the token, the System will attempt to log in again.")
+            cls._logger.error(f"Failed to retrieve data from {refresh_resource_with_tokens}: {e}. Failed to refresh the token, the System will attempt to log in again.")
             cls._login()
 
 

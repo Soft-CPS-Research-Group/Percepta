@@ -129,10 +129,12 @@ class ReceiverHTTPBase(ReceiverBase):
         runs the job immediately once, and then starts the scheduler loop.
         """
         self._scheduler = BlockingScheduler()
+        interval_minutes = self._time_interval // 60
+
         self._scheduler.add_job(
             self._run_job,
-            'interval',
-            seconds=self._time_interval,
+            'cron',
+            minute=f'*/{interval_minutes}',  # Run every 'interval_minutes' minutes
             misfire_grace_time=10,
             coalesce=True
         )

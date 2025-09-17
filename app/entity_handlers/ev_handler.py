@@ -34,17 +34,12 @@ class EVHandler(EntityHandlerBase):
 
     def fallback(self, device_id, substitute_dict):
         # Capture current timestamp in seconds
-        current_time = int(time.time())
 
         # Attempt to retrieve substitute data for the given device
         device_substitute = substitute_dict.get(device_id)
 
         if device_substitute:
-            timestamp = device_substitute.get('timestamp', 0)
-
-            # Validate if the substitute data falls within the acceptable freshness window
-            if (current_time - timestamp) <= EVHandler.data_deadline_seconds:
-                return device_substitute
+            return device_substitute
 
         # Log a warning if fallback data is unavailable or outdated
         self._logger.warning(f"Device not found in substitute_dict: {device_id}. Default data will be used instead.")

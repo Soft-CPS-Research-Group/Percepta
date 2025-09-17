@@ -33,18 +33,11 @@ class BatteryHandler(EntityHandlerBase):
         message["batteries"] = batteries
 
     def fallback(self, device_id, substitute_dict):
-        # Capture current timestamp
-        current_time = int(time.time())
-
         # Attempt to retrieve substitute data for the missing device
         device_substitute = substitute_dict.get(device_id)
 
         if device_substitute:
-            timestamp = device_substitute.get('timestamp', 0)
-
-            # Validate freshness of substitute data against the deadline
-            if (current_time - timestamp) <= BatteryHandler.data_deadline_seconds:
-                return device_substitute
+           return device_substitute
 
         # Log warning if no substitute found or if data is outdated
         self._logger.warning(f"Device not found in substitute_dict: {device_id}. Using default fallback data.")
