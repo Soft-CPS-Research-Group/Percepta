@@ -6,7 +6,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from threading import Lock
 from app.utils.data import DataSet
 
-#
 class Manager:
     def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, predictor, entities_handlers, configurations, logger):
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
@@ -55,27 +54,19 @@ class Manager:
             return False
 
     def _send(self):
-        timeout = self._time_interval / 4  # Maximum time to wait for data (25% of the interval)
-        poll_interval = 0.5  # How often to check if all data is received
-        waited = 0  # Time already waited
-
-        # TODO: Improve this waiting mechanism (e.g., make it event-driven instead of polling)
-        while waited < timeout:
-            # Check if self._dict contains data for all expected entities
-            if all(entity_id in self._dict for entity_id in self._entities):
-                break  # Exit loop if data is ready for all entities
-            time.sleep(poll_interval)
-            waited += poll_interval
-
         # Acquire the lock or condition to safely proceed with processing
         self._timer_ended.acquire()
+        self._logger.info(f"Lock acquired.")
 
         # Fill in missing data if necessary
         self._verify_and_replace_missing_data()
+        self._logger.info(f"Data verification completed.")
 
         # Format data for the prediction model
         self._format_data()
+        self._logger.info(f"Data formatting completed.")
 
+        # TODO publicar no RabbitMQ?
         # Perform prediction
         self._predictor.predict(self._message)
 
@@ -147,7 +138,7 @@ class Manager:
             self._send,
             'cron',
             minute=f'*/{interval_minutes}',  # Run every 'interval_minutes' minutes
-            second=0,  # Run at the start of the minute
+            second=10,  # Run 10 seconds after the start of the minute
             misfire_grace_time=10,  # Allow a 10-second window to catch missed jobs
             coalesce=True  # Combine missed job runs into one if delayed
         )

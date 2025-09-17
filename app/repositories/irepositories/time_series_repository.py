@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, List, Dict
+from typing import Any
+from app.utils.logger import LoggingUtils
 
 
 class TimeSeriesRepository(ABC):
-    def __init__(self, group, environment, logger):
+
+    _group : str                # Name of the database group to connect to (used to select the MongoDB database)
+    _environment : str          # Environment identifier used to construct the collection name
+    _logger : LoggingUtils      # Logger instance
+
+    def __init__(self, group : str, environment : str, logger : LoggingUtils):
         self._group = group
         self._environment = environment
         self._logger = logger
@@ -12,44 +18,21 @@ class TimeSeriesRepository(ABC):
     @abstractmethod
     def write(self, value: Any) -> None:
         """
-        Writes a single value into the time series for a given entity and timestamp.
-
-        environment_id:
-            str -> Identifier of the environment the value belongs to
-        timestamp:
-            datetime -> Timestamp representing when the value occurred
-        value:
-            Any -> The data point to store (e.g., float, int, dict)
-
-        Returns:
-            None
+        Inserts a single time series value into the collection.
         """
         pass
 
     @abstractmethod
-    def read(self, start_time: datetime, end_time: datetime) -> List[Dict[str, Any]]:
+    def read(self, start_time: datetime, end_time: datetime) -> list:
         """
-        Reads the time series values for a specific entity between two timestamps.
-
-        start_time:
-            datetime -> Lower bound of the time range (inclusive)
-        end_time:
-            datetime -> Upper bound of the time range (inclusive)
-
-        Returns:
-            List[Dict] -> A chronologically ordered list of data points within the specified time range
+        Reads all time series entries from the collection between two timestamps.
+        Results are sorted chronologically in ascending order.
         """
         pass
 
     @abstractmethod
-    def latest(self) -> Dict[str, Any]:
+    def latest(self) -> dict:
         """
-        Retrieves the latest available value for a given entity.
-
-        entity_id:
-            str -> Identifier of the entity to query
-
-        Returns:
-            Dict -> A dictionary containing the latest timestamp and value for the entity
+        Retrieves the most recent time series entry from the collection.
         """
         pass

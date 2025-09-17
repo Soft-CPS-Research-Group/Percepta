@@ -21,7 +21,7 @@ def wait_for_next_interval_start(time_interval):
     start_of_hour = now.replace(minute=0, second=0, microsecond=0)
     seconds_since_hour = (now - start_of_hour).total_seconds()
     next_multiple = ((seconds_since_hour // time_interval) + 1) * time_interval
-    wait_seconds = next_multiple - seconds_since_hour + 1
+    wait_seconds = next_multiple - seconds_since_hour
     target_time = now + timedelta(seconds=wait_seconds)
     logger.info(f"Waiting {wait_seconds:.2f}s until {target_time.strftime('%H:%M:%S')} to start data requesters...")
     time.sleep(wait_seconds)

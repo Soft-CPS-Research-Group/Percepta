@@ -47,7 +47,7 @@ class FileEnvironmentRepository(EnvironmentRepository):
         Returns:
             dict: Dictionary containing environments for the specified provider.
         """
-        return self._environments_by_provider[provider]
+        return self._environments_by_provider.get(provider)
 
     def process_json_files_in_folder(self, folder_path: str) -> None:
         """
@@ -68,6 +68,7 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
             # Read the JSON file content
             schema: dict = self._read_repo_file(file_path)
+
             # Extract and remove the 'provider' key from the schema
             provider: str = schema.pop('provider')
 
