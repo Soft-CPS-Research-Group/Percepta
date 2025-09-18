@@ -7,9 +7,14 @@ from app.utils.retry import with_retries
 
 class ReceiverRabbitMQBase(ReceiverBase):
     """
-    Base class for RabbitMQ receivers.
+    Generic base class for RabbitMQ receivers in Percepta.
 
-    Manages RabbitMQ connections.
+    This class manages RabbitMQ connections, channels, and message consumption.
+    It is designed for the specific context where each environment has a single fanout exchange,
+    and all data for that environment is published to that exchange.
+
+    Subclasses are responsible for defining how received messages are processed,
+    but the connection, queue declaration, and message acknowledgement are handled here.
     """
 
     _server: dict # Server configuration dictionary containing environment-specific settings

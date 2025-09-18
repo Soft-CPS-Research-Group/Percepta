@@ -1,5 +1,5 @@
 import requests
-from requests.exceptions import RequestException, HTTPError, ConnectionError, Timeout
+from requests.exceptions import ConnectionError, Timeout
 
 
 class HTTPErrorWrapper(Exception):
@@ -10,147 +10,141 @@ class HTTPErrorWrapper(Exception):
 class HTTPConnector:
     """
     Wrapper class for managing an HTTP connection/session.
-    Provides methods for GET, POST, and session management with structured exception handling.
+    Provides methods for GET, POST, PUT and session management with structured exception handling.
     """
 
     _session: requests.Session  # Session object
     _base_url: str  # Base URL of the HTTP server
 
-    def __init__(self, url : str):
+    def __init__(self, url: str):
         """
-        Initialize HTTP connection parameters.
+        Initializes HTTP connection parameters.
 
         Args:
             url (str): Server base url.
         """
         try:
-            self._base_url = url
-            if not self._base_url:
-                raise ValueError("Base URL must be provided")
+            self._base_url = url  # Assign the provided URL to the instance variable
 
-            self._session = requests.Session()
+            if not self._base_url:  # Check if the base URL is empty or None
+                raise ValueError("Base URL must be provided")  # Raise an error if no URL is provided
 
+            self._session = requests.Session()  # Create a persistent session object for HTTP requests
+
+        # Handle any exception that occurs during the initialization
         except Exception as e:
             raise HTTPErrorWrapper(f"Error initializing HTTP session: {e}") from e
 
     # TODO: review timeout settings)
-    def _request(self, method: str, endpoint: str, **kwargs):
+    def _request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """
-        Internal method to perform HTTP requests with error handling and JSON validation.
+        Performs HTTP requests with error handling and JSON validation.
 
         Args:
             method (str): HTTP method, e.g., 'GET', 'POST'.
             endpoint (str): API endpoint to call (appended to base_url).
             **kwargs: Additional arguments to pass to requests (params, data, json, timeout, etc.)
-
-        Returns:
-            Response: The raw HTTP response object from requests.
-
-        Raises:
-            HTTPErrorWrapper: For connection errors, timeouts, HTTP status 3xx–5xx, or invalid JSON.
         """
 
+        # Build the full URL by combining base_url and endpoint
         url = f"{self._base_url.rstrip('/')}/{endpoint.lstrip('/')}"
+
         try:
+            # Send the HTTP request using the session object
             response = self._session.request(method=method, url=url, **kwargs)
 
+            # Check if the response status code indicates an error (3xx, 4xx, 5xx)
             if 300 <= response.status_code < 600:
+                # Raise a custom wrapped error with details about the failed request
                 raise HTTPErrorWrapper(
                     f"HTTP error during {method.upper()} request for {url}: "
                     f"status code {response.status_code}, response: {response.text[:500]}"
                 )
 
-
+            # If no error, return the response object
             return response
 
+        # Handle connection-related errors
         except ConnectionError as e:
             raise HTTPErrorWrapper(f"Connection error during {method.upper()} request for {url}: {e}") from e
+
+        # Handle request timeout errors
         except Timeout as e:
             raise HTTPErrorWrapper(f"Timeout during {method.upper()} request for {url}: {e}") from e
+
+        # Handle any other unexpected errors
         except Exception as e:
             raise HTTPErrorWrapper(f"Unexpected error during {method.upper()} request for {url}: {e}") from e
 
-    def get(self, endpoint, timeout, params=None):
+    def get(self, endpoint, timeout, params=None) -> requests.Response:
         """
-        Perform a GET request.
+        Performs a GET request using _request.
 
         Args:
             endpoint (str): API endpoint to call (appended to base_url).
             params (dict, optional): Query parameters.
             timeout (int, optional): Timeout in seconds. Defaults to 10.
-
-        Returns:
-            Response: The raw HTTP response object from requests.
-
-        Raises:
-            HTTPErrorWrapper: For connection errors, timeouts, HTTP status 3xx–5xx, or invalid JSON.
         """
         return self._request("GET", endpoint, params=params, timeout=timeout)
 
-    def post(self, endpoint : str, data : dict = None, timeout : int =10):
+    def post(self, endpoint : str, data : dict = None, timeout : int =10) -> requests.Response:
         """
-        Perform a POST request.
+        Performs a POST request using _request.
 
         Args:
             endpoint (str): API endpoint to call (appended to base_url).
             data (dict, optional): JSON payload.
             timeout (int, optional): Timeout in seconds. Defaults to 10.
-
-        Returns:
-            Response: The raw HTTP response object from requests..
-
-        Raises:
-            HTTPErrorWrapper: For connection errors, timeouts, HTTP status 3xx–5xx, or invalid JSON.
         """
         return self._request("POST", endpoint, json=data, timeout=timeout)
 
-    def put(self, endpoint : str, data : dict = None, timeout : int =10):
+    def put(self, endpoint : str, data : dict = None, timeout : int =10) -> requests.Response:
         """
-        Perform a POST request.
+        Performs a POST request using _request.
 
         Args:
             endpoint (str): API endpoint to call (appended to base_url).
             data (dict, optional): JSON payload.
             timeout (int, optional): Timeout in seconds. Defaults to 10.
-
-        Returns:
-            Response: The raw HTTP response object from requests..
-
-        Raises:
-            HTTPErrorWrapper: For connection errors, timeouts, HTTP status 3xx–5xx, or invalid JSON.
         """
         return self._request("PUT", endpoint, json=data, timeout=timeout)
 
-
-    def update_headers(self, new_headers: dict):
+    def update_headers(self, new_headers: dict) -> None:
         """
-        Update session headers dynamically.
+        Updates session headers dynamically.
 
         Args:
             new_headers (dict): Dictionary of headers to add or update.
         """
         try:
+            # Ensure the provided argument is a dictionary
             if not isinstance(new_headers, dict):
                 raise ValueError("Headers must be provided as a dictionary")
 
+            # Only update headers if they are different from the current session headers
             if new_headers != dict(self._session.headers):
-                self._session.headers.update(new_headers)
+                self._session.headers.update(new_headers)  # Merge/overwrite headers in the session
+
+        # Handle any exception that occurs during the header update
         except Exception as e:
             raise HTTPErrorWrapper(f"Failed to update session headers: {e}") from e
 
-    def close(self):
-        """Close the HTTP session cleanly."""
+    def close(self) -> None:
+        """Closes the HTTP session cleanly."""
         try:
+            # Attempt to close the underlying requests.Session object
             self._session.close()
+
+        # Handle any exception that occurs during the session close
         except Exception as e:
             raise HTTPErrorWrapper(f"Failed to close HTTP session: {e}") from e
 
-
     def is_connected(self) -> bool:
         """
-        Returns True if  the connection is still alive.
+        Returns True if the connection is still alive.
         """
+        # Check if the instance has a '_session' attribute and that it is not None
         if not hasattr(self, "_session") or self._session is None:
-            return False
+            return False  # No active session
 
-        return True
+        return True  # Session exists and is assumed to be active

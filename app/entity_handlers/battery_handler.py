@@ -1,6 +1,4 @@
-import time
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
-
 
 class BatteryHandler(EntityHandlerBase):
     label = "battery"
@@ -12,7 +10,7 @@ class BatteryHandler(EntityHandlerBase):
         super().__init__(repository, entities_ids, configurations, logger)
 
     def process(self, message, all_data):
-        batteries_entities = self._entity_ids.get(BatteryHandler.label)
+        batteries_entities = self._entities_ids.get(BatteryHandler.label)
         # List to collect data from battery entities
         batteries = []
 

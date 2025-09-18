@@ -8,7 +8,7 @@ class EVChargerHandler(EntityHandlerBase):
         super().__init__(repository, entities_ids, configurations, logger)
 
     def process(self, message, all_data):
-        ev_chargers_entities = self._entity_ids.get(EVChargerHandler.label)
+        ev_chargers_entities = self._entities_ids.get(EVChargerHandler.label)
 
         # List to collect data from EV charging sessions
         charging_sessions = []

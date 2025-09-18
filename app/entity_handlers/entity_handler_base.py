@@ -1,13 +1,22 @@
 from abc import ABC, abstractmethod
+
+from app.repositories.file_environment_repository import FileEnvironmentRepository
 from app.utils.data import DataSet
+from app.utils.logger import LoggingUtils
+
 
 class EntityHandlerBase(ABC):
     label : str
 
-    def __init__(self, repository, entities_ids, configurations, logger):
+    _repository: FileEnvironmentRepository
+    _logger : LoggingUtils
+    _entities_ids : dict
+    _time_interval : int
+
+    def __init__(self, repository : FileEnvironmentRepository, entities_ids : dict, configurations : dict, logger : LoggingUtils):
         self._repository = repository
         self._logger = logger
-        self._entity_ids = entities_ids
+        self._entities_ids = entities_ids
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
 
     @abstractmethod

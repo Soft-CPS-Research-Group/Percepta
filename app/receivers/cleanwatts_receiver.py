@@ -2,6 +2,7 @@ from app.translators.cw_translator import CWTranslator
 from app.utils.cwlogin import CWSession
 from app.receivers.receiver_http_base import ReceiverHTTPBase
 from app.utils.logger import LoggingUtils
+from app.utils.providers import Provider
 
 class CWReceiver(ReceiverHTTPBase):
     """
@@ -10,26 +11,26 @@ class CWReceiver(ReceiverHTTPBase):
     using CWSession.
 
     Note:
-        Translation of provider-specific data into system-specific format
+        Translation of provider-specific data into Percepta-specific format
         is handled by CWTranslator.
     """
-    provider = "cleanwatts"     # Provider ID
+    provider = Provider.CLEANWATTS     # Provider ID
 
-    _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into System-specific format
+    _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into Percepta-specific format
 
     def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initializes the CWReceiver instance.
 
         Args:
-            environment (str): Environment name.
-            environment_specs (dict): Environment-specific configurations.
-            configurations (dict): General configurations for the receiver.
-            logger (LoggingUtils): Logger instance for logging events.
+            environment (str): Name of the environment the receiver will operate in.
+            environment_specs (dict): Specifications for the environment, including entities.
+            configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
+            logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment, environment_specs, configurations, logger)
 
-        # Translator instance is prepared but the receiver only collects raw data
+        # Translator instance is created
         self._translator = CWTranslator(environment, configurations, logger)
 
     def stop(self):
@@ -38,6 +39,8 @@ class CWReceiver(ReceiverHTTPBase):
         """
         self._logger.info(f"Stopping thread {self._environment}...")
         super().stop()
+
+        #TODO não faz sentido isto estar aqui!
         CWSession.stop_token_refresher()
 
     def _job(self):
@@ -46,8 +49,6 @@ class CWReceiver(ReceiverHTTPBase):
             - Ensures a valid session.
             - Retrieves raw data for all configured entities and parameters.
             - Passes collected data to CWTranslator (does not perform translation itself).
-
-        Logs errors and warnings for empty data or failures.
         """
         try:
             self._header_updater()
@@ -71,7 +72,8 @@ class CWReceiver(ReceiverHTTPBase):
                             all_entity_parameter_data.update({param_name: []})
 
                 # Pass raw data to translator; translation is not performed here
-                self._translator.translate(all_entity_parameter_data, values.get('label'), entity_id)
+
+                self._translator.translate({'entity_id' : entity_id, 'label' : values.get('label'), 'parameters' : all_entity_parameter_data})
 
         except Exception as e:
             self._logger.error(e)

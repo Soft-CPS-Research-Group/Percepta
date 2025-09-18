@@ -7,22 +7,38 @@ from app.utils.logger import LoggingUtils
 from pymongo.collection import Collection
 
 class MongoTimeSeriesRepository(TimeSeriesRepository):
+    """
+    Time series repository concrete implementation using MongoDB.
 
+    This class provides methods to connect to a specific MongoDB collection,
+    insert new time series values, read values within a time range, and retrieve
+    the latest recorded entry.
+
+    The connection to MongoDB is automatically established during initialization
+    and reconnected if the collection is unavailable during read/write operations.
+    """
+
+    _group: str  # Name of the database group to connect to (used to select the MongoDB database)
+    _environment: str  # Environment identifier used to construct the collection name
+    _logger: LoggingUtils  # Logger instance
     _client: MongoClient     # MongoClient instance to manage the connection to the MongoDB server
     _collection: Collection     # Collection object representing the specific MongoDB collection for time series data
 
     def __init__(self, group : str, environment : str, client : MongoClient, logger : LoggingUtils):
-        super().__init__(group, environment, logger)
+        self._group = group
+        self._environment = environment
+        self._logger = logger
         self._client = client
         self._connect()
 
-    def _connect(self):
+    def _connect(self) -> None:
         """
         Establishes a connection to the MongoDB collection using configuration parameters.
         """
         try:
             # Access the database using the client and the group name
             db = self._client[self._group]
+
             # Access the collection with a name based on the environment (spaces replaced by underscores)
             self._collection = db[f'building_{self._environment.replace(" ", "_")}']
 
@@ -34,6 +50,9 @@ class MongoTimeSeriesRepository(TimeSeriesRepository):
     def write(self, value: Any) -> None:
         """
         Inserts a single time series value into the collection.
+
+        Args:
+            value (Any): Time series value to be inserted.
         """
 
         # Check if the collection is not initialized
@@ -58,6 +77,13 @@ class MongoTimeSeriesRepository(TimeSeriesRepository):
         """
         Reads all time series entries from the collection between two timestamps.
         Results are sorted chronologically in ascending order.
+
+        Args:
+            start_time (datetime): Start time of the time series entries to be read.
+            end_time (datetime): End time of the time series entries to be read.
+
+        Returns:
+            list: List of time series entries between start_time and end_time.
         """
         # Check if the collection is initialized
         if self._collection is None:
@@ -90,11 +116,15 @@ class MongoTimeSeriesRepository(TimeSeriesRepository):
     def latest(self) -> dict:
         """
         Retrieves the most recent time series entry from the collection.
+
+        Returns:
+            dict: Latest time series entry retrieved from MongoDB.
         """
         # Check if the collection is initialized
         if self._collection is None:
             # If not, establish the MongoDB connection
             self._connect()
+
         #TODO VER ISTO MELHOR, CONNECT LANÇA ERRO?
         # If the collection is still not available, log a warning and return an empty dictionary
         if self._collection is None:

@@ -4,6 +4,7 @@ from app.ic_runtime_request import ICRuntimeRequest
 from app.translators.ic_translator import ICTranslator
 from app.receivers.receiver_rabbitmq_base import ReceiverRabbitMQBase
 from app.utils.logger import LoggingUtils
+from app.utils.providers import Provider
 
 
 class ICReceiver(ReceiverRabbitMQBase):
@@ -16,7 +17,7 @@ class ICReceiver(ReceiverRabbitMQBase):
         is handled by ICTranslator.
     """
 
-    provider: str = "i-charging"
+    provider: str = Provider.ICHARGING
     _translator: ICTranslator
 
     def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:

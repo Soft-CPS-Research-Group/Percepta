@@ -2,17 +2,34 @@ import datetime
 import json
 from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
+from app.utils.labels import Label
 
 class ICTranslator(TranslatorRabbitMQBase):
+    """
+    Concrete implementation of a translator for IC entities.
 
-    _entities : dict
-    _labels_functions_mapper : dict
+    Handles translation of entity messages into a standardized format,
+    applying special rules for specific labels such as EV chargers.
+    """
 
-    def __init__(self, environment : str, environment_specs : dict, configurations : dict, logger : LoggingUtils):
+    _entities: dict  # Stores entities defined in the environment specifications
+    _labels_functions_mapper: dict  # Maps labels to corresponding processing functions
+
+    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils) -> None:
+        """
+        Initializes the ICTranslator.
+
+        Args:
+            environment (str): String to identify the environment which the data belongs.
+            environment_specs (dict): Environment specifications including entities.
+            configurations (dict): General configurations passed to the translator.
+            logger (LoggingUtils): Logger instance for structured logging.
+        """
         super().__init__(environment, configurations, logger)
 
         self._entities = environment_specs.get('entities')
 
+        # Map each data label to its corresponding processing function
         self._labels_functions_mapper = {
             "pv.production": self._pv_panel,
             "battery.soc": self._battery,
@@ -20,154 +37,203 @@ class ICTranslator(TranslatorRabbitMQBase):
             "charging.session": self._ev_charger
         }
 
-    def _ev_charger(self, charging_sessions_list, timestamp):
+    def _ev_charger(self, charging_sessions: list, timestamp: str) -> list:
+        """
+        Processes EV charger sessions and converts them into messages.
 
-        messages = []
+        Args:
+            charging_sessions (list): List of charging session dictionaries.
+            timestamp (str): Current timestamp for message creation.
 
-        cs_label = "ev_charger"
+        Returns:
+            list: List of formatted messages for valid charging sessions.
+        """
+        messages: list = []
 
-        for charging_session in charging_sessions_list:
+        for charging_session in charging_sessions:
             # Get serial number and plug from the current session
-            serial = charging_session.get("serialnumber")
-            plug = charging_session.get("plug")
+            serial: str = charging_session.get("serialnumber")
+            plug: int = charging_session.get("plug")
 
             # Skip if any of the required fields is missing
             if not serial or plug is None:
                 continue
 
-            # Build the device key (e.g., "AC000001_1")
-            device_id = f"{serial}_{plug}"
-            device_data = self._entities.get(device_id)
+            # Build the entity key (e.g., "AC000001_1")
+            entity_id: str = f"{serial}_{plug}"
+            entity_data: dict = self._entities.get(entity_id)
 
-            if device_data:
-                # Check if the label matches "charging_session"
-                label = device_data.get("label")
-                if label == cs_label:
+            if entity_data:
+                # Check if the label matches "ev_charger"
+                label: str = entity_data.get("label")
+
+                if label == Label.EV_CHARGER:
                     # Prepare the message data
-                    value = {
+                    value: dict = {
                         "power": charging_session.get("power"),
+                        # TODO estudar isto do user_id!
                         "user_id": charging_session.get("user.id")
                     }
                     # Create and add the message
-                    messages.append(ICTranslator._message_creator(value, device_id, timestamp))
+                    messages.append(ICTranslator._message_creator(value, entity_id, timestamp))
                 else:
                     # Log error if label does not match
-                    self._logger.error(f"ICTranslator: Device found, but label mismatch: {device_id} (label: {label})")
+                    raise ValueError(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label})")
             else:
-                # Log error if device is not found in the configuration
-                self._logger.error(f"ICTranslator: Device {device_id} not found in the configuration file.")
+                # Log error if entity is not found in the configuration
+                raise ValueError(f"Translator | Entity {entity_id} not found in the configuration file.")
 
         return messages
 
     # TODO e se tiver mais do que um PV Panel? Neste momento a ic envia os dados como se só existisse um...
-    def _pv_panel(self, pv_production, timestamp):
+    def _pv_panel(self, pv_production: float, timestamp: str) -> list:
+        """
+        Processes PV panel production data and creates messages.
 
-        pv_label = "pv_panel"
+        Args:
+            pv_production (float): Power produced by the PV panel.
+            timestamp (str): Current timestamp for message creation.
 
-        # Iterate over devices dictionary (key=device_id, value=device_data)
-        for device_id, device_data in self._entities.items():
-            # Check if this device has the label "pv_panel"
-            if device_data.get("label") == pv_label:
+        Returns:
+            list: List containing one message per PV panel entity (At this moment, it is considered to be only one PV panel).
+        """
+
+        # Iterate over entities dictionary (key=entity_id, value=entity_data)
+        for entity_id, entity_data in self._entities.items():
+            # Check if this entity has the label "pv_panel"
+            if entity_data.get("label") == Label.PV_PANEL:
                 # Create and return a message using pv_production data and timestamp
-                value = {
+                value: dict = {
                     "solar_generation": pv_production
                 }
-                return [ICTranslator._message_creator(value, device_id, timestamp)]
+                return [ICTranslator._message_creator(value, entity_id, timestamp)]
 
         return []
 
-    def _battery(self, battery_soc, timestamp):
+    def _battery(self, battery_soc: float, timestamp: str) -> list:
+        """
+        Processes battery state-of-charge (SoC) data and creates messages.
 
-        pv_label = "battery"
+        Args:
+            battery_soc (float): Current battery SoC.
+            timestamp (str): Current timestamp for message creation.
 
-        # Iterate over devices dictionary (key=device_id, value=device_data)
-        for device_id, device_data in self._entities.items():
-            # Check if this device has the label "battery"
-            if device_data.get("label") == pv_label:
+        Returns:
+            list: List containing one message per battery entity (At this moment, it is considered to be only one battery).
+        """
+
+        # Iterate over entities dictionary (key=entity_id, value=entity_data)
+        for entity_id, entity_data in self._entities.items():
+            # Check if this entity has the label "battery"
+            if entity_data.get("label") == Label.BATTERY:
                 # Create and return a message using battery_soc data and timestamp
                 # TODO no caso da i-charging nao tenho a energia, o que faço?
-                value = {
-                    "battery_charging_energy": 0,
+                value: dict = {
+                    "battery_charging_energy": None,
                     "state_of_charge": battery_soc
                 }
-                return [ICTranslator._message_creator(value, device_id, timestamp)]
+                return [ICTranslator._message_creator(value, entity_id, timestamp)]
 
         return []
 
-    def _meter(self, meters_list, timestamp):
+    def _meter(self, meters_list: list, timestamp: str) -> list:
+        """
+        Processes grid meter readings and creates messages.
 
-        messages = []
+        Args:
+            meters_list (list): List of meter reading dictionaries.
+            timestamp (str): Current timestamp for message creation.
 
-        gm_label = "grid_meter"
+        Returns:
+            list: List of formatted messages for each valid grid meter.
+        """
+        messages: list = []
 
         for meter in meters_list:
             # Get id from the current meter
-            device_id = meter.get("id")
+            entity_id: str = meter.get("id")
 
             # Skip if id is None
-            if device_id is None:
+            if entity_id is None:
                 continue
 
-            device_data = self._entities.get(device_id)
+            entity_data: dict = self._entities.get(entity_id)
 
-            if device_data:
+            if entity_data:
                 # Check if the label matches "grid_meter"
-                label = device_data.get("label")
-                if label == gm_label:
+                label: str = entity_data.get("label")
+                if label == Label.GRID_METER:
                     # Prepare the message data
-                    value = {
+                    value: dict = {
                         "energy_in": meter.get("l123"),
                     }
                     # Create and add the message
-                    messages.append(ICTranslator._message_creator(value, device_id, timestamp))
+                    messages.append(ICTranslator._message_creator(value, entity_id, timestamp))
                 else:
                     # Log error if label does not match
-                    self._logger.error(f"ICTranslator: Device found, but label mismatch: {device_id} (label: {label})")
+                    raise ValueError(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label})")
             else:
-                # Log error if device is not found in the configuration
-                self._logger.error(f"ICTranslator: Device {device_id} not found in the configuration file.")
+                # Log error if entity is not found in the configuration
+                raise ValueError(f"Translator | Entity {entity_id} not found in the configuration file.")
 
         return messages
 
-    def translate(self, message):
+    def translate(self, message: bytes) -> None:
         """
-        Translate incoming device messages into a standardized format.
+        Translates incoming entity messages into a standardized format.
         Handles both generic translation and label-specific logic.
 
         Args:
-        message (dict): Dictionary containing i-charging-format environment data.
-
-        Returns:
-        None: The method sends the translated message to the environment queue.
+            message (bytes): Dictionary containing i-charging-format environment data, encoded as bytes.
         """
-        message = json.loads(message.decode('utf-8')).get('observation')
+        # Decode the incoming bytes message to a UTF-8 string, then parse it as JSON.
+        # Extract the 'observation' key which contains the relevant data.
+        message_dict: dict = json.loads(message.decode('utf-8')).get('observation')
 
+        # Generate a timestamp for when the message is being processed.
+        timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Initialize an empty list that will hold the translated messages.
+        message_list: list = []
 
-        message_list = []
-
-        for attr in message:
+        # Iterate through each attribute in the parsed message dictionary.
+        for attr in message_dict:
+            # Check if there is a specific processing function mapped for this attribute.
             if attr in self._labels_functions_mapper:
+                # Retrieve the function assigned to handle this attribute.
                 func = self._labels_functions_mapper[attr]
-                attr_processed = func(message.get(attr), timestamp)
-                # Only append to message_list if attr_processed is not empty (e.g., not an empty list or dict)
+
+                # Call the function with the attribute value and the current timestamp.
+                # The function is expected to return a list of processed data.
+                attr_processed: list = func(message_dict.get(attr), timestamp)
+
+                # Only add the processed attribute data to the message_list if it is not empty.
+                # This avoids adding empty lists or dictionaries.
                 if attr_processed:
                     message_list.extend(attr_processed)
 
-        # Send the message to the environment queue
+        # Send the final standardized message list to the environment queue.
         self.send_message_to_environment_queue(message_list)
 
     @staticmethod
-    def _message_creator(value, device_id, timestamp):
+    def _message_creator(value: dict, entity_id: str, timestamp: str) -> dict:
+        """
+        Creates a standardized message format for an entity reading.
 
-        new_message = {
-            "id": device_id,
+        Args:
+            value (dict): Dictionary containing entity-specific values.
+            entity_id (str): Unique entity identifier.
+            timestamp (str): Current timestamp for the message.
+
+        Returns:
+            dict: Standardized message dictionary.
+        """
+        new_message: dict = {
+            "id": entity_id,
             "value": value,
             "timestamp": timestamp
         }
 
         return new_message
-
 
 # Em caso de erro corro o risco da mensagem ser enviada duas vezes, mas não é um problema

@@ -1,35 +1,9 @@
 {
     "provider": "pulsecharge",
-    "H-03-G" : {
-        "group": "pulsecharge",
+    "i-charging headquarters" : {
+        "group": "i-charging headquarters",
         "entities": {
             "VR1UJZKXZKW134851" : {
-                 "parameters": {
-                    "soc": {
-                        "measurementUnit": "Percentage"
-                    }
-                },
-                "label": "electric_vehicle"
-            }
-        }
-    },
-    "ana-house" : {
-    "group": "pulsecharge",
-    "entities": {
-            "pctesolate" : {
-                 "parameters": {
-                    "soc": {
-                        "measurementUnit": "Percentage"
-                    }
-                },
-                "label": "electric_vehicle"
-            }
-        }
-    },
-   "escritorio" : {
-    "group": "pulsecharge",
-    "entities": {
-            "pctesolate" : {
                  "parameters": {
                     "soc": {
                         "measurementUnit": "Percentage"
