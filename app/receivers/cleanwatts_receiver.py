@@ -10,26 +10,26 @@ class CWReceiver(ReceiverHTTPBase):
     using CWSession.
 
     Note:
-        Translation of provider-specific data into system-specific format
+        Translation of provider-specific data into Percepta-specific format
         is handled by CWTranslator.
     """
     provider = "cleanwatts"     # Provider ID
 
-    _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into System-specific format
+    _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into Percepta-specific format
 
     def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initializes the CWReceiver instance.
 
         Args:
-            environment (str): Environment name.
-            environment_specs (dict): Environment-specific configurations.
-            configurations (dict): General configurations for the receiver.
-            logger (LoggingUtils): Logger instance for logging events.
+            environment (str): Name of the environment the receiver will operate in.
+            environment_specs (dict): Specifications for the environment, including entities.
+            configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
+            logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment, environment_specs, configurations, logger)
 
-        # Translator instance is prepared but the receiver only collects raw data
+        # Translator instance is created
         self._translator = CWTranslator(environment, configurations, logger)
 
     def stop(self):
@@ -38,6 +38,8 @@ class CWReceiver(ReceiverHTTPBase):
         """
         self._logger.info(f"Stopping thread {self._environment}...")
         super().stop()
+
+        #TODO não faz sentido isto estar aqui!
         CWSession.stop_token_refresher()
 
     def _job(self):
@@ -46,8 +48,6 @@ class CWReceiver(ReceiverHTTPBase):
             - Ensures a valid session.
             - Retrieves raw data for all configured entities and parameters.
             - Passes collected data to CWTranslator (does not perform translation itself).
-
-        Logs errors and warnings for empty data or failures.
         """
         try:
             self._header_updater()

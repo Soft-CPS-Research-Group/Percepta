@@ -7,6 +7,16 @@ from app.utils.logger import LoggingUtils
 from pymongo.collection import Collection
 
 class MongoTimeSeriesRepository(TimeSeriesRepository):
+    """
+    Time series repository using MongoDB as the backend.
+
+    This class provides methods to connect to a specific MongoDB collection,
+    insert new time series values, read values within a time range, and retrieve
+    the latest recorded entry.
+
+    The connection to MongoDB is automatically established during initialization
+    and reconnected if the collection is unavailable during read/write operations.
+    """
 
     _client: MongoClient     # MongoClient instance to manage the connection to the MongoDB server
     _collection: Collection     # Collection object representing the specific MongoDB collection for time series data

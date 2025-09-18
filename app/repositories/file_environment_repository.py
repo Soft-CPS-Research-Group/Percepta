@@ -6,7 +6,10 @@ from app.utils.logger import LoggingUtils
 
 class FileEnvironmentRepository(EnvironmentRepository):
     """
-    Implementation of EnvironmentRepository that loads and manages environments from JSON files.
+    Environment repository implementation that loads and manages environment configurations from JSON files.
+
+    This class reads JSON files from a specified folder, organizes environments by provider,
+    and merges them into a unified dictionary.
     """
 
     _all_environments : dict            # Dictionary storing all loaded environments, merging data from all providers.
@@ -31,9 +34,6 @@ class FileEnvironmentRepository(EnvironmentRepository):
     def get_environments(self) -> dict:
         """
         Returns all loaded environments, merging data from all providers.
-
-        Returns:
-            dict: Dictionary containing all environments.
         """
         return self._all_environments
 
@@ -43,9 +43,6 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
         Args:
             provider (str): Name of the provider.
-
-        Returns:
-            dict: Dictionary containing environments for the specified provider.
         """
         return self._environments_by_provider.get(provider)
 

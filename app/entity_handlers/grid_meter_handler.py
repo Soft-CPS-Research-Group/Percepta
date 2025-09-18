@@ -16,8 +16,8 @@ class GridMeterHandler(EntityHandlerBase):
         battery_energy = 0
 
         # Retrieve the list of grid meter entities and battery entities from the input data
-        grid_meter_entities = self._entity_ids.get('grid_meter')
-        batteries_entities = self._entity_ids.get('battery')
+        grid_meter_entities = self._entities_ids.get('grid_meter')
+        batteries_entities = self._entities_ids.get('battery')
 
         # Sum up the energy consumption (energy_in) from each grid meter entity
         if grid_meter_entities:

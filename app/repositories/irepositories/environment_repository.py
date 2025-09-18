@@ -1,6 +1,15 @@
 from abc import ABC, abstractmethod
 
 class EnvironmentRepository(ABC):
+    """
+       Abstract base class for environment repositories.
+
+       This class defines the interface for managing and retrieving environment
+       configurations and their associated entities. Implementations must provide
+       methods to retrieve all environments as well as environments filtered by
+       specific providers.
+    """
+
     @abstractmethod
     def get_environments(self) -> dict:
         """

@@ -5,6 +5,13 @@ from app.utils.logger import LoggingUtils
 
 
 class TimeSeriesRepository(ABC):
+    """
+       Abstract base class for time series repositories.
+
+       This class defines the interface for storing and retrieving time series data.
+       Implementations must provide concrete methods for writing new entries,
+       reading entries within a time range, and retrieving the latest entry.
+    """
 
     _group : str                # Name of the database group to connect to (used to select the MongoDB database)
     _environment : str          # Environment identifier used to construct the collection name

@@ -15,7 +15,7 @@ class PVPanelHandler(EntityHandlerBase):
         total_solar_generation = 0
 
         # Retrieve the list of PV panel entities assigned to this handler
-        pv_panel_entities = self._entity_ids.get('pv_panel')
+        pv_panel_entities = self._entities_ids.get('pv_panel')
 
         # Iterate through each panel and add its solar generation value
         if pv_panel_entities:
