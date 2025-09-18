@@ -13,7 +13,7 @@ class ReceiverHTTPBase(ReceiverBase):
     Manages HTTP connections, periodic data retrieval, and scheduling of jobs.
     """
 
-    _server: dict # Server configuration dictionary containing environment-specific settings
+    _server: dict # Server configuration dictionary containing provider-specific settings
     _http_connector: HTTPConnector # HTTP connector instance for performing HTTP requests
     _time_interval: int # Interval in seconds for scheduling the periodic job
     _header: dict # Current HTTP headers used for requests, updated dynamically when needed
@@ -26,7 +26,7 @@ class ReceiverHTTPBase(ReceiverBase):
         Args:
             environment (str): Name of the environment the receiver will operate in.
             environment_specs (dict): Specifications for the environment, including entities.
-            configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
+            configurations (dict): General configurations passed to the translator.
             logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment, environment_specs, configurations, logger)

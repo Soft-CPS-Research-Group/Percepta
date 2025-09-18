@@ -8,7 +8,7 @@ class ReceiverBase(ABC, threading.Thread):
     """
 
     provider: str  # Identifier of the data provider (to be set by subclasses)
-    _environment: str  # Name of the environment
+    _environment: str # String to identify the environment which the data belongs
     _entities: dict  # Entities configuration extracted from environment specifications
     _provider_configuration: dict # Provider-specific configurations
     _configurations: dict  # General configurations passed to the receiver
@@ -18,9 +18,9 @@ class ReceiverBase(ABC, threading.Thread):
         """Initializes the receiver with environment and configuration details.
 
         Args:
-            environment (str): Name of the environment the receiver will operate in.
+            environment (str): String to identify the environment which the data belongs.
             environment_specs (dict): Specifications for the environment, including entities.
-            configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
+            configurations (dict): General configurations passed to the translator.
             logger (LoggingUtils): Logger instance for structured logging.
         """
 
@@ -42,11 +42,26 @@ class ReceiverBase(ABC, threading.Thread):
         raise NotImplementedError
 
     @classmethod
-    def pre_start(cls, configurations : dict, logger : LoggingUtils) -> None:
-        """Optional hook to run before the receiver starts. Defaults to no-op."""
+    def pre_start(cls, configurations: dict, logger: LoggingUtils) -> None:
+        """
+        Optional hook executed before the receiver starts.
+        Defaults to a no-op.
+
+        Args:
+            configurations (dict): General configurations for the receiver.
+            logger (LoggingUtils): Logger instance for structured logging.
+        """
         pass
 
     @classmethod
-    def post_start(cls, environments : dict, configurations : dict, logger : LoggingUtils) -> None:
-        """Optional hook to run after receiver starts. Defaults to no-op."""
+    def post_start(cls, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
+        """
+        Optional hook executed after the receiver starts.
+        Defaults to a no-op.
+
+        Args:
+            environments (dict): Dict of all provider environments.
+            configurations (dict): General configurations for the receiver.
+            logger (LoggingUtils): Logger instance for structured logging.
+        """
         pass
