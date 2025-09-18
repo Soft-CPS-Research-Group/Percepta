@@ -8,7 +8,7 @@ class TranslatorBase:
     """
     Abstract base class for implementing a translator service.
     """
-    _environment : str # string to identify the environment which the data belongs
+    _environment : str # String to identify the environment which the data belongs
     _internal_message_hub_server: dict  # Configuration details for the internal message hub (for example, AMQP server)
     _configurations: dict  # General configurations passed to the translator
     _logger: LoggingUtils  # Logger instance for structured logging
