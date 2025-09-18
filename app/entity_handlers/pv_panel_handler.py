@@ -1,11 +1,8 @@
-import time
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
+from app.utils.labels import Label
 
 class PVPanelHandler(EntityHandlerBase):
-    label = "pv_panel"
-
-    # TODO: Consider relocating this threshold—might make more sense to define it per device, not globally by label
-    data_deadline_seconds = 7200  # Time limit in seconds (2 hours)
+    label = Label.PV_PANEL.value
 
     def __init__(self, repository, entities_ids, configurations, logger):
         super().__init__(repository, entities_ids, configurations, logger)
@@ -27,18 +24,12 @@ class PVPanelHandler(EntityHandlerBase):
         message["solar_generation"] = total_solar_generation
 
     def fallback(self, device_id, substitute_dict):
-        # Capture current timestamp in seconds
-        current_time = int(time.time())
 
         # Attempt to retrieve substitute data for the given device
         device_substitute = substitute_dict.get(device_id)
 
         if device_substitute:
-            timestamp = device_substitute.get('timestamp', 0)
-
-            # Validate if the substitute data falls within the acceptable freshness window
-            if (current_time - timestamp) <= PVPanelHandler.data_deadline_seconds:
-                return device_substitute
+            return device_substitute
 
         # Log a warning if fallback data is unavailable or outdated
         self._logger.warning(f"Device not found in substitute_dict: {device_id}. Default data will be used instead.")

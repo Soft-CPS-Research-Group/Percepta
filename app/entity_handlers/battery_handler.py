@@ -1,7 +1,8 @@
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
+from app.utils.labels import Label
 
 class BatteryHandler(EntityHandlerBase):
-    label = "battery"
+    label = Label.BATTERY.value
 
     # TODO: Consider relocating this setting—might make more sense to associate with a specific device rather than a general label
     data_deadline_seconds = 7200  # Threshold in seconds (2 hours)

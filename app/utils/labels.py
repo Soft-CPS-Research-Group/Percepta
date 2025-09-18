@@ -4,5 +4,5 @@ class Label(Enum):
     GRID_METER = "grid_meter"
     PV_PANEL = "pv_panel"
     BATTERY = "battery"
-    EV_CHARGER = "ev_charger",
+    EV_CHARGER = "ev_charger"
     EV = "electric_vehicle"
