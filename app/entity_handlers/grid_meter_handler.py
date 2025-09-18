@@ -1,8 +1,8 @@
-import time
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
+from app.utils.labels import Label
 
 class GridMeterHandler(EntityHandlerBase):
-    label = "grid_meter"
+    label = Label.GRID_METER.value
 
     # TODO perceber onde meter isto, secalhar faz mais sentido por dispositivo em concreto e não por label
     data_deadline_seconds = 7200  # 2 hours

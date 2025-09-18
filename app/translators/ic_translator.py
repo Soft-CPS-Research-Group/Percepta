@@ -67,7 +67,7 @@ class ICTranslator(TranslatorRabbitMQBase):
                 # Check if the label matches "ev_charger"
                 label: str = entity_data.get("label")
 
-                if label == Label.EV_CHARGER:
+                if label == Label.EV_CHARGER.value:
                     # Prepare the message data
                     value: dict = {
                         "power": charging_session.get("power"),
@@ -101,7 +101,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         # Iterate over entities dictionary (key=entity_id, value=entity_data)
         for entity_id, entity_data in self._entities.items():
             # Check if this entity has the label "pv_panel"
-            if entity_data.get("label") == Label.PV_PANEL:
+            if entity_data.get("label") == Label.PV_PANEL.value:
                 # Create and return a message using pv_production data and timestamp
                 value: dict = {
                     "solar_generation": pv_production
@@ -125,7 +125,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         # Iterate over entities dictionary (key=entity_id, value=entity_data)
         for entity_id, entity_data in self._entities.items():
             # Check if this entity has the label "battery"
-            if entity_data.get("label") == Label.BATTERY:
+            if entity_data.get("label") == Label.BATTERY.value:
                 # Create and return a message using battery_soc data and timestamp
                 # TODO no caso da i-charging nao tenho a energia, o que faço?
                 value: dict = {
@@ -162,7 +162,7 @@ class ICTranslator(TranslatorRabbitMQBase):
             if entity_data:
                 # Check if the label matches "grid_meter"
                 label: str = entity_data.get("label")
-                if label == Label.GRID_METER:
+                if label == Label.GRID_METER.value:
                     # Prepare the message data
                     value: dict = {
                         "energy_in": meter.get("l123"),

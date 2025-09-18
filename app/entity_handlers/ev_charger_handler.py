@@ -1,8 +1,9 @@
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
+from app.utils.labels import Label
 
 
 class EVChargerHandler(EntityHandlerBase):
-    label = "ev_charger"
+    label = Label.EV_CHARGER.value
 
     def __init__(self, repository, entities_ids, configurations, logger):
         super().__init__(repository, entities_ids, configurations, logger)

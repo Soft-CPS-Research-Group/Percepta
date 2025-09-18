@@ -106,12 +106,12 @@ class Manager:
 
         # Set the current timestamp in the message
         self._message['timestamp'] = timestamp
-
         # Iterate over all labels in the pre-built label-to-IDs mapping
         for label in self._entities_ids_by_label.keys():
             if label not in self._message:
                 # Get the corresponding handler for the label
                 handler = self._entities_handlers.get(label)
+                print(f"{label}, {handler}")
 
                 # Use the handler to process and update the message
                 # Pass the current message, the data dictionary, and the list of entity IDs for this label

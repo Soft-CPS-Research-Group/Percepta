@@ -1,8 +1,8 @@
-import time
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
+from app.utils.labels import Label
 
 class EVHandler(EntityHandlerBase):
-    label = "electric_vehicle"
+    label = Label.EV.value
 
     # TODO: Consider relocating this threshold—might make more sense to define it per device, not globally by label
     data_deadline_seconds = 7200  # Time limit in seconds (2 hours)

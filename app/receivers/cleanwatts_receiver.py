@@ -14,7 +14,7 @@ class CWReceiver(ReceiverHTTPBase):
         Translation of provider-specific data into Percepta-specific format
         is handled by CWTranslator.
     """
-    provider = Provider.CLEANWATTS     # Provider ID
+    provider = Provider.CLEANWATTS.value     # Provider ID
 
     _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into Percepta-specific format
 

@@ -17,7 +17,7 @@ class ICReceiver(ReceiverRabbitMQBase):
         is handled by ICTranslator.
     """
 
-    provider: str = Provider.ICHARGING
+    provider: str = Provider.ICHARGING.value
     _translator: ICTranslator
 
     def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
