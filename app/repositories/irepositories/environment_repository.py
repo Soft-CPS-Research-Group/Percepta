@@ -30,8 +30,8 @@ class EnvironmentRepository(ABC):
 
         Each environment includes only the entities that belong to the specified provider.
 
-        provider:
-            str -> Name or ID of the data provider to filter environments by
+        args:
+            provider (str): Name or ID of the data provider to filter environments by
 
         Returns:
             dict -> A dictionary of environments with their respective entities and attributes,

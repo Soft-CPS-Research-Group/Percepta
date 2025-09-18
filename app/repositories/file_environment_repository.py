@@ -6,7 +6,7 @@ from app.utils.logger import LoggingUtils
 
 class FileEnvironmentRepository(EnvironmentRepository):
     """
-    Environment repository implementation that loads and manages environment configurations from JSON files.
+    Environment repository concrete implementation that loads and manages environment configurations from JSON files.
 
     This class reads JSON files from a specified folder, organizes environments by provider,
     and merges them into a unified dictionary.
@@ -22,7 +22,7 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
         Args:
             configurations (dict): Configuration dictionary, must include "environment_files" path.
-            logger: Logger object for logging events.
+            logger (LoggingUtils): Logger object for logging events.
         """
         self._all_environments = {}
         self._environments_by_provider = {}
@@ -33,16 +33,28 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
     def get_environments(self) -> dict:
         """
-        Returns all loaded environments, merging data from all providers.
+        Returns all environments with their associated entities and characteristics.
+
+        The method combines entities from different providers if they belong to the same environment.
+
+        Returns:
+           dict -> A dictionary where each key is an environment name, and the value is a structure
+                   containing all related entities and their attributes, regardless of the provider.
         """
         return self._all_environments
 
     def get_environments_by_provider(self, provider: str) -> dict:
         """
-        Returns environments loaded for a specific provider.
+        Returns all environments related to a specific provider.
 
-        Args:
-            provider (str): Name of the provider.
+        Each environment includes only the entities that belong to the specified provider.
+
+        args:
+           provider (str): Name or ID of the data provider to filter environments by
+
+        Returns:
+           dict -> A dictionary of environments with their respective entities and attributes,
+                   limited to those provided by the specified provider.
         """
         return self._environments_by_provider.get(provider)
 
@@ -77,11 +89,16 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
     def _house_identifier(self, schema: dict, provider: str) -> None:
         """
-        Processes and stores environments from a provider, adding additional metadata.
+        Aggregates and stores environment entities, merging them across providers.
+
+        This method ensures that all entities belonging to the same environment are
+        grouped together under a single dictionary entry, regardless of which provider
+        they originate from. It also normalizes group names and adds provider metadata
+        to each entity.
 
         Args:
-            schema (dict): Dictionary containing environment definitions for a provider.
-            provider (str): Provider name associated with this schema.
+            schema (dict): Dictionary containing environment definitions from a provider.
+            provider (str): The provider name associated with the given schema.
         """
         for key, value in schema.items():
             # Assign the provider to each device entity

@@ -5,8 +5,6 @@ from app.utils.logger import LoggingUtils
 class ReceiverBase(ABC, threading.Thread):
     """
     Abstract base class for implementing a data receiver running as a thread.
-    Provides a common interface for handling environment configurations,
-    connection retries, and logging.
     """
 
     provider: str  # Identifier of the data provider (to be set by subclasses)
@@ -15,7 +13,6 @@ class ReceiverBase(ABC, threading.Thread):
     _provider_configuration: dict # Provider-specific configurations
     _configurations: dict  # General configurations passed to the receiver
     _logger: LoggingUtils  # Logger instance for structured logging
-    _max_reconnect_attempts: int  # Maximum number of reconnection attempts allowed
 
     def __init__(self, environment : str, environment_specs : dict, configurations : dict, logger : LoggingUtils):
         """Initializes the receiver with environment and configuration details.
@@ -33,7 +30,6 @@ class ReceiverBase(ABC, threading.Thread):
         self._configurations = configurations
         self._provider_configurations = configurations.get(self.provider)
         self._logger = logger
-        self._max_reconnect_attempts = configurations.get('max_reconnect_attempts')
 
     @abstractmethod
     def run(self) -> None:

@@ -6,84 +6,95 @@ from app.utils.logger import LoggingUtils
 
 class CWTranslator(TranslatorRabbitMQBase):
     """
-    Concrete implementation of a translator for CW devices.
-    Handles translation of device messages into a standardized format,
+    Concrete implementation of a translator for CW entities.
+    Handles translation of entity messages into a standardized format,
     applying special rules for specific labels such as EV chargers.
     """
 
-    _labels_functions_mapper : dict
+    _labels_functions_mapper : dict # Maps labels to corresponding processing functions
 
     def __init__(self, environment: str, configurations: dict, logger: LoggingUtils):
         """
-        Initialize the CWTranslator with environment, configuration, and logger.
-        Sets up label-function mapping for translation logic.
+        Initializes the CWTranslator.
+
+        Args:
+            environment (str): String to identify the environment which the data belongs.
+            configurations (dict): General configurations passed to the translator.
+            logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment, configurations, logger)
 
-        # Map labels to their corresponding translation methods
+        # Map each data label to its corresponding processing function
         self._labels_functions_mapper = {
             "ev_charger": self._ev_charger
         }
 
-    def _ev_charger(self, messages : dict) -> dict:
+    def _ev_charger(self, messages: dict) -> dict:
         """
-        Process messages for EV chargers with specific translation logic.
+        Processes EV charger sessions and converts them into a standardized dictionary of readings.
 
         Args:
-        messages (dict): Dictionary containing device data, where keys represent
-                         measurement types and values are lists of readings.
+            messages (dict): Dictionary representing a charging session with various measurements.
 
         Returns:
-        dict: Processed values where each key maps to its corresponding "Read" value.
+            dict: Dictionary where each key maps to its corresponding 'Read' value (or None if not valid).
         """
-        if not isinstance(messages, dict):
-            raise TypeError(f"Cleanwatts | _ev_charger expected dict, got {type(messages)}")
 
-        # Retrieve 'session_status' without removing it from the original dictionary
+        # Ensure the input is a dictionary; raise an exception otherwise
+        if not isinstance(messages, dict):
+            raise TypeError(f"Translator | _ev_charger expected dict, got {type(messages)}")
+
+        # Retrieve the 'session_status' key without modifying the original messages dictionary
         session_status_list = messages.get("session_status", [])
         session_status = {}
+
+        # Extract the first dictionary from 'session_status' list if it exists
         if isinstance(session_status_list, list) and session_status_list:
             first_item = session_status_list[0]
             if isinstance(first_item, dict):
                 session_status = first_item
 
-        # Extract the "Read" flag from session_status to determine readiness
+        # Extract the "Read" flag from session_status to determine if the session is valid (ready)
         read_status = session_status.get("Read", 0)
 
         value = {}
+
         if read_status == 1:
-            # If the session is valid (read_status == 1), process each measurement key
+            # If the session is valid, process each key in the messages dictionary
             for key, item_list in messages.items():
                 if isinstance(item_list, list) and item_list:
+                    # TODO aqui estou a considerar apenas um último registo, no futuro teremos vários e depois é necessário aplicar harmonização e fazer distinção entre a potência e a energia
                     first_item = item_list[0]
+                    # Extract the 'Read' value from the first item if it's a dictionary; otherwise default to 0
                     read_value = first_item.get("Read", 0) if isinstance(first_item, dict) else 0
                     value[key] = read_value
                 else:
-                    # Default to 0 if the list is empty or invalid
+                    # Default to 0 if the item list is empty or invalid
                     value[key] = 0
         else:
-            # If the session is not valid, all values default to 0
+            # If the session is not valid, all measurement values default to 0
             for key in messages:
                 value[key] = 0
 
+        # Return the dictionary of processed 'Read' values
         return value
 
-    def translate(self, messages : dict, label : str, entity_id : str) -> None:
+    def translate(self, messages : dict) -> None:
         """
-        Translate incoming device messages into a standardized format.
+        Translates incoming entity messages into a standardized format.
         Handles both generic translation and label-specific logic.
 
         Args:
-        messages (dict): Dictionary containing device data with keys as parameters
-                         and values as lists of readings.
-        label (str): Identifier for the type of device or data (e.g., "ev_charger").
-        entity_id (str): Unique identifier for the device.
-
-        Returns:
-        None: The method sends the translated message to the environment queue.
+        messages (dict): A dictionary containing the entity identifier,
+                        the data type identifier, and the corresponding readings,
+                        where keys represent parameters and values are lists of readings.
         """
         if not isinstance(messages, dict):
-            raise TypeError(f"Cleanwatts | translate expected dict, got {type(messages)}")
+            raise TypeError(f"Translator | translate expected dict, got {type(messages)}")
+
+        entity_id = messages.get("entity_id")
+        label = messages.get("label")
+        parameters = messages.get("parameters")
 
         value = {}
 
@@ -92,7 +103,7 @@ class CWTranslator(TranslatorRabbitMQBase):
         try:
             tz = ZoneInfo(tz_name)
         except Exception:
-            self._logger.warning(f"Cleanwatts | Invalid timezone '{tz_name}', falling back to UTC")
+            self._logger.warning(f"Translator | Invalid timezone '{tz_name}', falling back to UTC")
             tz = ZoneInfo("UTC")
 
         # Format timestamp using the configured timezone
@@ -100,10 +111,10 @@ class CWTranslator(TranslatorRabbitMQBase):
 
         if label in self._labels_functions_mapper:
             # Use label-specific translation method
-            value = self._labels_functions_mapper[label](messages)
+            value = self._labels_functions_mapper[label](parameters)
         else:
             # Default translation logic: sum all readings for each parameter
-            for key, params in messages.items():
+            for key, params in parameters.items():
                 if key:
                     total = 0
                     if isinstance(params, list):
@@ -112,7 +123,7 @@ class CWTranslator(TranslatorRabbitMQBase):
                                 total += reading.get("Read", 0)
                     value[key] = total
                 else:
-                    self._logger.warning(f"Cleanwatts | No data for {entity_id} device.")
+                    self._logger.warning(f"Translator | No data for {entity_id} entity.")
                     return
 
         # Construct standardized message with ID, values, and timestamp

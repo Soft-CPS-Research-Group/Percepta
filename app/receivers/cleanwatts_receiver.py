@@ -2,6 +2,7 @@ from app.translators.cw_translator import CWTranslator
 from app.utils.cwlogin import CWSession
 from app.receivers.receiver_http_base import ReceiverHTTPBase
 from app.utils.logger import LoggingUtils
+from app.utils.providers import Provider
 
 class CWReceiver(ReceiverHTTPBase):
     """
@@ -13,7 +14,7 @@ class CWReceiver(ReceiverHTTPBase):
         Translation of provider-specific data into Percepta-specific format
         is handled by CWTranslator.
     """
-    provider = "cleanwatts"     # Provider ID
+    provider = Provider.CLEANWATTS     # Provider ID
 
     _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into Percepta-specific format
 
@@ -71,7 +72,8 @@ class CWReceiver(ReceiverHTTPBase):
                             all_entity_parameter_data.update({param_name: []})
 
                 # Pass raw data to translator; translation is not performed here
-                self._translator.translate(all_entity_parameter_data, values.get('label'), entity_id)
+
+                self._translator.translate({'entity_id' : entity_id, 'label' : values.get('label'), 'parameters' : all_entity_parameter_data})
 
         except Exception as e:
             self._logger.error(e)

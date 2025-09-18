@@ -6,6 +6,7 @@ from app.utils.retry import with_retries
 class TranslatorRabbitMQBase(TranslatorBase):
     """
     Abstract base class for implementing a RabbitMQ-based translator.
+
     Handles connection management, message sending, reconnection retries,
     and provides a common interface for translating data to a specific environment queue.
     """
@@ -16,32 +17,31 @@ class TranslatorRabbitMQBase(TranslatorBase):
         Initialize the translator with environment and configuration details.
 
         Args:
-        environment (str): Name of the environment the translator operates in.
-        configurations (dict): General configurations for the translator.
-        logger: Logger instance for structured logging.
+            environment (str): String to identify the environment which the data belongs.
+            configurations (dict): General configurations passed to the translator.
+            logger (LoggingUtils): Logger instance for structured logging.
         """
 
         super().__init__(environment, configurations, logger)
-
 
         # Start the messaging service by establishing a connection to RabbitMQ
         with_retries(self._start_messaging_service, error_msg=f"RabbitMQ Translator - {self._environment}: RabbitMQ connection failed", logger = self._logger)
 
     def _start_messaging_service(self) -> None:
         """
-        Establish connection to RabbitMQ with retry logic.
-        Declares the environment-specific queue and logs connection status.
-        Raises an exception if maximum reconnection attempts are reached.
+        Establishes connection to RabbitMQ using the appropriate connector.
         """
 
-        # Initialize the RabbitMQ connector with the internal message hub server
+        # Create a new RabbitMQConnector instance using the internal message hub server
         self._rabbitmq_connector = RabbitMQConnector(self._internal_message_hub_server)
+
+        # Establish the connection to RabbitMQ
         self._rabbitmq_connector.connect()
+
+        # Declare a queue named after the current environment
         self._rabbitmq_connector.declare_queue(self._environment)
 
         self._logger.info(f"RabbitMQ Translator - {self._environment}: Connection successfully established.")
-
-
 
     def send_message_to_environment_queue(self, message) -> None:
         """

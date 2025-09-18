@@ -13,19 +13,13 @@ class TimeSeriesRepository(ABC):
        reading entries within a time range, and retrieving the latest entry.
     """
 
-    _group : str                # Name of the database group to connect to (used to select the MongoDB database)
-    _environment : str          # Environment identifier used to construct the collection name
-    _logger : LoggingUtils      # Logger instance
-
-    def __init__(self, group : str, environment : str, logger : LoggingUtils):
-        self._group = group
-        self._environment = environment
-        self._logger = logger
-
     @abstractmethod
     def write(self, value: Any) -> None:
         """
         Inserts a single time series value into the collection.
+
+         Args:
+            value (Any): Time series value to be inserted.
         """
         pass
 
@@ -34,6 +28,13 @@ class TimeSeriesRepository(ABC):
         """
         Reads all time series entries from the collection between two timestamps.
         Results are sorted chronologically in ascending order.
+
+        Args:
+            start_time (datetime): Start time of the time series entries to be read.
+            end_time (datetime): End time of the time series entries to be read.
+
+        Returns:
+            list: List of time series entries between start_time and end_time.
         """
         pass
 
@@ -41,5 +42,8 @@ class TimeSeriesRepository(ABC):
     def latest(self) -> dict:
         """
         Retrieves the most recent time series entry from the collection.
+
+        Returns:
+            dict: Latest time series entry retrieved from MongoDB.
         """
         pass
