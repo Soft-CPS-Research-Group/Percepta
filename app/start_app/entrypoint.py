@@ -59,6 +59,7 @@ def launch_app():
         target=accumulator_entrypoint,
         args=(environment_repository, repository_factory, configurations, logger)
     )
+
     accumulator_process.start()
 
     # Wait until next aligned time interval before starting requesters

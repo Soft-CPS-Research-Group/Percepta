@@ -1,0 +1,60 @@
+{
+    "i-charging headquarters": {
+        "group": "i-charging headquarters",
+        "entities": {
+            "GR01": {
+                "parameters": {
+                    "energy_in": {
+                        "id": "33682",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "grid_meter"
+            },
+            "B01" :  {
+                "parameters" : {
+                    "battery_charging_energy" : {
+                        "id" : "35927",
+                        "type": "Battery charging energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    },
+                    "state_of_charge" : {
+                        "id" : "33690",
+                        "type": "Battery State of charge",
+                        "measurementUnit": "Percentage",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "battery"
+            }
+        }
+    },
+    "provider": "cleanwatts"
+}

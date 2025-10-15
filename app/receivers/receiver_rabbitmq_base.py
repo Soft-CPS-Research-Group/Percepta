@@ -20,6 +20,7 @@ class ReceiverRabbitMQBase(ReceiverBase):
     _server: dict # Server configuration dictionary containing environment-specific settings
     _rabbitmq_connector: RabbitMQConnector  # RabbitMQ connector instance for handling messaging
     _stop_event: threading.Event # Signals that the thread will stop
+    _exchange_name : str
 
     def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
@@ -49,8 +50,8 @@ class ReceiverRabbitMQBase(ReceiverBase):
         # Initialize the RabbitMQ connector with the internal message hub server
         self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._rabbitmq_connector.connect()
-        self._rabbitmq_connector.declare_exchange(self._environment)
-        queue_name = self._rabbitmq_connector.declare_queue(exchange_name=self._environment)
+        self._rabbitmq_connector.declare_exchange(self._exchange_name)
+        queue_name = self._rabbitmq_connector.declare_queue(exchange_name=self._exchange_name)
         self._rabbitmq_connector.consume(queue_name, self._callback)
 
     def _callback(self, ch, method, properties, body):

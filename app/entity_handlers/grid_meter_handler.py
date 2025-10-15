@@ -23,15 +23,28 @@ class GridMeterHandler(EntityHandlerBase):
         if grid_meter_entities:
             for grid_meter_entity in grid_meter_entities:
                 grid_meter_values = all_data[grid_meter_entity]
-                non_shiftable_load += grid_meter_values.get('data', 0).get('energy_in', 0)
-                if grid_meter_values.get('generated') == 1:
-                    message["generated"] = 1
+                energy_in = grid_meter_values.get('data', 0).get('energy_in', [])
+
+                sum_aux = 0
+
+                if isinstance(energy_in, list):
+                    for ei in energy_in:
+                        sum_aux += ei.get("value", 0)
+
+                    if "meters" not in message:
+                        message["meters"] = {}
+
+                    message["meters"][grid_meter_entity] = {"energy_in" : sum_aux}
+
+                    non_shiftable_load += sum_aux
 
         # Sum up the charging energy from each battery entity
         if batteries_entities:
             for battery_entity in batteries_entities:
                 battery_values = all_data[battery_entity]
-                battery_energy += battery_values.get('data', 0).get('battery_charging_energy', 0)
+                battery_charging_energy = battery_values.get('data', 0).get('battery_charging_energy', [])
+                for bce in battery_charging_energy:
+                    battery_energy += bce.get("value", 0)
 
         # Calculate the net non-shiftable load by subtracting battery charging energy
         message["non_shiftable_load"] = non_shiftable_load - battery_energy
@@ -50,6 +63,5 @@ class GridMeterHandler(EntityHandlerBase):
             'timestamp': 0,
             'data': {
                         "energy_in": 0,
-                    },
-            'generated': 1
+                    }
         }

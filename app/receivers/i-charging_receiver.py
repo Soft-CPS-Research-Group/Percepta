@@ -1,5 +1,4 @@
-from typing import Dict, List, Any
-from logging import Logger
+from typing import Dict, Any
 from app.ic_runtime_request import ICRuntimeRequest
 from app.translators.ic_translator import ICTranslator
 from app.receivers.receiver_rabbitmq_base import ReceiverRabbitMQBase
@@ -30,7 +29,10 @@ class ICReceiver(ReceiverRabbitMQBase):
             configurations (dict): General configurations for the receiver.
             logger (LoggingUtils): Logger instance for logging events.
         """
+        self._exchange_name : str = environment
+
         super().__init__(environment, environment_specs, configurations, logger)
+
         self._translator = ICTranslator(environment, environment_specs, configurations, logger)
 
     def stop(self) -> None:
@@ -65,4 +67,4 @@ class ICReceiver(ReceiverRabbitMQBase):
             configurations (dict): Application-specific configurations.
             logger (Logger): Logger instance for logging events.
         """
-        ICRuntimeRequest(environments, configurations, logger).init()
+        ICRuntimeRequest(environments, configurations, logger).start_service()

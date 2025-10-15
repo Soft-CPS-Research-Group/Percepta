@@ -13,12 +13,15 @@ class PVPanelHandler(EntityHandlerBase):
 
         # Retrieve the list of PV panel entities assigned to this handler
         pv_panel_entities = self._entities_ids.get('pv_panel')
-
         # Iterate through each panel and add its solar generation value
         if pv_panel_entities:
             for pv_panel_entity in pv_panel_entities:
                 pv_panel_values = all_data.get(pv_panel_entity, {})
-                total_solar_generation += pv_panel_values.get('data', {}).get('solar_generation', 0)
+                solar_generation = pv_panel_values.get('data', {}).get('energy', [])
+                if isinstance(solar_generation, list):
+
+                    for sg in solar_generation:
+                        total_solar_generation += sg.get('value', 0)
 
         # Include the final solar generation total in the message payload
         message["solar_generation"] = total_solar_generation
@@ -39,6 +42,5 @@ class PVPanelHandler(EntityHandlerBase):
             'timestamp': 0,
             'data': {
                 "solar_generation": 0,
-            },
-            'generated': 1
+            }
         }

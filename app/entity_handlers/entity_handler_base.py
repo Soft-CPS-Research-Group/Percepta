@@ -39,3 +39,14 @@ class EntityHandlerBase(ABC):
         """
         raise NotImplementedError
 
+    def generic_period_harmonizer(self):
+        """Generic harmonizer.py to resample or aggregate data across different time periods.
+
+        For example, this function can take data points recorded every 5 minutes
+        and aggregate them into 15-minute intervals. It is meant to provide a
+        standardized temporal resolution for downstream processing.
+
+        This method can be overridden by subclasses with the specific
+        aggregation or resampling logic required for the data.
+        """
+        pass

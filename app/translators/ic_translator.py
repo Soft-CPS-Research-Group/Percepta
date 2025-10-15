@@ -61,27 +61,36 @@ class ICTranslator(TranslatorRabbitMQBase):
 
             # Build the entity key (e.g., "AC000001_1")
             entity_id: str = f"{serial}_{plug}"
+            #print(f"ENTITIES: {self._entities}\n")
             entity_data: dict = self._entities.get(entity_id)
 
             if entity_data:
-                # Check if the label matches "ev_charger"
+                # Check if the label matches "ev_charger" (double verification: confirms if the id and label matches)
                 label: str = entity_data.get("label")
 
                 if label == Label.EV_CHARGER.value:
+                    _entity_parameters: dict = entity_data.get('parameters')
+
                     # Prepare the message data
                     value: dict = {
-                        "power": charging_session.get("power"),
-                        # TODO estudar isto do user_id!
-                        "user_id": charging_session.get("user.id")
+                        "power": [{
+                            "timestamp": timestamp,
+                            "value": charging_session.get("power")
+                            }],
+                        "electric_vehicle": charging_session.get("user.id")
                     }
+
+                    self._parameters_validation(value, _entity_parameters)
+
                     # Create and add the message
                     messages.append(ICTranslator._message_creator(value, entity_id, timestamp))
                 else:
                     # Log error if label does not match
-                    raise ValueError(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label})")
+                    self._logger.warning(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label}). The program will ignore this entity.")
             else:
                 # Log error if entity is not found in the configuration
-                raise ValueError(f"Translator | Entity {entity_id} not found in the configuration file.")
+                self._logger.warning(f"Translator | Entity {entity_id} not found in the configuration file. The program will ignore this entity.")
+                continue
 
         return messages
 
@@ -102,10 +111,18 @@ class ICTranslator(TranslatorRabbitMQBase):
         for entity_id, entity_data in self._entities.items():
             # Check if this entity has the label "pv_panel"
             if entity_data.get("label") == Label.PV_PANEL.value:
+                _entity_parameters: dict = entity_data.get('parameters')
+
                 # Create and return a message using pv_production data and timestamp
                 value: dict = {
-                    "solar_generation": pv_production
+                    "energy": [{
+                        "timestamp": timestamp,
+                        "value": pv_production
+                    }]
                 }
+
+                self._parameters_validation(value, _entity_parameters)
+
                 return [ICTranslator._message_creator(value, entity_id, timestamp)]
 
         return []
@@ -126,12 +143,19 @@ class ICTranslator(TranslatorRabbitMQBase):
         for entity_id, entity_data in self._entities.items():
             # Check if this entity has the label "battery"
             if entity_data.get("label") == Label.BATTERY.value:
+                _entity_parameters: dict = entity_data.get('parameters')
                 # Create and return a message using battery_soc data and timestamp
                 # TODO no caso da i-charging nao tenho a energia, o que faço?
+
                 value: dict = {
-                    "battery_charging_energy": None,
-                    "state_of_charge": battery_soc
+                    "state_of_charge": [{
+                        "timestamp": timestamp,
+                        "value": battery_soc
+                    }]
                 }
+
+                self._parameters_validation(value, _entity_parameters)
+
                 return [ICTranslator._message_creator(value, entity_id, timestamp)]
 
         return []
@@ -163,18 +187,26 @@ class ICTranslator(TranslatorRabbitMQBase):
                 # Check if the label matches "grid_meter"
                 label: str = entity_data.get("label")
                 if label == Label.GRID_METER.value:
+                    _entity_parameters: dict = entity_data.get('parameters')
+
                     # Prepare the message data
                     value: dict = {
-                        "energy_in": meter.get("l123"),
+                        "energy_in": [{
+                            "timestamp": timestamp,
+                            "value": meter.get("l123")
+                        }]
                     }
+
+                    self._parameters_validation(value, _entity_parameters)
+
                     # Create and add the message
                     messages.append(ICTranslator._message_creator(value, entity_id, timestamp))
                 else:
                     # Log error if label does not match
-                    raise ValueError(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label})")
+                    self._logger.warning(f"Translator | Entity found, but label mismatch: {entity_id} (label: {label}). The program will ignore this entity.")
             else:
                 # Log error if entity is not found in the configuration
-                raise ValueError(f"Translator | Entity {entity_id} not found in the configuration file.")
+                self._logger.warning(f"Translator | Entity {entity_id} not found in the configuration file. The program will ignore this entity.")
 
         return messages
 
@@ -186,6 +218,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         Args:
             message (bytes): Dictionary containing i-charging-format environment data, encoded as bytes.
         """
+        print("TRANSLATE CHAMADO\n")
         # Decode the incoming bytes message to a UTF-8 string, then parse it as JSON.
         # Extract the 'observation' key which contains the relevant data.
         message_dict: dict = json.loads(message.decode('utf-8')).get('observation')
@@ -195,9 +228,10 @@ class ICTranslator(TranslatorRabbitMQBase):
 
         # Initialize an empty list that will hold the translated messages.
         message_list: list = []
-
+        print(f"MESSAGES DICT {message_dict}")
         # Iterate through each attribute in the parsed message dictionary.
         for attr in message_dict:
+
             # Check if there is a specific processing function mapped for this attribute.
             if attr in self._labels_functions_mapper:
                 # Retrieve the function assigned to handle this attribute.
@@ -207,6 +241,7 @@ class ICTranslator(TranslatorRabbitMQBase):
                 # The function is expected to return a list of processed data.
                 attr_processed: list = func(message_dict.get(attr), timestamp)
 
+                print(f"attr_processed: {attr_processed}")
                 # Only add the processed attribute data to the message_list if it is not empty.
                 # This avoids adding empty lists or dictionaries.
                 if attr_processed:

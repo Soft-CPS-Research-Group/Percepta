@@ -1,8 +1,7 @@
-import json
 import uuid
 import time
 import threading
-from typing import Dict, Any
+from typing import Any
 from app.connectors.rabbitmq_connector import RabbitMQConnector
 from app.utils.data import DataSet
 from app.utils.logger import LoggingUtils
@@ -16,8 +15,9 @@ class ICRuntimeRequest:
     and handling responses from RabbitMQ.
     """
 
-    _server: dict # Server configuration dictionary containing environment-specific settings
-    _rabbitmq_connector: RabbitMQConnector  # RabbitMQ connector instance for handling messaging
+    _server: dict  # Server configuration dictionary containing environment-specific settings
+    _publisher_connector: RabbitMQConnector  # RabbitMQ connector for publishing
+    _consumer_connector: RabbitMQConnector   # RabbitMQ connector for consuming
     _logger: LoggingUtils  # Logger instance
     _message: dict  # Runtime request message, stored as dict before serialization
     _return_queue_name: str  # Name of the return queue created for responses
@@ -31,54 +31,64 @@ class ICRuntimeRequest:
             configurations (dict): Configuration dictionary including server and frequency settings.
             logger (LoggingUtils): Logger instance for logging messages.
         """
-        self._server = configurations.get('i-charging').get('receiver_server')
-
+        self._server = configurations.get("i-charging").get("receiver_server")
         self._logger = logger
 
         self._message = {
             "type": "runtime",
             "value": {
-                "installations": [list(environments.keys())],
-                "frequency": DataSet.calculate_interval(configurations.get('frequency'))
-            }
+                "installations": list(environments.keys()),
+                "frequency": DataSet.calculate_interval(configurations.get("frequency")),
+            },
         }
 
-        # Start the messaging service by establishing a connection to RabbitMQ with retries
-        with_retries(self._start_messaging_service, logger=self._logger)
+        self._logger.info(f"Request to Change Data Submission Schedule for i-charging installations: {self._message}")
 
-    def _start_messaging_service(self) -> None:
-        """
-        Establish connection to RabbitMQ with retry logic.
-        Declares the environment-specific queue and logs connection status.
+        self._response_event: threading.Event = threading.Event()
 
-        Raises:
-            Exception: If maximum reconnection attempts are reached.
-        """
-        self._rabbitmq_connector: RabbitMQConnector = RabbitMQConnector(self._server)
-        self._rabbitmq_connector.connect()
-        self._rabbitmq_connector.declare_queue('RPC')
-        self._return_queue_name: str = self._rabbitmq_connector.declare_queue(exclusive=True)
+        # Initialize both publisher and consumer connectors with retries
+        with_retries(self._setup_consumer_service, logger=self._logger)
+        with_retries(self._setup_publisher_service, logger=self._logger)
 
-        self._logger.info("IC Runtime Request: Connection successfully established.")
 
-    def init(self) -> None:
-        """
-        Initialize the runtime request by sending the initial message.
-        Uses retry logic to ensure the message is delivered.
-        """
-        with_retries(self._send_message, logger=self._logger)
+    def _setup_publisher_service(self) -> None:
+        """Initialize RabbitMQ connection for publishing."""
+        self._publisher_connector = RabbitMQConnector(self._server)
+        self._publisher_connector.connect()
+        self._publisher_connector.declare_queue("RPC")
+        self._logger.info("IC Runtime Request: Publisher connection established.")
 
-    def _start_service(self) -> None:
+    def _setup_consumer_service(self) -> None:
+        """Initialize RabbitMQ connection for consuming responses."""
+        self._consumer_connector = RabbitMQConnector(self._server)
+        self._consumer_connector.connect()
+        self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
+        self._logger.info("IC Runtime Request: Consumer connection established.")
+
+    def start_service(self) -> None:
         """
         Start the runtime request service.
-
-        - Launches a separate thread to send the initial message.
-        - Begins consuming messages from the return queue to process responses.
         """
-        sender_thread: threading.Thread = threading.Thread(target=self._send_message, daemon=True)
-        sender_thread.start()
 
-        self._rabbitmq_connector.consume(self._return_queue_name, self._on_response)
+        # Thread to consume messages
+        consumer_thread = threading.Thread(
+            target=self._consumer_connector.consume,
+            args=(self._return_queue_name, self._on_response),
+            daemon=True,
+        )
+        consumer_thread.start()
+
+        # Method to send the message
+        self._send_message()
+
+        # Wait until the response arrives
+        self._response_event.wait()
+
+        # Close connections
+        self._consumer_connector.close()
+        self._publisher_connector.close()
+
+        consumer_thread.join()
 
     def _send_message(self) -> None:
         """
@@ -86,17 +96,18 @@ class ICRuntimeRequest:
 
         - Serializes the message into JSON format.
         - Sets message properties including reply queue and unique message ID.
-        - Waits briefly before publishing to ensure readiness of the consumer.
+        - Waits briefly before publishing to ensure the consumer is ready.
         """
-        self._message = json.dumps(self._message)
-
-        _properties: Dict[str, str] = {
-            "reply_to": self._return_queue_name,
-            "message_id": str(uuid.uuid4())
-        }
-
         time.sleep(1)
-        self._rabbitmq_connector.publish(self._message, _properties)
+        self._publisher_connector.publish(
+            "RPC",
+            self._message,
+            properties={
+                "reply_to": self._return_queue_name,
+                "message_id": str(uuid.uuid4()),
+            },
+        )
+        self._logger.info("Runtime request message published.")
 
     def _on_response(self, ch: Any, method: Any, properties: Any, body: bytes) -> None:
         """
@@ -109,4 +120,7 @@ class ICRuntimeRequest:
             body (bytes): The response payload received from RabbitMQ.
         """
         self._logger.info(f"Received response: {body.decode()}")
-        self._rabbitmq_connector.close()
+
+        # Stop the consuming loop once the response is received
+        self._consumer_connector.stop_consuming()
+        self._response_event.set()

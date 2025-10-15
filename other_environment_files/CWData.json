@@ -8,10 +8,14 @@
                         "id" : "29720",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -23,10 +27,14 @@
                         "id" : "29725",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                         "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -46,10 +54,14 @@
                         "id" : "28387",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                          "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -66,10 +78,14 @@
                         "id" : "30634",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -81,10 +97,14 @@
                         "id" : "30642",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -101,10 +121,14 @@
                         "id" : "28375",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -116,10 +140,14 @@
                         "id" : "29658",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -136,10 +164,14 @@
                         "id" : "33423",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -151,10 +183,14 @@
                         "id" : "31139",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -166,7 +202,15 @@
                         "id" : "31031",
                         "type": "Battery State of charge",
                         "measurementUnit": "Percentage",
-                        "cumulative": false
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last", 
+                            "fill_operation": "linear"
+                        }
                     }
                 },
                 "label": "battery"
@@ -182,10 +226,14 @@
                         "id": "31093",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -202,10 +250,14 @@
                         "id" : "39291",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -217,10 +269,14 @@
                         "id" : "39286",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                          "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -237,10 +293,14 @@
                         "id" : "29851",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -257,10 +317,14 @@
                         "id" : "39641",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -272,10 +336,14 @@
                         "id" : "39330",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -292,10 +360,14 @@
                         "id" : "29660",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -312,10 +384,14 @@
                         "id" : "36766",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -327,10 +403,14 @@
                         "id" : "36769",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -347,31 +427,38 @@
                         "id" : "39437",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
                 "label": "grid_meter"
             },
-            "EV02" :  {
+            "EVC02" :  {
                 "parameters" : {
                     "session_status" : {
                         "id" : "37687",
                         "type": "Session status",
-                        "measurementUnit": "Status",
-                        "cumulative": false
+                        "measurementUnit": "Status"
                     },
                     "energy_in" : {
                         "id" : "39442",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -395,10 +482,14 @@
                         "id" : "33682",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 15,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -410,10 +501,14 @@
                         "id" : "33711",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -425,34 +520,53 @@
                         "id" : "35927",
                         "type": "Battery charging energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     },
                     "state_of_charge" : {
                         "id" : "33690",
                         "type": "Battery State of charge",
                         "measurementUnit": "Percentage",
-                        "cumulative": false
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last",
+                            "fill_operation": "linear"
+                        }
                     }
                 },
                 "label": "battery"
             },
-            "EV01" :  {
+            "EVC01" :  {
                 "parameters" : {
                     "session_status" : {
                         "id" : "37507",
                         "type": "Session status",
-                        "measurementUnit": "Status",
-                        "cumulative": false
+                        "measurementUnit": "Status"
                     },
                     "power" : {
                         "id" : "41836",
                         "type": "Power",
                         "measurementUnit": "Kilowatt",
-                        "cumulative": false
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "mean",
+                            "fill_operation": "linear"
+                        }
                     }
                 },
                 "label": "ev_charger"
@@ -468,10 +582,14 @@
                         "id" : "37208",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
@@ -483,28 +601,39 @@
                         "id" : "37214",
                         "type": "PV energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
                 "label": "pv_panel"
             },
-            "EV03" :  {
+            "EVC03" :  {
                 "parameters" : {
                     "session_status" : {
                         "id" : "37497",
                         "type": "Session status",
-                        "measurementUnit": "Status",
-                        "cumulative": false
+                        "measurementUnit": "Status"
                     },
                     "power" : {
                         "id" : "37698",
                         "type": "Power",
                         "measurementUnit": "Kilowatt",
-                        "cumulative": false
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "mean",
+                            "fill_operation": "linear"
+                        }
                     }
                 },
                 "actuations" : {
@@ -522,17 +651,29 @@
                         "id" : "42149",
                         "type": "Battery charging energy",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     },
                     "state_of_charge" : {
                         "id" : "42104",
                         "type": "Battery State of charge",
                         "measurementUnit": "Percentage",
-                        "cumulative": false
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last",
+                            "fill_operation": "linear"
+                        }
                     }
                 },
                 "label": "battery"
@@ -548,31 +689,38 @@
                         "id" : "29590",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 5,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },
                 "label": "grid_meter"
             },
-            "EV19" :  {
+            "EVC19" :  {
                 "parameters" : {
                     "session_status" : {
                         "id" : "39055",
                         "type": "Session status",
-                        "measurementUnit": "Status",
-                        "cumulative": false
+                        "measurementUnit": "Status"
                     },
                     "energy_in" : {
                         "id" : "37503",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
-                        "cumulative": true,
-                        "periodicity": {
-                            "value" : 10,
-                            "unity" : "min"
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 10,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
                         }
                     }
                 },

@@ -1,0 +1,28 @@
+{
+    "provider": "i-charging",
+    "i-charging headquarters" : {
+        "group": "i-charging headquarters",
+        "entities": {
+            "AC000001_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000001",
+                "plug": 1
+            },
+            "AC000002_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000002",
+                "plug": 1
+            }
+        }
+    }
+}

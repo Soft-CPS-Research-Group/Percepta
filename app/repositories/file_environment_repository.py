@@ -1,5 +1,6 @@
 import os
 import json
+import copy
 from app.repositories.irepositories.environment_repository import EnvironmentRepository
 from app.utils.logger import LoggingUtils
 
@@ -30,6 +31,7 @@ class FileEnvironmentRepository(EnvironmentRepository):
 
         # Process all JSON files in the folder specified in configurations
         self.process_json_files_in_folder(configurations.get("environment_files"))
+
 
     def get_environments(self) -> dict:
         """
@@ -82,10 +84,10 @@ class FileEnvironmentRepository(EnvironmentRepository):
             provider: str = schema.pop('provider')
 
             # Store schema by provider
-            self._environments_by_provider[provider] = schema
+            self._environments_by_provider[provider] = copy.deepcopy(schema)
 
             # Process the environment data and store it
-            self._house_identifier(schema, provider)
+            self._house_identifier(copy.deepcopy(schema), provider)
 
     def _house_identifier(self, schema: dict, provider: str) -> None:
         """
@@ -108,9 +110,10 @@ class FileEnvironmentRepository(EnvironmentRepository):
             value['group'] = value['group'].replace(' ', '_')
             # Merge or assign processed value to the main dictionary
             if key in self._all_environments:
-                self._all_environments[key].update(value)
+                self._all_environments[key]['entities'].update(value['entities'])
             else:
                 self._all_environments[key] = value
+
 
     @staticmethod
     def _read_repo_file(filepath: str, **kwargs) -> dict:
