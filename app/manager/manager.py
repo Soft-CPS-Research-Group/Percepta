@@ -89,7 +89,7 @@ class Manager:
 
             # Clear the dictionary for the next cycle
             self._dict.clear()
-            print(f'UM PEQUENO TESTE {timestamp_1} {self._timestamp} {datetime.datetime.now(self._tz)}')
+            self._logger.info(f'UM PEQUENO TESTE {timestamp_1} {self._timestamp} {datetime.datetime.now(self._tz)}')
             self._send_event.set()
 
             self._timer_ended.notify_all()
