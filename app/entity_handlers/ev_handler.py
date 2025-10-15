@@ -13,7 +13,7 @@ class EVHandler(EntityHandlerBase):
     def process(self, message, all_data):
         ev_entities = self._entities_ids.get(EVHandler.label)
         # List to collect data from ev entities
-        evs = []
+        evs = {}
 
         if ev_entities:
             # Loop through all configured ev IDs
@@ -22,11 +22,7 @@ class EVHandler(EntityHandlerBase):
 
                 if ev:
                     # Add ev data to the results list
-                    evs.append(ev.get('data'))
-
-                    # If data was generated (and not directly measured), mark the message accordingly
-                    if ev.get('generated') == 1:
-                        message["generated"] = 1
+                    evs.update({ev_id: ev.get('data')})
 
         # Attach ev data to the outgoing message
         message["electric_vehicles"] = evs
@@ -48,7 +44,7 @@ class EVHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
+                "SoC": -1,
                 "flexibility": {},
-            },
-            'generated': 1
+            }
         }

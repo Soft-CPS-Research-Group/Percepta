@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
@@ -13,20 +14,36 @@ class BatteryHandler(EntityHandlerBase):
     def process(self, message, all_data):
         batteries_entities = self._entities_ids.get(BatteryHandler.label)
         # List to collect data from battery entities
-        batteries = []
+        batteries = {}
 
         if batteries_entities:
             # Loop through all configured battery IDs
             for battery_id in batteries_entities:
                 battery = all_data.get(battery_id)
 
+                total_battery_changing_energy = 0
+                last_soc = 0
+
                 if battery:
                     # Add battery data to the results list
-                    batteries.append(battery.get('data'))
+                    battery_data = battery.get('data')
+                    battery_energy_array = battery_data.get('battery_charging_energy')
+                    if battery_energy_array and isinstance(battery_energy_array, list):
+                        for be in battery_energy_array:
+                            total_battery_changing_energy += be.get('value')
 
-                    # If data was generated (and not directly measured), mark the message accordingly
-                    if battery.get('generated') == 1:
-                        message["generated"] = 1
+                    soc_array = battery_data.get('state_of_charge')
+                    if soc_array and isinstance(soc_array, list):
+                        last_soc = max(
+                            soc_array,
+                            key=lambda x: datetime.strptime(x['timestamp'], "%Y-%m-%d %H:%M:%S %z")
+                        ).get('value')
+
+
+                batteries.update({battery_id: {
+                    "total_charging_energy": total_battery_changing_energy,
+                    "last_soc": last_soc,
+                }})
 
         # Attach battery data to the outgoing message
         message["batteries"] = batteries
@@ -45,10 +62,9 @@ class BatteryHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "battery_charging_energy": 0,
-                "state_of_charge": 0
-            },
-            'generated': 1
+                "battery_charging_energy": [],
+                "state_of_charge": []
+            }
         }
 
     # TODO: For batteries, does it make sense to send values like 0,0? Even if the data is a day old,

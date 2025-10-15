@@ -1,5 +1,5 @@
 from .accumulator import Accumulator
-from .manager import Manager
+from app.manager.manager import Manager
 from .predictor import Predictor
 from .entity_handlers.entity_handler_factory import build_entity_handler
 from .forwarders.decision_forwarder_factory import build_forwarder
@@ -15,7 +15,6 @@ class AccumulatorContextFactory:
 
     def _build_label_to_ids(self):
         entities = self._environment_specs.get('entities')
-
         label_map = {}
         for entity_id, values in entities.items():
             label = values.get("label")

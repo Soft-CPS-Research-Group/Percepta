@@ -1,0 +1,44 @@
+{
+    "provider": "pulsecharge",
+    "i-charging headquarters" : {
+        "group": "i-charging headquarters",
+        "entities": {
+            "2" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                    "flexibility" :{
+
+                    }
+                },
+                "vin": "VR3UKZKXZNJ855677",
+                "label": "electric_vehicle"
+            },
+           "11823" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "vin": "LSJWH4099PN266007",
+                "label": "electric_vehicle"
+            },
+           "11837" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "vin": "WVWZZZE1ZPP010253",
+                "label": "electric_vehicle"
+            }
+        }
+    }
+}

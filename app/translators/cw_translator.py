@@ -4,6 +4,7 @@ from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
 
 
+
 class CWTranslator(TranslatorRabbitMQBase):
     """
     Concrete implementation of a translator for CW entities.
@@ -11,25 +12,53 @@ class CWTranslator(TranslatorRabbitMQBase):
     applying special rules for specific labels such as EV chargers.
     """
 
+    _entities: dict  # Stores entities defined in the environment specifications
     _labels_functions_mapper : dict # Maps labels to corresponding processing functions
+    _tz : ZoneInfo
 
-    def __init__(self, environment: str, configurations: dict, logger: LoggingUtils):
+    def __init__(self, environment: str,  environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initializes the CWTranslator.
 
         Args:
             environment (str): String to identify the environment which the data belongs.
+            environment_specs (dict): Environment specifications including entities.
             configurations (dict): General configurations passed to the translator.
             logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment, configurations, logger)
+
+        self._entities = environment_specs.get('entities')
 
         # Map each data label to its corresponding processing function
         self._labels_functions_mapper = {
             "ev_charger": self._ev_charger
         }
 
-    def _ev_charger(self, messages: dict) -> dict:
+        self._tz = self._set_time_zone()
+
+    # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
+    def _set_time_zone(self) -> ZoneInfo:
+        # Get the current timestamp in UTC without microseconds
+        tz_name = self._configurations.get("timezone", "UTC")
+        try:
+            return ZoneInfo(tz_name)
+        except Exception:
+            self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
+            return ZoneInfo("UTC")
+
+    def _build_result(self, param_values_list, default_value = 0):
+        return [
+            {
+                "timestamp": datetime.datetime.fromisoformat(entry["Date"])
+                .astimezone(self._tz)
+                .strftime("%Y-%m-%d %H:%M:%S %z"),
+                "value": entry.get("Value") if entry.get("Value") else entry.get("Read", default_value)
+            }
+            for entry in param_values_list
+        ]
+
+    def _ev_charger(self, entity_id, messages: dict) -> dict:
         """
         Processes EV charger sessions and converts them into a standardized dictionary of readings.
 
@@ -37,15 +66,15 @@ class CWTranslator(TranslatorRabbitMQBase):
             messages (dict): Dictionary representing a charging session with various measurements.
 
         Returns:
-            dict: Dictionary where each key maps to its corresponding 'Read' value (or None if not valid).
+            dict: Dictionary where each param maps to its corresponding 'Read' value (or None if not valid).
         """
 
         # Ensure the input is a dictionary; raise an exception otherwise
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | _ev_charger expected dict, got {type(messages)}")
 
-        # Retrieve the 'session_status' key without modifying the original messages dictionary
-        session_status_list = messages.get("session_status", [])
+        # Retrieve the 'session_status' param without modifying the original messages dictionary
+        session_status_list = messages.pop("session_status", []) # TODO aqui poderia estar pop acho eu
         session_status = {}
 
         # Extract the first dictionary from 'session_status' list if it exists
@@ -55,26 +84,24 @@ class CWTranslator(TranslatorRabbitMQBase):
                 session_status = first_item
 
         # Extract the "Read" flag from session_status to determine if the session is valid (ready)
-        read_status = session_status.get("Read", 0)
+        read_status = session_status.get("Read") if session_status.get("Read") else session_status.get("Value", 0)
 
         value = {}
 
         if read_status == 1:
-            # If the session is valid, process each key in the messages dictionary
-            for key, item_list in messages.items():
-                if isinstance(item_list, list) and item_list:
-                    # TODO aqui estou a considerar apenas um último registo, no futuro teremos vários e depois é necessário aplicar harmonização e fazer distinção entre a potência e a energia
-                    first_item = item_list[0]
-                    # Extract the 'Read' value from the first item if it's a dictionary; otherwise default to 0
-                    read_value = first_item.get("Read", 0) if isinstance(first_item, dict) else 0
-                    value[key] = read_value
+            for param, param_values_list in messages.items():
+                if isinstance(param_values_list, list) and param_values_list:
+                    value[param] = self._build_result(param_values_list)
                 else:
-                    # Default to 0 if the item list is empty or invalid
-                    value[key] = 0
+                    self._logger.warning(
+                        f"Parameter '{param}' of entity '{entity_id}' is missing."
+                    )
+                    value[param] = []
         else:
-            # If the session is not valid, all measurement values default to 0
-            for key in messages:
-                value[key] = 0
+            for param, param_values_list in messages.items():
+                value[param] = self._build_result(param_values_list)
+
+        self._parameters_validation(value, self._entities_parameters, ['session_status'])
 
         # Return the dictionary of processed 'Read' values
         return value
@@ -94,37 +121,31 @@ class CWTranslator(TranslatorRabbitMQBase):
 
         entity_id = messages.get("entity_id")
         label = messages.get("label")
-        parameters = messages.get("parameters")
+        parameters_readings = messages.get("parameters")
+
+        self._entities_parameters = self._entities.get(entity_id).get('parameters')
 
         value = {}
 
-        # Retrieve timezone from configuration, defaulting to UTC if invalid
-        tz_name = self._configurations.get("timezone", "UTC")
-        try:
-            tz = ZoneInfo(tz_name)
-        except Exception:
-            self._logger.warning(f"Translator | Invalid timezone '{tz_name}', falling back to UTC")
-            tz = ZoneInfo("UTC")
-
         # Format timestamp using the configured timezone
-        timestamp = datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         if label in self._labels_functions_mapper:
             # Use label-specific translation method
-            value = self._labels_functions_mapper[label](parameters)
+            value = self._labels_functions_mapper[label](entity_id, parameters_readings)
         else:
             # Default translation logic: sum all readings for each parameter
-            for key, params in parameters.items():
-                if key:
-                    total = 0
-                    if isinstance(params, list):
-                        for reading in params:
-                            if isinstance(reading, dict):
-                                total += reading.get("Read", 0)
-                    value[key] = total
+            for param, param_values_list in parameters_readings.items():
+                if param:
+                    if isinstance(param_values_list, list) and param_values_list:
+                        value[param] = self._build_result(param_values_list)
                 else:
-                    self._logger.warning(f"Translator | No data for {entity_id} entity.")
-                    return
+                    self._logger.warning(
+                        f"Parameter '{param}' of entity '{entity_id}' is missing."
+                    )
+                    value[param] = []
+
+            self._parameters_validation(value, self._entities_parameters)
 
         # Construct standardized message with ID, values, and timestamp
         new_message = [{

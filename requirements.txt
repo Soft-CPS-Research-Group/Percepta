@@ -5,3 +5,4 @@ pymongo
 loguru
 apscheduler
 paho-mqtt
+pandas

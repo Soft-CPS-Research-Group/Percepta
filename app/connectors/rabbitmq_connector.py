@@ -2,6 +2,7 @@ import json
 from typing import Callable, Dict, Any
 from pika.adapters.blocking_connection import BlockingChannel
 from pika import PlainCredentials, BlockingConnection, ConnectionParameters, BasicProperties
+from pika.spec import Exchange
 
 # Allowed keys for declaring an exchange in RabbitMQ
 ALLOWED_EXCHANGE_KEYS = {
@@ -9,7 +10,7 @@ ALLOWED_EXCHANGE_KEYS = {
     "durable",        # If True, the exchange will survive broker restarts
     "auto_delete",    # If True, the exchange is deleted when no longer in use
     "internal",       # If True, the exchange cannot be directly published to by clients
-    "arguments"       # Additional optional arguments for the exchange (e.g., for plugins)
+    "arguments"      # Additional optional arguments for the exchange (e.g., for plugins)
 }
 DEFAULT_EXCHANGE_CONF = {"exchange_type": "direct", "durable": False, "auto_delete": False, "internal": False, "arguments": None}
 
@@ -203,11 +204,15 @@ class RabbitMQConnector:
         else:
             raise RabbitMQError("Cannot nack message: channel is not open.")
 
-    def close(self) -> None:
+    def stop_consuming(self) -> None:
         """Stop consuming messages safely."""
         if getattr(self, "_consuming", False) and self._channel.is_open:
             self._channel.stop_consuming()
             self._consuming = False
+
+    def close(self) -> None:
+        """Stop consuming messages safely."""
+        self.stop_consuming()
         """Close the channel and connection cleanly if they are open."""
         if hasattr(self, "_channel") and self._channel and self._channel.is_open:
             self._channel.close()

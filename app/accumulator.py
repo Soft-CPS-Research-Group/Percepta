@@ -1,7 +1,7 @@
 import threading
 from typing import Any
 from app.connectors.rabbitmq_connector import RabbitMQConnector
-from app.manager import Manager
+from app.manager.manager import Manager
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
 
@@ -34,7 +34,6 @@ class Accumulator(threading.Thread):
         self._logger = logger
         # TODO: If the configuration file key changes, update this as well.
         self._internal_message_hub_server = configurations.get('internal_amqp_server').get('server')
-
         self._environment = environment
         self._manager = manager
         self._configurations = configurations

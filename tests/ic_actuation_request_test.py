@@ -1,0 +1,74 @@
+from app.utils.logger import LoggingUtils
+from app.ic_actuation_request import ICActuationRequest  # adjust import path to your project
+
+# -------- Required configurations --------
+environments = {
+    "i-charging headquarters": {
+        "group": "i-charging headquarters",
+        "entities": {
+            "AC000001_1": {
+                "parameters": {
+                    "power": {"measurementUnit": "Kilowatt"}
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000001",
+                "plug": 1
+            },
+            "AC000002_1": {
+                "parameters": {
+                    "power": {"measurementUnit": "Kilowatt"}
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000002",
+                "plug": 1
+            },
+        }
+    }
+}
+
+configurations = {
+    "i-charging": {
+        "type": "amqp",
+        "receiver_server": {
+            "host": "softcps.dei.isep.ipp.pt",
+            "port": 5672,
+            "heartbeat": 660,
+            "auth": {
+                "username": "dataprovider",
+                "password": "dataprovidermq"
+            },
+            "exchange_conf": {
+                "durable": False,
+                "exchange_type": "fanout"
+            },
+            "queue_conf": {
+                "durable": True
+            },
+            "consume_conf": {
+                "auto_ack": False
+            }
+        },
+    },
+    "frequency": {
+        "value": 0,
+        "unit": "minutes"
+    },
+    "log_files": {
+        "max_size": 10485760
+    }
+}
+
+# -------- Logger --------
+logger = LoggingUtils("ic_actuation_request_test", configurations)
+
+# -------- Integration Test --------
+if __name__ == "__main__":
+    try:
+        ic_actuation = ICActuationRequest(configurations, logger)
+        logger.info("Initializing actuation request...")
+
+        # Start background service (sends request and listens for responses)
+        ic_actuation.start_service()
+
+    except Exception as e:
+        logger.error(f"Integration test error: {e}")

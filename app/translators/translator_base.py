@@ -1,8 +1,24 @@
 from abc import abstractmethod
-
 from app.utils.logger import LoggingUtils
 from typing import Any
+from app.utils.measurement_unit_validation import is_type_compatible
 
+def validate_temporal_list(value_list : list, measurement_unit : str):
+    """
+    Validates a list of dictionaries with 'timestamp' and 'value'.
+    Uses `is_type_compatible` for each value.
+    Returns True only if all values are compatible.
+    """
+    if not isinstance(value_list, list):
+        return False
+
+    for entry in value_list:
+        if not isinstance(entry, dict):
+            return False
+        val = entry.get("value")
+        if not is_type_compatible(val, measurement_unit):
+            return False
+    return True
 
 class TranslatorBase:
     """
@@ -39,14 +55,50 @@ class TranslatorBase:
            """
         raise NotImplementedError()
 
-    def generic_period_harmonizer(self):
-        """Generic harmonizer to resample or aggregate data across different time periods.
-
-        For example, this function can take data points recorded every 5 minutes
-        and aggregate them into 15-minute intervals. It is meant to provide a
-        standardized temporal resolution for downstream processing.
-
-        This method can be overridden by subclasses with the specific
-        aggregation or resampling logic required for the data.
+    def _parameters_validation(self, parameters_to_send: dict, entity_parameters: dict, optional_parameters: list = None) -> dict:
         """
-        pass
+        Validates that all required entity parameters are present in messages.
+        Adds NaN for missing parameters or empty lists, except for optional ones.
+        Validates parameter values and adds metadata if invalid.
+
+        Args:
+            parameters_to_send: Dictionary of parameter values to validate.
+            entity: Dictionary of entity definitions.
+            optional_parameters: List of parameter names that are optional.
+
+        Returns:
+            The updated dictionary with missing/invalid parameters handled.
+        """
+        if optional_parameters is None:
+            optional_parameters = []
+
+        for param_name, param_info in entity_parameters.items():
+            # Skip optional parameters that are not in the message
+            if param_name in optional_parameters and param_name not in parameters_to_send:
+                continue
+
+            if param_name not in parameters_to_send:
+                # Required parameter missing → add NaN with metadata
+                parameters_to_send[param_name] = {
+                    "value": float('nan'),
+                    "metadata": "Parameter missing in receiver response"
+                }
+            else:
+                param_values = parameters_to_send.get(param_name)
+                # Treat empty list as NaN with metadata
+                if isinstance(param_values, list) and len(param_values) == 0:
+                    parameters_to_send[param_name] = {
+                        "value": float('nan'),
+                        "metadata": "Parameter sent empty by receiver"
+                    }
+                    continue
+                measurement_unit = param_info.get("measurementUnit")
+                if measurement_unit is not None:
+                    if not validate_temporal_list(param_values, param_info.get("measurementUnit")):
+                        # Invalid values → set NaN with metadata
+                        parameters_to_send[param_name] = {
+                            "value": float('nan'),
+                            "metadata": "Parameter value invalid"
+                        }
+
+        return parameters_to_send
