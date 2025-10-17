@@ -1,9 +1,10 @@
+import time
+import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
 from app.exceptions import general_exceptions
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
-
 
 class CWSession:
     """
@@ -35,7 +36,6 @@ class CWSession:
         cls._configurations = configurations
         cls._cw_configurations = configurations.get('cleanwatts')
         cls._max_reconnect_attempts = configurations.get('max_reconnect_attempts')
-
         cls._server = cls._cw_configurations.get('login_server')
         cls._auth = cls._server.get('auth')
 
@@ -45,15 +45,14 @@ class CWSession:
             }
         cls._refresh_resource = cls._server.get('resources').get("refresh")
         cls._login_resource = cls._server.get('resources').get("login")
-
         cls._start_http_service()
 
         cls._login()
 
         cls._scheduler = BackgroundScheduler()
-        # Schedule token refresh every 3000 seconds. If a scheduled run is missed (e.g. due to system sleep), allow it to run within 10 seconds (misfire_grace_time).
+        # Schedule token refresh every 3500 seconds. If a scheduled run is missed (e.g. due to system sleep), allow it to run within 10 seconds (misfire_grace_time).
         # coalesce=True ensures that if multiple runs were missed, only the latest one will be executed to avoid backlog.
-        cls._scheduler.add_job(cls._run_job, 'interval', seconds=3000, misfire_grace_time=10, coalesce=True)
+        cls._scheduler.add_job(cls._run_job, 'interval', seconds=3500, misfire_grace_time=10, coalesce=True)
         cls._scheduler.start()
 
     @classmethod
@@ -100,7 +99,6 @@ class CWSession:
                     f"Failed to retrieve data from {cls._login_resource}: "
                     f"HTTP {response.status_code}, response: {response.text[:500]}"
                 )
-
             cls.token = response.json().get('Token')
             cls.refresh_token = response.json().get('RefreshToken')
 
@@ -109,11 +107,17 @@ class CWSession:
     @classmethod
     def _refresh_tokens(cls):
         """
-        Refreshes the access token using the refresh token.
-
-        If the refresh fails, it attempts to log in again.
-        Uses retry logic to handle transient HTTP errors.
+        Refresh the access token using the refresh token, but wait if
+        we are in the first 10 seconds of the minute to avoid invalidating
+        the token while threads are using it.
         """
+        now = datetime.datetime.now()
+        # Wait the first 10 seconds because a thread might be using the old (still valid) token
+        if now.second < 10:
+            sleep_time = 10 - now.second
+            cls._logger.info(f"Token refresh waiting {sleep_time}s to avoid invalidating token in use")
+            time.sleep(sleep_time)
+
         if cls._http_connector.is_connected() is False:
             cls._start_http_service()
 
@@ -121,22 +125,18 @@ class CWSession:
 
         try:
             response = cls._http_connector.put(endpoint=refresh_resource_with_tokens)
-
             if response.status_code != 201:
-                raise HTTPErrorWrapper(
-                    f"HTTP {response.status_code}, response: {response.text[:500]}"
-                )
+                raise HTTPErrorWrapper(f"HTTP {response.status_code}, response: {response.text[:500]}")
 
             cls.token = response.json().get('Token')
             cls.refresh_token = response.json().get('RefreshToken')
-
+            cls._logger.info(f"Refreshed access token: {cls.token}")
         except Exception as e:
-            cls._logger.error(f"Failed to retrieve data from {refresh_resource_with_tokens}: {e}. Failed to refresh the token, the System will attempt to log in again.")
+            cls._logger.error(f"Failed to refresh token: {e}, attempting login again")
             cls._login()
 
-
     @classmethod
-    def _run_job(self):
+    def _run_job(cls):
         """
         Wrapper to run the scheduled token refresh job and handle exceptions.
 
@@ -144,9 +144,9 @@ class CWSession:
             general_exceptions.SchedulerJobError: If the scheduled job fails.
         """
         try:
-            self._refresh_tokens()
+            cls._refresh_tokens()
         except Exception as e:
-            self._logger.error(f"CWLogin: Scheduled job failed: {e}")
+            cls._logger.error(f"CWLogin: Scheduled job failed: {e}")
             raise general_exceptions.SchedulerJobError(f"Scheduled job error: {e}") from e
 
     @classmethod

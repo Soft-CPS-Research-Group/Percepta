@@ -12,6 +12,7 @@ class BatteryHandler(EntityHandlerBase):
         super().__init__(repository, entities_ids, configurations, logger)
 
     def process(self, message, all_data):
+        # Retrieve the list of battery entities from the input data
         batteries_entities = self._entities_ids.get(BatteryHandler.label)
         # List to collect data from battery entities
         batteries = {}
@@ -41,12 +42,13 @@ class BatteryHandler(EntityHandlerBase):
 
 
                 batteries.update({battery_id: {
-                    "total_charging_energy": total_battery_changing_energy,
+                    "energy_in": total_battery_changing_energy,
                     "last_soc": last_soc,
                 }})
 
         # Attach battery data to the outgoing message
         message["batteries"] = batteries
+
 
     def fallback(self, device_id, substitute_dict):
         # Attempt to retrieve substitute data for the missing device

@@ -54,7 +54,7 @@ class ICReceiver(ReceiverRabbitMQBase):
         if not self._stop_event.is_set():
             self._translator.translate(body)
 
-    @classmethod
+    '''@classmethod
     def post_start(cls, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
         """
         Perform initialization tasks after the receiver has started.
@@ -65,4 +65,4 @@ class ICReceiver(ReceiverRabbitMQBase):
             configurations (dict): Application-specific configurations.
             logger (Logger): Logger instance for logging events.
         """
-        start()
+        start()'''

@@ -10,7 +10,7 @@ from app.manager.harmonizer import Harmonizer
 
 
 class Manager:
-    def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, predictor, entities_handlers, configurations, logger):
+    def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, aggregator, predictor, entities_handlers, configurations, logger):
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
         self._start_sched()
         self._environment = environment
@@ -25,6 +25,7 @@ class Manager:
         self._tz = self._set_time_zone()
         self._send_event = threading.Event()
         self._send_event.set()
+        self._aggregator = aggregator
 
         # TODO será que isto é mesmo necessário? Isto garante que todos os campos estão presentes mesmo que a zero
         self._algorithm_format = configurations.get('algorithm_attributes')
@@ -84,12 +85,13 @@ class Manager:
             # Format data for the prediction model
             self._format_data()
 
+            self._aggregator.aggregate(self._message)
             # Perform prediction
             # self._predictor.predict(self._message)
-
+            # Print the final message prepared for the AI model (for debugging)
+            self._logger.info(f"Message to the AI Model: {self._message}\n")
             # Clear the dictionary for the next cycle
             self._dict.clear()
-            print(f'UM PEQUENO TESTE {timestamp_1} {self._timestamp} {datetime.datetime.now(self._tz)}')
             self._send_event.set()
 
             self._timer_ended.notify_all()
@@ -161,9 +163,6 @@ class Manager:
                 # Use the handler to process and update the message
                 # Pass the current message, the data dictionary, and the list of entity IDs for this label
                 handler.process(self._message, self._dict)
-
-        # Print the final message prepared for the AI model (for debugging)
-        self._logger.info(f"Message to the AI Model: {self._message}\n")
 
 
     def stop(self):

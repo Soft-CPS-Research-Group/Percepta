@@ -16,7 +16,6 @@ class ReceiverHTTPBase(ReceiverBase):
     _server: dict # Server configuration dictionary containing provider-specific settings
     _http_connector: HTTPConnector # HTTP connector instance for performing HTTP requests
     _time_interval: int # Interval in seconds for scheduling the periodic job
-    _header: dict # Current HTTP headers used for requests, updated dynamically when needed
     _scheduler: BlockingScheduler # Scheduler that blocks the main thread while running
 
     def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
@@ -55,7 +54,7 @@ class ReceiverHTTPBase(ReceiverBase):
         """
         raise NotImplementedError
 
-    def retrieve_data(self, resource: str, timeout: int = 10):
+    def retrieve_data(self, resource: str, timeout: int = 10, header: dict = None):
         """
         Retrieves data from a given HTTP resource.
         Updates headers if needed and performs a GET request.
@@ -70,7 +69,8 @@ class ReceiverHTTPBase(ReceiverBase):
             self._start_http_service()
 
         # Update headers if they have changed
-        self._http_connector.update_headers(self._header)
+        if header is not None:
+            self._http_connector.update_headers(header)
 
         # Perform GET request
         response = self._http_connector.get(resource, timeout)

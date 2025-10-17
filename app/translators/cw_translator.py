@@ -1,4 +1,5 @@
 import datetime
+import pandas as pd
 from zoneinfo import ZoneInfo
 from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
@@ -47,16 +48,17 @@ class CWTranslator(TranslatorRabbitMQBase):
             self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
             return ZoneInfo("UTC")
 
-    def _build_result(self, param_values_list, default_value = 0):
-        return [
-            {
-                "timestamp": datetime.datetime.fromisoformat(entry["Date"])
-                .astimezone(self._tz)
-                .strftime("%Y-%m-%d %H:%M:%S %z"),
-                "value": entry.get("Value") if entry.get("Value") else entry.get("Read", default_value)
-            }
-            for entry in param_values_list
-        ]
+    def _build_result(self, param_values_list, default_value=0):
+        if not param_values_list:
+            return []
+
+        df = pd.DataFrame(param_values_list)
+        if 'Value' not in df.columns:
+            df['Value'] = df.get('Read', default_value)
+        df['timestamp'] = pd.to_datetime(df['Date']).dt.tz_localize('UTC').dt.tz_convert(self._tz)
+        df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M:%S %z")
+
+        return df[['timestamp', 'Value']].rename(columns={'Value': 'value'}).to_dict(orient='records')
 
     def _ev_charger(self, entity_id, messages: dict) -> dict:
         """
@@ -116,6 +118,7 @@ class CWTranslator(TranslatorRabbitMQBase):
                         the data type identifier, and the corresponding readings,
                         where keys represent parameters and values are lists of readings.
         """
+
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | translate expected dict, got {type(messages)}")
 
@@ -128,6 +131,7 @@ class CWTranslator(TranslatorRabbitMQBase):
         value = {}
 
         # Format timestamp using the configured timezone
+        timestamp_1 = datetime.datetime.now()
         timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         if label in self._labels_functions_mapper:
@@ -154,6 +158,11 @@ class CWTranslator(TranslatorRabbitMQBase):
             "timestamp": timestamp
         }]
 
+        timestamp_pos = datetime.datetime.now()
+
         # Send the message to the environment queue
         self.send_message_to_environment_queue(new_message)
+        timestamp_pos_rabbit = datetime.datetime.now()
+
+        print(f"{entity_id} {timestamp_1} {timestamp_pos} {timestamp_pos_rabbit}\n")
 

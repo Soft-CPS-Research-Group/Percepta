@@ -11,13 +11,11 @@ class GridMeterHandler(EntityHandlerBase):
         super().__init__(repository, entities_ids, configurations, logger)
 
     def process(self, message, all_data):
-        # Initialize variables to store total non-shiftable load and battery energy
-        non_shiftable_load = 0
-        battery_energy = 0
 
-        # Retrieve the list of grid meter entities and battery entities from the input data
+        # Retrieve the list of grid meter entities from the input data
         grid_meter_entities = self._entities_ids.get('grid_meter')
-        batteries_entities = self._entities_ids.get('battery')
+
+        grid_meters = {}
 
         # Sum up the energy consumption (energy_in) from each grid meter entity
         if grid_meter_entities:
@@ -31,23 +29,9 @@ class GridMeterHandler(EntityHandlerBase):
                     for ei in energy_in:
                         sum_aux += ei.get("value", 0)
 
-                    if "meters" not in message:
-                        message["meters"] = {}
+                    grid_meters.update({grid_meter_entity: {"energy_in" : sum_aux}})
 
-                    message["meters"][grid_meter_entity] = {"energy_in" : sum_aux}
-
-                    non_shiftable_load += sum_aux
-
-        # Sum up the charging energy from each battery entity
-        if batteries_entities:
-            for battery_entity in batteries_entities:
-                battery_values = all_data[battery_entity]
-                battery_charging_energy = battery_values.get('data', 0).get('battery_charging_energy', [])
-                for bce in battery_charging_energy:
-                    battery_energy += bce.get("value", 0)
-
-        # Calculate the net non-shiftable load by subtracting battery charging energy
-        message["non_shiftable_load"] = non_shiftable_load - battery_energy
+        message["grid_meters"] = grid_meters
 
     def fallback(self, device_id, substitute_dict):
         # Try to get substitute data for the device
