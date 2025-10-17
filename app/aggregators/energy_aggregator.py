@@ -1,11 +1,15 @@
-class EnergyAggregator:
+from app.aggregators.aggregator_base import AggregatorBase
+from app.utils.logger import LoggingUtils
+
+
+class EnergyAggregator(AggregatorBase):
     """
     Aggregator responsible for calculating system-level metrics.
     For example: non_shiftable_load
     """
 
-    def __init__(self, logger=None):
-        self._logger = logger
+    def __init__(self, logger: LoggingUtils =None):
+        super().__init__(logger)
 
     def aggregate(self, message):
         """
