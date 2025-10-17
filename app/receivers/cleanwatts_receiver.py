@@ -5,6 +5,8 @@ from app.utils.cwlogin import CWSession
 from app.receivers.receiver_http_base import ReceiverHTTPBase
 from app.utils.logger import LoggingUtils
 from app.utils.providers import Provider
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 def round_timestamp_to_nearest(timestamp: datetime.datetime, interval_seconds: int) -> datetime.datetime:
     """
@@ -75,61 +77,93 @@ class CWReceiver(ReceiverHTTPBase):
         #TODO não faz sentido isto estar aqui! Várias threads vão executar isto...
         CWSession.stop_token_refresher()
 
+
+    def fetch_entity_parameter_data(self, entity_id, param_name, param_attr):
+        """
+        Fetch data for a single parameter of a single entity.
+
+        Args:
+            entity_id (str): ID of the entity.
+            param_name (str): Name of the parameter.
+            param_attr (dict): Parameter attributes, including the tag ID.
+
+        Returns:
+            tuple: (entity_id, {param_name: data})
+        """
+        all_entity_parameter_data = {}
+
+        try:
+            if param_attr:
+                tag_id = param_attr.get('id')
+                agora = datetime.datetime.now()
+                # Perform the GET request with specified time range
+                data = self.retrieve_data(
+                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}",
+                    header=self._header_updater()
+                )
+
+                if not data:
+                    # If data is empty, fallback to last value
+                    data = self.retrieve_data(f"{self._server.get('resources').get('last_value')}{tag_id}",
+                                              header=self._header_updater())
+
+                depois = datetime.datetime.now()
+                print(f"{entity_id}_{param_name}: {agora} - {depois}")
+                all_entity_parameter_data.update({param_name: data})
+
+        except Exception as e:
+            self._logger.error(f"Error fetching {entity_id}-{param_name}: {e}")
+
+        return entity_id, all_entity_parameter_data
+
     def _job(self):
         """
         Executes the main data retrieval job:
             - Ensures a valid session.
-            - Retrieves raw data for all configured entities and parameters.
-            - Passes collected data to CWTranslator (does not perform translation itself).
+            - Retrieves raw data for all configured entities and parameters in parallel.
+            - Passes collected data to CWTranslator after all requests complete.
         """
+        results = {}  # Will store all data per entity
 
-        print(f"Start = {self._start.strftime("%Y-%m-%dT%H:%M:%S")} End = {self._end.strftime("%Y-%m-%dT%H:%M:%S")}")
-        self._header_updater()
+        # Parallelize requests using ThreadPoolExecutor (I/O-bound tasks)
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_entity_param = {}
 
+            for entity_id, values in self._entities.items():
+                for param_name, param_attr in values.get('parameters', {}).items():
+                    future = executor.submit(self.fetch_entity_parameter_data, entity_id, param_name, param_attr)
+                    future_to_entity_param[future] = (entity_id, param_name)
+
+            # Collect results as they complete
+            for future in as_completed(future_to_entity_param):
+                entity_id, param_data = future.result()
+                if entity_id not in results:
+                    results[entity_id] = {}
+                results[entity_id].update(param_data)
+
+        # Pass raw data to translator in a separate loop
         for entity_id, values in self._entities.items():
-            all_entity_parameter_data = {}
+            self._translator.translate({
+                'entity_id': entity_id,
+                'label': values.get('label'),
+                'parameters': results.get(entity_id, {})
+            })
 
-            for param_name, param_attr in values.get('parameters', {}).items():
-                try:
+        # Update start/end timestamps for the next job
+        self._start = self._end
+        self._end = self._end + self._time_interval_timedelta
 
-                    if param_attr:
-                        tag_id = param_attr.get('id')
-
-                        # TODO alterar lógica para request temporal e não last value
-                        # Make the GET request with specified timeout
-                        data = self.retrieve_data(f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime("%Y-%m-%dT%H:%M:%S")}&to={self._end.strftime("%Y-%m-%dT%H:%M:%S")}")
-
-                        if data:
-                            self._logger.info(f"Tag {tag_id} successfully retrieved!")
-                        else:
-                            # Data is empty, treat as a failure
-                            self._logger.warning(f"Tag {tag_id} returned empty data. Last value will be used instead.")
-                            data = self.retrieve_data(f"{self._server.get('resources').get('last_value')}{tag_id}")
-
-                        all_entity_parameter_data.update({param_name: data})
-
-
-                except Exception as e:
-                    self._logger.error(e)
-                    continue
-
-            # Pass raw data to translator; translation is not performed here
-            self._translator.translate({'entity_id' : entity_id, 'label' : values.get('label'), 'parameters' : all_entity_parameter_data})
-
-            self._start = self._end
-            self._end = self._end + self._time_interval_timedelta
-
-    def _header_updater(self):
+    def _header_updater(self) -> dict:
         """
         Sets the authorization header using the current CWSession token.
 
         """
         token = CWSession.get_token()
-
         if token is None:
             raise RuntimeError(f"Token is None.")
 
-        self._header = {'Authorization': f"CW {token}"}
+        return {'Authorization': f"CW {token}"}
+
 
     # TODO: Verificar se isto é a melhor alternativa
     @classmethod

@@ -1,11 +1,11 @@
 {
-    "i-charging headquarters": {
-        "group": "i-charging headquarters",
+    "R-H-01": {
+        "group": "living lab",
         "entities": {
-            "GR01": {
-                "parameters": {
-                    "energy_in": {
-                        "id": "33682",
+            "GR01" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "33682",
                         "type": "Active energy+",
                         "measurementUnit": "Kilowatt Hour",
                         "temporal_behavior": {
@@ -20,6 +20,25 @@
                     }
                 },
                 "label": "grid_meter"
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "33711",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "pv_panel"
             },
             "B01" :  {
                 "parameters" : {
@@ -53,6 +72,30 @@
                     }
                 },
                 "label": "battery"
+            },
+            "EVC01" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "37507",
+                        "type": "Session status",
+                        "measurementUnit": "Status"
+                    },
+                    "power" : {
+                        "id" : "41836",
+                        "type": "Power",
+                        "measurementUnit": "Kilowatt",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "mean",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "ev_charger"
             }
         }
     },

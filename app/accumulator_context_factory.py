@@ -4,6 +4,7 @@ from .predictor import Predictor
 from .entity_handlers.entity_handler_factory import build_entity_handler
 from .forwarders.decision_forwarder_factory import build_forwarder
 from app.utils.logger import LoggingUtils
+from app.aggregators.energy_aggregator import EnergyAggregator
 
 
 class AccumulatorContextFactory:
@@ -33,7 +34,8 @@ class AccumulatorContextFactory:
         entity_ids_by_label = self._build_label_to_ids()
         manager_logger = LoggingUtils("manager", self._configurations, self._environment)
         entities_handlers = build_entity_handler(time_series_repository, entity_ids_by_label, self._configurations, manager_logger)
-        return Manager(self._environment, self._environment_specs, entity_ids_by_label, time_series_repository, predictor, entities_handlers, self._configurations, manager_logger)
+        aggregator = EnergyAggregator(manager_logger)
+        return Manager(self._environment, self._environment_specs, entity_ids_by_label, time_series_repository, aggregator, predictor, entities_handlers, self._configurations, manager_logger)
 
     def build_accumulator(self, manager):
         accumulator_logger = LoggingUtils("accumulator", self._configurations, self._environment)

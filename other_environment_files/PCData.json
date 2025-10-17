@@ -1,7 +1,7 @@
 {
     "provider": "pulsecharge",
-    "i-charging headquarters" : {
-        "group": "i-charging headquarters",
+    "i-charging headquarters 3Phase" : {
+        "group": "i-charging headquarters 3Phase",
         "entities": {
             "2" : {
                  "parameters": {

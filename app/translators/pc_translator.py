@@ -58,7 +58,6 @@ class PCTranslator(TranslatorRabbitMQBase):
                         'mode' : message_dict.get('mode')
                     }
                 }
-                print(f"KEYYYYY {key}")
                 message = PCTranslator._message_creator(value, key, timestamp)
                 break
 

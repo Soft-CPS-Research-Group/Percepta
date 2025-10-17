@@ -1,0 +1,189 @@
+{
+    "provider": "i-charging",
+    "i-charging headquarters 3Phase" : {
+        "group": "i-charging headquarters 3Phase",
+        "entities": {
+            "AC000001_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000001",
+                "plug": 1
+            },
+            "AC000002_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000002",
+                "plug": 1
+            },
+            "AC000004_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000004",
+                "plug": 1
+            },
+            "AC000007_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000007",
+                "plug": 1
+            },
+            "AC000010_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000010",
+                "plug": 1
+            },
+            "AC000013_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000013",
+                "plug": 1
+            },
+            "AC000003_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000003",
+                "plug": 1
+            },
+            "AC000005_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000005",
+                "plug": 1
+            },
+            "AC000006_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000006",
+                "plug": 1
+            },
+            "AC000008_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000008",
+                "plug": 1
+            },
+            "AC000009_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000009",
+                "plug": 1
+            },
+            "AC000011_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000011",
+                "plug": 1
+            },
+            "AC000012_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000012",
+                "plug": 1
+            },
+            "AC000014_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "AC000014",
+                "plug": 1
+            },
+            "ACEXT001_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "ACEXT001",
+                "plug": 1
+            },
+            "ACEXT002_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "ACEXT002",
+                "plug": 1
+            },
+            "ACEXT003_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "ACEXT003",
+                "plug": 1
+            },
+            "ACEXT004_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "ACEXT004",
+                "plug": 1
+            }
+
+        }
+    }
+}

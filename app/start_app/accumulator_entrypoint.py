@@ -1,5 +1,4 @@
 import time
-from multiprocessing import Process
 from app.repositories.irepositories.environment_repository import EnvironmentRepository
 from app.repositories.repository_factory import RepositoryFactory
 from app.accumulator_context_factory import AccumulatorContextFactory
@@ -12,7 +11,7 @@ def launch_accumulator_service(environment_repository: EnvironmentRepository,
     logger.info("Starting Accumulator...")
 
     all_environments = environment_repository.get_environments()
-    processes = []
+    threads = []
 
     try:
         for current_environment, environment_specs in all_environments.items():
@@ -23,22 +22,22 @@ def launch_accumulator_service(environment_repository: EnvironmentRepository,
             manager = factory.build_manager(time_series_repository, predictor)
             accumulator = factory.build_accumulator(manager)
 
-            # Create a process for each accumulator
-            p = Process(target=accumulator.start)
-            p.start()
-            processes.append(p)
+            # Start the accumulator (which runs as a thread)
+            accumulator.start()
+            threads.append(accumulator)
 
-        # Loop to keep the main process alive and monitor the child processes
-        while processes:
-            for p in processes:
-                if not p.is_alive():
-                    processes.remove(p)
+        # Loop to keep the main thread alive and monitor the threads
+        while threads:
+            for thread in threads[:]:  # iterate over a copy of the list
+                if not thread.is_alive():
+                    threads.remove(thread)
             time.sleep(0.1)
 
     except KeyboardInterrupt:
-        print("KeyboardInterrupt: Stopping processes...")
-        for p in processes:
-            p.terminate()  # terminate the process
-        for p in processes:
-            p.join()
-        print("All processes stopped.")
+        print("KeyboardInterrupt: Stopping threads...")
+        for thread in threads:
+            thread.stop()  # assuming your accumulator has a stop() method
+
+        for thread in threads:
+            thread.join()
+        print("All threads stopped.")

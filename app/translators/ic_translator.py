@@ -241,7 +241,6 @@ class ICTranslator(TranslatorRabbitMQBase):
                 # The function is expected to return a list of processed data.
                 attr_processed: list = func(message_dict.get(attr), timestamp)
 
-                print(f"attr_processed: {attr_processed}")
                 # Only add the processed attribute data to the message_list if it is not empty.
                 # This avoids adding empty lists or dictionaries.
                 if attr_processed:

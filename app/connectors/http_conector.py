@@ -48,7 +48,6 @@ class HTTPConnector:
 
         # Build the full URL by combining base_url and endpoint
         url = f"{self._base_url.rstrip('/')}/{endpoint.lstrip('/')}"
-
         try:
             # Send the HTTP request using the session object
             response = self._session.request(method=method, url=url, **kwargs)
