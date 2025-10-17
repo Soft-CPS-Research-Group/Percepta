@@ -88,6 +88,9 @@ class Manager:
             self._aggregator.aggregate(self._message)
             # Perform prediction
             self._predictor.predict(self._message)
+            timestamp_2 = datetime.datetime.now(self._tz)
+            self._logger.info(f"Fui iniciado às: {timestamp_1} Obtive o lock às: {self._timestamp} Terminei às: {timestamp_2}\n")
+
             # Print the final message prepared for the AI model (for debugging)
             self._logger.info(f"Message to the AI Model: {self._message}\n")
             # Clear the dictionary for the next cycle
