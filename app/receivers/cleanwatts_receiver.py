@@ -98,14 +98,14 @@ class CWReceiver(ReceiverHTTPBase):
                 agora = datetime.datetime.now()
                 # Perform the GET request with specified time range
                 data = self.retrieve_data(
-                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}",
-                    header=self._header_updater()
+                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 3,
+                    self._header_updater()
                 )
 
                 if not data:
                     # If data is empty, fallback to last value
-                    data = self.retrieve_data(f"{self._server.get('resources').get('last_value')}{tag_id}",
-                                              header=self._header_updater())
+                    data = self.retrieve_data(f"{self._server.get('resources').get('last_value')}{tag_id}", 3,
+                                              self._header_updater())
 
                 depois = datetime.datetime.now()
                 print(f"{entity_id}_{param_name}: {agora} - {depois}")
