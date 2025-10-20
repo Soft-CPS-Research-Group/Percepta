@@ -27,15 +27,11 @@ class Manager:
         self._send_event.set()
         self._aggregator = aggregator
 
-        # TODO será que isto é mesmo necessário? Isto garante que todos os campos estão presentes mesmo que a zero
-        self._algorithm_format = configurations.get('algorithm_attributes')
         self._logger = logger
         self._harmonizer = Harmonizer(self._time_interval, self._logger)
 
 
         self._timer_ended = Condition()
-
-        self._message = {}
 
     def new_message(self, messages):
         # Decode the incoming message bytes to a UTF-8 string
@@ -69,7 +65,6 @@ class Manager:
             return False
 
     def _send(self):
-        timestamp_1 = datetime.datetime.now(self._tz)
 
         self._send_event.clear()
 
@@ -77,39 +72,37 @@ class Manager:
         with self._timer_ended:
             # Format timestamp using the configured timezone
             self._timestamp = datetime.datetime.now(self._tz)
-            self._period_harmonizer()
+            self._period_harmonizer(self._dict)
 
             # Fill in missing data if necessary
-            self._verify_and_replace_missing_data()
+            self._verify_and_replace_missing_data(self._dict)
 
             # Format data for the prediction model
-            self._format_data()
+            message = self._format_data(self._dict)
 
-            self._aggregator.aggregate(self._message)
+            self._aggregator.aggregate(message)
             # Perform prediction
-            self._predictor.predict(self._message)
-            timestamp_2 = datetime.datetime.now(self._tz)
-            self._logger.info(f"Fui iniciado às: {timestamp_1} Obtive o lock às: {self._timestamp} Terminei às: {timestamp_2}\n")
+            self._predictor.predict(message)
 
             # Print the final message prepared for the AI model (for debugging)
-            self._logger.info(f"Message to the AI Model: {self._message}\n")
+            self._logger.info(f"Message to the AI Model: {message}\n")
             # Clear the dictionary for the next cycle
             self._dict.clear()
             self._send_event.set()
 
             self._timer_ended.notify_all()
 
-    def _period_harmonizer(self):
+    def _period_harmonizer(self, data):
 
         period_start_time = self._timestamp.replace(second=0, microsecond=0)
         period_end_time = period_start_time + datetime.timedelta(seconds=self._time_interval)
 
         for entity_id, entity_values in self._entities.items():
 
-            if self._dict.get(entity_id) is None:
+            if data.get(entity_id) is None:
                 continue
 
-            entity_params = self._dict.get(entity_id).get('data')
+            entity_params = data.get(entity_id).get('data')
 
             # TODO: Isto serve para não dar erro quando o parâmetro está a NaN
             for param, param_data in entity_params.items():
@@ -119,7 +112,8 @@ class Manager:
                     if temporal_behavior is not None:
 
                         # Replace the original list in the dictionary
-                        self._dict[entity_id]['data'][param] = self._harmonizer.period_harmonizer(period_start_time, period_end_time, temporal_behavior, param_data)
+                        data[entity_id]['data'][param] = self._harmonizer.period_harmonizer(f"{entity_id}_{param}",period_start_time, period_end_time, temporal_behavior, param_data)
+
 
     #TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
     def _set_time_zone(self) -> ZoneInfo:
@@ -131,7 +125,7 @@ class Manager:
             self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
             return ZoneInfo("UTC")
 
-    def _verify_and_replace_missing_data(self):
+    def _verify_and_replace_missing_data(self, data):
         # Iterate over all known entities
         for entity_id, entity_values in self._entities.items():
             label = entity_values.get("label")
@@ -142,36 +136,32 @@ class Manager:
                 continue
 
             # If no data was found for this entity in the current data dict
-            if entity_id not in self._dict.keys():
+            if entity_id not in data.keys():
                 self._logger.warning(f"Entity {entity_id} was not found.")
                 # Use fallback data provided by the appropriate handler
-                self._dict[entity_id] = handler.fallback(entity_id, self._substitute_dict)
+                data[entity_id] = handler.fallback(entity_id, self._substitute_dict)
             else:
                 # Store a copy of valid data for potential substitution later
-                self._substitute_dict[entity_id] = copy.deepcopy(self._dict[entity_id])
+                self._substitute_dict[entity_id] = copy.deepcopy(data[entity_id])
 
     #TODO se o handler não existir fazer formatação normal
-    def _format_data(self):
-        # Deep copy the algorithm format template to prepare the message
-        self._message = copy.deepcopy(self._algorithm_format)
-
+    def _format_data(self, data) -> dict:
         # Set the current timestamp in the message
-        self._message['timestamp'] = self._timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        message = {
+            'timestamp' : self._timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        }
+
         # Iterate over all labels in the pre-built label-to-IDs mapping
-        for label in self._entities_ids_by_label.keys():
-            if label not in self._message:
-                # Get the corresponding handler for the label
-                handler = self._entities_handlers.get(label)
+        for handler in self._entities_handlers.values():
+            # Use the handler to process and update the message
+            # Pass the current message, the data dictionary, and the list of entity IDs for this label
+            handler.process(message, data)
 
-                # Use the handler to process and update the message
-                # Pass the current message, the data dictionary, and the list of entity IDs for this label
-                handler.process(self._message, self._dict)
-
+        return message
 
     def stop(self):
         # Shutdown the scheduler to stop any scheduled jobs gracefully
         self._scheduler.shutdown()
-
 
     def _start_sched(self):
         # Initialize the background scheduler for periodic task execution
@@ -193,4 +183,3 @@ class Manager:
 
         # Start the scheduler to begin executing jobs
         self._scheduler.start()
-

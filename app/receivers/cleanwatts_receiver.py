@@ -1,3 +1,5 @@
+import time
+import random
 import datetime
 from zoneinfo import ZoneInfo
 from app.translators.cw_translator import CWTranslator
@@ -95,7 +97,12 @@ class CWReceiver(ReceiverHTTPBase):
         try:
             if param_attr:
                 tag_id = param_attr.get('id')
-                agora = datetime.datetime.now()
+
+                # Random delay to prevent multiple threads from making the request to the Cleanwatts API simultaneously
+                r = random.uniform(0, 2)
+                print(f"{entity_id}: {r}\n")
+                time.sleep(r)
+
                 # Perform the GET request with specified time range
                 data = self.retrieve_data(
                     f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 3,
@@ -104,11 +111,19 @@ class CWReceiver(ReceiverHTTPBase):
 
                 if not data:
                     # If data is empty, fallback to last value
-                    data = self.retrieve_data(f"{self._server.get('resources').get('last_value')}{tag_id}", 3,
-                                              self._header_updater())
+                    fallback_from = (self._start - datetime.timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%S')
 
-                depois = datetime.datetime.now()
-                print(f"{entity_id}_{param_name}: {agora} - {depois}")
+                    # Random delay to prevent multiple threads from making the request to the Cleanwatts API simultaneously
+                    r = random.uniform(0, 2)
+                    print(f"{entity_id}: {r}\n")
+                    time.sleep(r)
+
+                    data = self.retrieve_data(
+                        f"{self._server.get('resources').get('last_value')}{tag_id}&from={fallback_from}&",
+                        3,
+                        self._header_updater()
+                    )
+
                 all_entity_parameter_data.update({param_name: data})
 
         except Exception as e:

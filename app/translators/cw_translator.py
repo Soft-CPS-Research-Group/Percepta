@@ -131,7 +131,6 @@ class CWTranslator(TranslatorRabbitMQBase):
         value = {}
 
         # Format timestamp using the configured timezone
-        timestamp_1 = datetime.datetime.now()
         timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         if label in self._labels_functions_mapper:
@@ -158,11 +157,7 @@ class CWTranslator(TranslatorRabbitMQBase):
             "timestamp": timestamp
         }]
 
-        timestamp_pos = datetime.datetime.now()
-
         # Send the message to the environment queue
         self.send_message_to_environment_queue(new_message)
-        timestamp_pos_rabbit = datetime.datetime.now()
 
-        print(f"{entity_id} {timestamp_1} {timestamp_pos} {timestamp_pos_rabbit}\n")
 

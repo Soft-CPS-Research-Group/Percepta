@@ -25,5 +25,8 @@ class Predictor():
         pass
 
     def _save_data(self,message,result):
+        print(f"antes do save: {message}\n")
         self._time_series_repository.write(message)
+        print(f"depois do save: {message}\n")
+
         return 0

@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime
+import time
 from app.utils.logger import LoggingUtils
 
 class Harmonizer:
@@ -64,8 +65,7 @@ class Harmonizer:
                 # Scale the value by the fraction of overlap
                 data.at[row.Index, "value"] = row_value * fraction
 
-    def period_harmonizer(self, period_start_time: datetime.datetime, period_end_time: datetime.datetime, temporal_behavior : dict, data : list) -> list:
-
+    def period_harmonizer(self,entity_param,period_start_time: datetime.datetime, period_end_time: datetime.datetime, temporal_behavior : dict, data : list) -> list:
         periodicity = temporal_behavior.get("periodicity", {"value": 1, "unit": "min"})
         cumulative = temporal_behavior.get("cumulative", False)
         fill_operation = temporal_behavior.get("fill_operation", "linear")
