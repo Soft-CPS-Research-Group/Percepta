@@ -1,3 +1,4 @@
+import copy
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
@@ -38,7 +39,7 @@ class PVPanelHandler(EntityHandlerBase):
     def fallback(self, device_id, substitute_dict):
 
         # Attempt to retrieve substitute data for the given device
-        device_substitute = substitute_dict.get(device_id)
+        device_substitute = copy.deepcopy(substitute_dict.get(device_id))
 
         if device_substitute:
             return device_substitute
@@ -50,6 +51,6 @@ class PVPanelHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "solar_generation": 0,
+                "solar_generation": 0.0,
             }
         }

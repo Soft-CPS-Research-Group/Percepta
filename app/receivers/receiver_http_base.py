@@ -104,17 +104,28 @@ class ReceiverHTTPBase(ReceiverBase):
         runs the job immediately once, and then starts the scheduler loop.
         """
         self._scheduler = BlockingScheduler()
-        interval_minutes = self._time_interval // 60
+        total_seconds = self._time_interval
+
+        # Convert the interval from seconds to hours and minutes
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+
+        # Dynamically define cron arguments based on the interval
+        cron_args = {}
+        if hours > 0:
+            cron_args['hour'] = f'*/{hours}'
+        if minutes > 0:
+            cron_args['minute'] = f'*/{minutes}'
 
         self._scheduler.add_job(
             self._job,
             'cron',
-            minute=f'*/{interval_minutes}',  # Run every 'interval_minutes' minutes
             misfire_grace_time=10,
-            coalesce=True
+            coalesce=True,
+            **cron_args
         )
 
-        # Execute the job once immediately
+        # Run the job immediately once before scheduling
         self._job()
 
         # Start the scheduler loop

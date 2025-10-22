@@ -77,7 +77,7 @@ class CWReceiver(ReceiverHTTPBase):
         super().stop()
 
         #TODO não faz sentido isto estar aqui! Várias threads vão executar isto...
-        CWSession.stop_token_refresher()
+        CWSession.stop_token_refresher_service()
 
 
     def fetch_entity_parameter_data(self, entity_id, param_name, param_attr):
@@ -98,14 +98,9 @@ class CWReceiver(ReceiverHTTPBase):
             if param_attr:
                 tag_id = param_attr.get('id')
 
-                # Random delay to prevent multiple threads from making the request to the Cleanwatts API simultaneously
-                r = random.uniform(0, 2)
-                print(f"{entity_id}: {r}\n")
-                time.sleep(r)
-
                 # Perform the GET request with specified time range
                 data = self.retrieve_data(
-                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 3,
+                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 5,
                     self._header_updater()
                 )
 
@@ -113,14 +108,9 @@ class CWReceiver(ReceiverHTTPBase):
                     # If data is empty, fallback to last value
                     fallback_from = (self._start - datetime.timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%S')
 
-                    # Random delay to prevent multiple threads from making the request to the Cleanwatts API simultaneously
-                    r = random.uniform(0, 2)
-                    print(f"{entity_id}: {r}\n")
-                    time.sleep(r)
-
                     data = self.retrieve_data(
                         f"{self._server.get('resources').get('last_value')}{tag_id}&from={fallback_from}&",
-                        3,
+                        5,
                         self._header_updater()
                     )
 
@@ -191,4 +181,4 @@ class CWReceiver(ReceiverHTTPBase):
             logger (LoggingUtils): Logger instance.
             configurations (dict): General configurations for CWSession.
         """
-        CWSession.start_token_refresher(logger, configurations)
+        CWSession.start_token_refresher_service(logger, configurations)

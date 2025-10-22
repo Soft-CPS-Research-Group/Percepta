@@ -58,3 +58,64 @@ def with_retries(func, retry_config: dict = None, error_msg : str ="Operation fa
 
     # --- Raise the last error if all attempts fail ---
     raise last_error
+
+
+def with_persistent_retries(func, retry_config: dict = None, error_msg: str = "Operation failed", logger: LoggingUtils = None):
+    """
+    Executes a function persistently with retry cycles and waiting periods between them.
+
+    This version never stops retrying (useful for critical operations like authentication),
+    but it does pause between cycles to avoid busy loops.
+
+    Args:
+        func (callable): Function to execute.
+        retry_config (dict, optional): Dictionary with keys:
+            - "max_retries" (int): Retries per cycle.
+            - "timeout" (int): Delay between retries inside a cycle.
+            - "wait_between_cycles" (int): Delay before restarting a new retry cycle.
+            - "max_backoff" (int, optional): Maximum time to wait between cycles (for exponential backoff).
+        error_msg (str): Message for logging.
+        logger (LoggingUtils | None): Logger instance.
+
+    Returns:
+        Any: Return value of func when successful.
+    """
+
+    if retry_config is None:
+        retry_config = {"max_retries": 3, "timeout": 5, "wait_between_cycles": 60}
+
+    max_retries = retry_config.get("max_retries", 3)
+    timeout = retry_config.get("timeout", 5)
+    wait_between_cycles = retry_config.get("wait_between_cycles", 60)
+    max_backoff = retry_config.get("max_backoff", 600)
+
+    backoff = wait_between_cycles
+
+    while True:
+        attempts = max_retries
+        last_error = None
+
+        while attempts > 0:
+            try:
+                return func()
+            except Exception as e:
+                attempts -= 1
+                last_error = e
+
+                if logger:
+                    if attempts > 0:
+                        logger.warning(f"{error_msg} ({e}). Retries left: {attempts}")
+                    else:
+                        logger.error(f"{error_msg} - Retry cycle failed. Last error: {e}")
+
+                if attempts > 0:
+                    time.sleep(timeout)
+
+        # All retries in this cycle failed
+        if logger:
+            logger.warning(f"All retries failed. Waiting {backoff}s before next cycle...")
+
+        time.sleep(backoff)
+
+        # Optional exponential backoff (to avoid hammering a dead server)
+        backoff = min(backoff * 2, max_backoff)

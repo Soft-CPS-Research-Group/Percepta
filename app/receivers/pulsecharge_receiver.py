@@ -3,9 +3,8 @@ from app.translators.pc_translator import PCTranslator
 from app.receivers.receiver_rabbitmq_base import ReceiverRabbitMQBase
 from app.utils.logger import LoggingUtils
 from app.utils.providers import Provider
-from app.receivers.pulsecharge_moc import start
 
-class ICReceiver(ReceiverRabbitMQBase):
+class PCReceiver(ReceiverRabbitMQBase):
     """
     ICReceiver is responsible for retrieving raw data from the i-charging API
     for specific environments.
@@ -15,7 +14,7 @@ class ICReceiver(ReceiverRabbitMQBase):
         is handled by ICTranslator.
     """
 
-    provider: str = Provider.PULSECHARGE.value
+    provider = Provider.PULSECHARGE.value
     _translator: PCTranslator
 
     def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
@@ -29,7 +28,7 @@ class ICReceiver(ReceiverRabbitMQBase):
             logger (LoggingUtils): Logger instance for logging events.
         """
         self._exchange_name: str = f"building_{environment.replace(' ', '_')}"
-
+        print(f"INICIEI {self._exchange_name}\n")
         super().__init__(environment, environment_specs, configurations, logger)
         self._translator = PCTranslator(environment, environment_specs, configurations, logger)
 
@@ -53,16 +52,3 @@ class ICReceiver(ReceiverRabbitMQBase):
         """
         if not self._stop_event.is_set():
             self._translator.translate(body)
-
-    '''@classmethod
-    def post_start(cls, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
-        """
-        Perform initialization tasks after the receiver has started.
-        Specifically, initializes the runtime request handler.
-
-        Args:
-            environments (dict): List of available environments.
-            configurations (dict): Application-specific configurations.
-            logger (Logger): Logger instance for logging events.
-        """
-        start()'''

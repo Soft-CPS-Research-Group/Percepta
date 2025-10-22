@@ -2,8 +2,8 @@ import copy
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
-class GridMeterHandler(EntityHandlerBase):
-    label = Label.GRID_METER.value
+class EnergyPriceHandler(EntityHandlerBase):
+    label = Label.ENERGY_PRICE.value
 
     # TODO perceber onde meter isto, secalhar faz mais sentido por dispositivo em concreto e não por label
     data_deadline_seconds = 7200  # 2 hours
@@ -14,25 +14,17 @@ class GridMeterHandler(EntityHandlerBase):
     def process(self, message, all_data):
 
         # Retrieve the list of grid meter entities from the input data
-        grid_meter_entities = self._entities_ids.get('grid_meter')
+        energy_price_entities = self._entities_ids.get('energy_price')
+        energy_price = 0
 
-        grid_meters = {}
+        if energy_price_entities:
+            energy_price_values = all_data[energy_price_entities[0]]
+            energy_price_list = energy_price_values.get('data', 0).get('energy_price', [])
 
-        # Sum up the energy consumption (energy_in) from each grid meter entity
-        if grid_meter_entities:
-            for grid_meter_entity in grid_meter_entities:
-                grid_meter_values = all_data[grid_meter_entity]
-                energy_in = grid_meter_values.get('data', 0).get('energy_in', [])
+            if isinstance(energy_price_list, list):
+                energy_price = energy_price_list[0].get("value", 0)
+        message["energy_price"] = energy_price
 
-                sum_aux = 0
-
-                if isinstance(energy_in, list):
-                    for ei in energy_in:
-                        sum_aux += ei.get("value", 0)
-
-                    grid_meters.update({grid_meter_entity: {"energy_in" : sum_aux}})
-
-        message["grid_meters"] = grid_meters
 
     def fallback(self, device_id, substitute_dict):
         # Try to get substitute data for the device
@@ -47,6 +39,6 @@ class GridMeterHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                        "energy_in": 0.0,
+                        "energy_price": 0,
                     }
         }

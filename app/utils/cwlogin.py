@@ -1,10 +1,10 @@
 import time
 import datetime
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BlockingScheduler
 from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
 from app.exceptions import general_exceptions
 from app.utils.logger import LoggingUtils
-from app.utils.retry import with_retries
+from app.utils.retry import with_retries, with_persistent_retries
 
 class CWSession:
     """
@@ -13,7 +13,8 @@ class CWSession:
 
     token : str                     # Current access token.
     refresh_token : str             # Token used to refresh the access token.
-    _scheduler: BackgroundScheduler # Scheduler for periodically refreshing the token.
+    token_valid : bool
+    _scheduler: BlockingScheduler   # Scheduler for periodically refreshing the token.
     _http_connector: HTTPConnector  # HTTP connector instance for performing GET/POST requests
     _configurations: dict           # General configurations for the session.
     _cw_configurations: dict        # Cleanwatts-specific configurations.
@@ -23,7 +24,7 @@ class CWSession:
     _login_resource : str
 
     @classmethod
-    def start_token_refresher(cls, logger : LoggingUtils, configurations : dict):
+    def start_token_refresher_service(cls, logger : LoggingUtils, configurations : dict):
         """
                Initializes the session, logs in to the Cleanwatts server, and starts the token refresher scheduler.
 
@@ -45,14 +46,17 @@ class CWSession:
             }
         cls._refresh_resource = cls._server.get('resources').get("refresh")
         cls._login_resource = cls._server.get('resources').get("login")
+        cls.token_valid = False
         cls._start_http_service()
 
         cls._login()
 
-        cls._scheduler = BackgroundScheduler()
+        cls._scheduler = BlockingScheduler()
         # Schedule token refresh every 3500 seconds. If a scheduled run is missed (e.g. due to system sleep), allow it to run within 10 seconds (misfire_grace_time).
         # coalesce=True ensures that if multiple runs were missed, only the latest one will be executed to avoid backlog.
         cls._scheduler.add_job(cls._run_job, 'interval', seconds=3500, misfire_grace_time=10, coalesce=True)
+        cls._logger.info("Starting blocking token refresher...")
+
         cls._scheduler.start()
 
     @classmethod
@@ -69,10 +73,10 @@ class CWSession:
             cls._http_connector = HTTPConnector(cls._server.get('url'))
             cls._logger.info(f"CWLogin: Connection successfully established.")
 
-        with_retries(func=_start_http_service_auxiliar, logger=cls._logger)
+        with_persistent_retries(func=_start_http_service_auxiliar, logger=cls._logger)
 
     @classmethod
-    def get_token(cls):
+    def get_token(cls) -> str:
         """
         Returns the current access token.
 
@@ -80,6 +84,16 @@ class CWSession:
             str: Current access token.
         """
         return cls.token
+
+    @classmethod
+    def is_token_valid(cls) -> bool:
+        """
+        Returns the current token state.
+
+        Returns:
+            bool: Token state.
+        """
+        return cls.token_valid
 
     @classmethod
     def _login(cls):
@@ -95,14 +109,23 @@ class CWSession:
             response = cls._http_connector.post(endpoint=cls._login_resource, data=cls._credentials)
 
             if response.status_code != 201:
+                cls._logger.error(f"Failed to retrieve data from {cls._login_resource}: "
+                                  f"HTTP {response.status_code}, response: {response.text[:500]}"
+                                  )
                 raise HTTPErrorWrapper(
                     f"Failed to retrieve data from {cls._login_resource}: "
                     f"HTTP {response.status_code}, response: {response.text[:500]}"
                 )
+
+
             cls.token = response.json().get('Token')
             cls.refresh_token = response.json().get('RefreshToken')
+            cls._logger.debug(f"Login access token: {cls.token}")
 
-        with_retries(func=_login_auxiliar, logger=cls._logger)
+            cls.token_valid = True
+
+        with_persistent_retries(func=_login_auxiliar, logger=cls._logger)
+
 
     @classmethod
     def _refresh_tokens(cls):
@@ -111,6 +134,8 @@ class CWSession:
         we are in the first 10 seconds of the minute to avoid invalidating
         the token while threads are using it.
         """
+
+        cls._logger.debug("FUI CHAMADO\n")
         now = datetime.datetime.now()
         # Wait the first 10 seconds because a thread might be using the old (still valid) token
         if now.second < 10:
@@ -118,19 +143,23 @@ class CWSession:
             cls._logger.info(f"Token refresh waiting {sleep_time}s to avoid invalidating token in use")
             time.sleep(sleep_time)
 
+        cls.token_valid = False
+
         if cls._http_connector.is_connected() is False:
             cls._start_http_service()
 
-        refresh_resource_with_tokens = f"{cls._refresh_resource}token={cls.token}&refresh_token={cls.refresh_token}"
-
-        try:
+        def refresh_tokens_auxiliar():
+            refresh_resource_with_tokens = f"{cls._refresh_resource}token={cls.token}&refresh_token={cls.refresh_token}"
             response = cls._http_connector.put(endpoint=refresh_resource_with_tokens)
             if response.status_code != 201:
                 raise HTTPErrorWrapper(f"HTTP {response.status_code}, response: {response.text[:500]}")
-
             cls.token = response.json().get('Token')
             cls.refresh_token = response.json().get('RefreshToken')
-            cls._logger.info(f"Refreshed access token: {cls.token}")
+            cls._logger.debug(f"Refreshed access token: {cls.token}")
+            cls.token_valid = True
+
+        try:
+            with_retries(func=refresh_tokens_auxiliar, logger=cls._logger)
         except Exception as e:
             cls._logger.error(f"Failed to refresh token: {e}, attempting login again")
             cls._login()
@@ -150,9 +179,12 @@ class CWSession:
             raise general_exceptions.SchedulerJobError(f"Scheduled job error: {e}") from e
 
     @classmethod
-    def stop_token_refresher(cls):
+    def stop_token_refresher_service(cls):
         """
         Stops the token refresher scheduler gracefully.
         """
-        if cls._scheduler:
-            cls._scheduler.shutdown()
+        if cls._scheduler and cls._scheduler.running:
+            cls._logger.info("Stopping token refresher...")
+            cls._scheduler.shutdown(wait=False)
+        else:
+            cls._logger.info("Token refresher already stopped.")

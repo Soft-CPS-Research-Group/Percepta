@@ -1,8 +1,9 @@
+import time
+import threading
 from app.repositories.irepositories.environment_repository import EnvironmentRepository
 from app.utils.registry_auto import discover_subclasses
 from app.receivers.receiver_base import ReceiverBase
 from app.utils.logger import LoggingUtils
-import time
 
 # Dynamically build a registry of all available receivers in the package
 RECEIVER_REGISTRY: dict = discover_subclasses(
@@ -19,8 +20,8 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
     threads = []
 
     for ReceiverClass in RECEIVER_REGISTRY.values():
-        provider = getattr(ReceiverClass, "provider", None)
 
+        provider = getattr(ReceiverClass, "provider", None)
         if provider is not None:
             # Fetch environments specific to the current provider
             environments = environment_repository.get_environments_by_provider(provider)
@@ -33,8 +34,12 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
             # Fetch all environments if the receiver is provider-agnostic
             environments = environment_repository.get_environments()
 
-        # Call pre-start hook for setup tasks
-        ReceiverClass.pre_start(configurations, logger)
+        # Call pre-start hook after all receiver instances are started
+        threading.Thread(
+            target=ReceiverClass.pre_start,
+            args=(configurations, logger),
+            daemon=True
+        ).start()
 
         for current_environment, environment_specs in environments.items():
             # Create a dedicated logger for each receiver instance
@@ -46,7 +51,11 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
             threads.append(receiver)
 
         # Call post-start hook after all receiver instances are started
-        ReceiverClass.post_start(environments, configurations, logger)
+        threading.Thread(
+            target=ReceiverClass.post_start,
+            args=(environments, configurations, logger),
+            daemon=True
+        ).start()
 
     return threads
 

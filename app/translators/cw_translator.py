@@ -55,9 +55,20 @@ class CWTranslator(TranslatorRabbitMQBase):
         df = pd.DataFrame(param_values_list)
         if 'Value' not in df.columns:
             df['Value'] = df.get('Read', default_value)
-        df['timestamp'] = pd.to_datetime(df['Date']).dt.tz_localize('UTC').dt.tz_convert(self._tz)
-        df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M:%S %z")
 
+        try:
+            # Try to localize and convert timezone normally
+            df['timestamp'] = pd.to_datetime(df['Date']).dt.tz_localize('UTC').dt.tz_convert(self._tz)
+        except TypeError as e:
+            # Handle case where the datetime is already timezone-aware
+            print(f"[Warning] Failed to localize timezone: {e}")
+            print("Problematic dates:")
+            for date_str in df['Date']:
+                print(f"  - {date_str}")
+            print("Attempting to convert existing timezone instead...")
+            df['timestamp'] = pd.to_datetime(df['Date']).dt.tz_convert(self._tz)
+
+        df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M:%S %z")
         return df[['timestamp', 'Value']].rename(columns={'Value': 'value'}).to_dict(orient='records')
 
     def _ev_charger(self, entity_id, messages: dict) -> dict:

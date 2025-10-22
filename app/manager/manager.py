@@ -103,7 +103,7 @@ class Manager:
                 continue
 
             entity_params = data.get(entity_id).get('data')
-
+            print(f"ENTITY PARAMS: {entity_params}\n")
             # TODO: Isto serve para não dar erro quando o parâmetro está a NaN
             for param, param_data in entity_params.items():
                 if isinstance(param_data, list):
@@ -148,7 +148,7 @@ class Manager:
     def _format_data(self, data) -> dict:
         # Set the current timestamp in the message
         message = {
-            'timestamp' : self._timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            'timestamp' : self._timestamp
         }
 
         # Iterate over all labels in the pre-built label-to-IDs mapping

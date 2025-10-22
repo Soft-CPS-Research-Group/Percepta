@@ -1,3 +1,4 @@
+import copy
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
@@ -32,7 +33,7 @@ class EVHandler(EntityHandlerBase):
         # Capture current timestamp in seconds
 
         # Attempt to retrieve substitute data for the given device
-        device_substitute = substitute_dict.get(device_id)
+        device_substitute = copy.deepcopy(substitute_dict.get(device_id))
 
         if device_substitute:
             return device_substitute

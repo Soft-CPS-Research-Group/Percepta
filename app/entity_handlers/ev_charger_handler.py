@@ -77,7 +77,7 @@ class EVChargerHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "power": 0,
+                "power": 0.0,
                 "electric_vehicle": ''
             }
         }
