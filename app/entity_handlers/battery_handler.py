@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
@@ -22,7 +23,7 @@ class BatteryHandler(EntityHandlerBase):
             for battery_id in batteries_entities:
                 battery = all_data.get(battery_id)
 
-                total_battery_changing_energy = 0
+                total_battery_changing_energy = 0.0
                 last_soc = 0
 
                 if battery:
@@ -52,7 +53,7 @@ class BatteryHandler(EntityHandlerBase):
 
     def fallback(self, device_id, substitute_dict):
         # Attempt to retrieve substitute data for the missing device
-        device_substitute = substitute_dict.get(device_id)
+        device_substitute = copy.deepcopy(substitute_dict.get(device_id))
 
         if device_substitute:
            return device_substitute
@@ -64,8 +65,8 @@ class BatteryHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "battery_charging_energy": [],
-                "state_of_charge": []
+                "battery_charging_energy": 0.0,
+                "state_of_charge": -1
             }
         }
 

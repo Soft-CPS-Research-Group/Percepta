@@ -6,3 +6,4 @@ class Label(Enum):
     BATTERY = "battery"
     EV_CHARGER = "ev_charger"
     EV = "electric_vehicle"
+    ENERGY_PRICE = "energy_price"

@@ -1,0 +1,211 @@
+{
+    "R-H-09": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-08": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-15": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-14": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-13": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-07": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-05": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-10": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-11": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-12": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-04": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-02": {
+        "group": "living lab",
+        "entities": {
+           "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-01": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-03": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "R-H-19": {
+        "group": "living lab",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "i-charging headquarters 3Phase" : {
+        "group": "i-charging headquarters 3Phase",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "provider": "ren"
+}

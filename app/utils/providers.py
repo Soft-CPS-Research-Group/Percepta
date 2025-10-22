@@ -4,3 +4,4 @@ class Provider(Enum):
     CLEANWATTS = "cleanwatts"
     ICHARGING = "i-charging"
     PULSECHARGE = "pulsecharge"
+    REN = "ren"

@@ -41,7 +41,7 @@ class PCTranslator(TranslatorRabbitMQBase):
         timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         message_dict: dict = json.loads(message.decode('utf-8'))
-
+        print(f"PulseCharge message {message_dict}\n")
         vin = message_dict.get('vin')
         message = []
         print(message_dict)
