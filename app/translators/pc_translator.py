@@ -48,14 +48,14 @@ class PCTranslator(TranslatorRabbitMQBase):
         for key, entity in self._entities.items():
             if entity.get('vin') == vin:
                 value = {
-                    'soc' : message_dict.get('soc'),
+                    'soc' : message_dict.get('current_soc',-1),
                     'flexibiliy' : {
-                        'estimated_soc_at_arrival' : message_dict.get('estimated_soc_at_arrival'),
-                        'estimated_soc_at_departure' : message_dict.get('estimated_soc_at_departure'),
-                        'estimated_time_at_arrival' : message_dict.get('estimated_time_at_arrival'),
-                        'estimated_time_at_departure' : message_dict.get('estimated_time_at_departure'),
-                        'charger' : message_dict.get('charger'),
-                        'mode' : message_dict.get('mode')
+                        'estimated_soc_at_arrival' : message_dict.get('estimated_soc_at_arrival',''),
+                        'estimated_soc_at_departure' : message_dict.get('estimated_soc_at_departure',''),
+                        'estimated_time_at_arrival' : message_dict.get('estimated_time_at_arrival',''),
+                        'estimated_time_at_departure' : message_dict.get('estimated_time_at_departure',''),
+                        'charger' : message_dict.get('charger',''),
+                        'mode' : message_dict.get('mode','')
                     }
                 }
                 message = PCTranslator._message_creator(value, key, timestamp)
