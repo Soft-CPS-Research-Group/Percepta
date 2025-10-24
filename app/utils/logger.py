@@ -45,7 +45,7 @@ class LoggingUtils:
             "%(asctime)s | %(levelname)s | %(environment)s | %(component)s | %(message)s"
         )
         file_handler.setFormatter(format)
-        file_handler.setLevel(logging.WARNING)
+        file_handler.setLevel(logging.DEBUG)
 
         # Console handler
         console_handler = logging.StreamHandler()
