@@ -131,3 +131,6 @@ class ReceiverHTTPBase(ReceiverBase):
         # Start the scheduler loop
         self._scheduler.start()
 
+    @classmethod
+    def launch(cls, environments: dict, configurations: dict) -> list:
+        raise NotImplementedError

@@ -65,3 +65,7 @@ class ReceiverBase(ABC, threading.Thread):
             logger (LoggingUtils): Logger instance for structured logging.
         """
         pass
+
+    @classmethod
+    def launch(cls, environments: dict, configurations: dict) -> list:
+        raise NotImplementedError

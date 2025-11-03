@@ -1,6 +1,5 @@
-import time
-import random
 import datetime
+import threading
 from zoneinfo import ZoneInfo
 from app.translators.cw_translator import CWTranslator
 from app.utils.cwlogin import CWSession
@@ -169,16 +168,25 @@ class CWReceiver(ReceiverHTTPBase):
 
         return {'Authorization': f"CW {token}"}
 
-
-    # TODO: Verificar se isto é a melhor alternativa
     @classmethod
-    def pre_start(cls, configurations : dict, logger : LoggingUtils):
-        """
-        Performs pre-start initialization for the receiver by starting the
-        CWSession token refresher.
+    def launch(cls, environments : dict, configurations : dict):
+        threads = []
 
-        Args:
-            logger (LoggingUtils): Logger instance.
-            configurations (dict): General configurations for CWSession.
-        """
-        CWSession.start_token_refresher_service(logger, configurations)
+        logger_cw_session = LoggingUtils(f"{cls.provider}_login", configurations)
+
+        cw_session = threading.Thread(
+            target=CWSession.start_token_refresher_service,
+            args=(logger_cw_session, configurations),
+            daemon=True
+        )
+        cw_session.start()
+
+        threads.append(cw_session)
+
+        for environment, environment_specs in environments.items():
+            logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
+            receiver = cls(environment, environment_specs, configurations, logger_per_environment)
+            receiver.start()
+            threads.append(receiver)
+
+        return threads

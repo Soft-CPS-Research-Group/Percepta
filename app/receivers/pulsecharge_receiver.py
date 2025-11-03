@@ -52,3 +52,15 @@ class PCReceiver(ReceiverRabbitMQBase):
         """
         if not self._stop_event.is_set():
             self._translator.translate(body)
+
+    @classmethod
+    def launch(cls, environments: dict, configurations: dict):
+        threads = []
+
+        for environment, environment_specs in environments.items():
+            logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
+            receiver = cls(environment, environment_specs, configurations, logger_per_environment)
+            receiver.start()
+            threads.append(receiver)
+
+        return threads

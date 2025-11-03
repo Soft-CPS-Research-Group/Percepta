@@ -1,3 +1,4 @@
+import threading
 from typing import Dict, Any
 from app.ic_runtime_request import ICRuntimeRequest
 from app.translators.ic_translator import ICTranslator
@@ -68,3 +69,28 @@ class ICReceiver(ReceiverRabbitMQBase):
             logger (Logger): Logger instance for logging events.
         """
         ICRuntimeRequest(environments, configurations, logger).start_service()
+
+    @classmethod
+    def launch(cls, environments: dict, configurations: dict):
+        threads = []
+
+        for environment, environment_specs in environments.items():
+            logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
+            receiver = cls(environment, environment_specs, configurations, logger_per_environment)
+            receiver.start()
+            threads.append(receiver)
+
+        logger_cw_session = LoggingUtils(f"{cls.provider}_runtime_request", configurations)
+
+        ic_runtime_request = ICRuntimeRequest(environments, configurations, logger_cw_session)
+
+        ic_runtime_request_service = threading.Thread(
+            target= ic_runtime_request.start_service,
+            daemon=True
+        )
+
+        ic_runtime_request_service.start()
+
+        threads.append(ic_runtime_request_service)
+
+        return threads

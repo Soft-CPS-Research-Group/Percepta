@@ -1,4 +1,5 @@
 import datetime
+import threading
 from app.translators.energy_price_translator import EnergyPriceTranslator
 from app.utils.ren_data import ElectricityPriceFetcher
 from app.receivers.receiver_http_base import ReceiverHTTPBase
@@ -51,16 +52,25 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
                 "entity_id" : "EP"
             })
 
-
-    # TODO: Verificar se isto é a melhor alternativa
     @classmethod
-    def pre_start(cls, configurations : dict, logger : LoggingUtils):
-        """
-        Performs pre-start initialization for the receiver by starting the
-        electricity price fetcher.
+    def launch(cls, environments : dict, configurations : dict):
+        threads = []
 
-        Args:
-            logger (LoggingUtils): Logger instance.
-            configurations (dict): General configurations for CWSession.
-        """
-        ElectricityPriceFetcher.start_electricity_price_fetcher_service(logger, configurations)
+        logger_energy_price_fetcher = LoggingUtils(f"{cls.provider}_energy_price_fetcher", configurations)
+
+        energy_price_fetcher = threading.Thread(
+            target=ElectricityPriceFetcher.start_electricity_price_fetcher_service,
+            args=(logger_energy_price_fetcher, configurations),
+            daemon=True
+        )
+        energy_price_fetcher.start()
+
+        threads.append(energy_price_fetcher)
+
+        for environment, environment_specs in environments.items():
+            logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
+            receiver = cls(environment, environment_specs, configurations, logger_per_environment)
+            receiver.start()
+            threads.append(receiver)
+
+        return threads
