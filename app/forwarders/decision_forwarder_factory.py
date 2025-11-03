@@ -10,7 +10,7 @@ FORWARDER_REGISTRY: Dict[str, Type[ForwarderBase]] = discover_subclasses(
 )
 
 
-def build_forwarder(configurations, logger):
+def build_forwarder(configurations, logger) -> dict:
     """
     Instantiates all forwarder classes from the registry using shared dependencies.
 

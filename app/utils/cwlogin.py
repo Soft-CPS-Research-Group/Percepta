@@ -52,9 +52,9 @@ class CWSession:
         cls._login()
 
         cls._scheduler = BlockingScheduler()
-        # Schedule token refresh every 3500 seconds. If a scheduled run is missed (e.g. due to system sleep), allow it to run within 10 seconds (misfire_grace_time).
+        # Schedule token refresh every 55 minutes. If a scheduled run is missed (e.g. due to system sleep), allow it to run within 10 seconds (misfire_grace_time).
         # coalesce=True ensures that if multiple runs were missed, only the latest one will be executed to avoid backlog.
-        cls._scheduler.add_job(cls._run_job, 'interval', seconds=3500, misfire_grace_time=None, coalesce=True)
+        cls._scheduler.add_job(cls._run_job, 'interval', minutes=55, misfire_grace_time=None, coalesce=True)
         cls._logger.info("Starting blocking token refresher...")
 
         cls._scheduler.start()

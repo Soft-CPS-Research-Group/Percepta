@@ -34,28 +34,9 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
             # Fetch all environments if the receiver is provider-agnostic
             environments = environment_repository.get_environments()
 
-        # Call pre-start hook after all receiver instances are started
-        threading.Thread(
-            target=ReceiverClass.pre_start,
-            args=(configurations, logger),
-            daemon=True
-        ).start()
+        receiver_threads = ReceiverClass.launch(environments, configurations)
 
-        for current_environment, environment_specs in environments.items():
-            # Create a dedicated logger for each receiver instance
-            logger_per_receiver = LoggingUtils(f"{provider}_receiver", configurations, current_environment)
-
-            # Instantiate and start the receiver thread
-            receiver = ReceiverClass(current_environment, environment_specs, configurations, logger_per_receiver)
-            receiver.start()
-            threads.append(receiver)
-
-        # Call post-start hook after all receiver instances are started
-        threading.Thread(
-            target=ReceiverClass.post_start,
-            args=(environments, configurations, logger),
-            daemon=True
-        ).start()
+        threads.extend(receiver_threads)
 
     return threads
 

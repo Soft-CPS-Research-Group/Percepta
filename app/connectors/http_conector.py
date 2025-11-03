@@ -1,4 +1,5 @@
 import requests
+from urllib.parse import urlparse
 from requests.exceptions import ConnectionError, Timeout
 
 
@@ -21,19 +22,36 @@ class HTTPConnector:
         Initializes HTTP connection parameters.
 
         Args:
-            url (str): Server base url.
+            url (str): Server base URL.
         """
         try:
-            self._base_url = url  # Assign the provided URL to the instance variable
+            self._base_url = url.strip()
+            if not self._base_url:
+                raise ValueError("Base URL must be provided")
 
-            if not self._base_url:  # Check if the base URL is empty or None
-                raise ValueError("Base URL must be provided")  # Raise an error if no URL is provided
+            # Validate the URL structure
+            if not self._is_valid_url(self._base_url):
+                raise ValueError(f"Invalid URL format: {self._base_url}")
 
-            self._session = requests.Session()  # Create a persistent session object for HTTP requests
+            # Create a persistent HTTP session
+            self._session = requests.Session()
 
-        # Handle any exception that occurs during the initialization
         except Exception as e:
             raise HTTPErrorWrapper(f"Error initializing HTTP session: {e}") from e
+
+    @staticmethod
+    def _is_valid_url(url: str) -> bool:
+        """
+        Checks if the provided URL is syntactically valid.
+
+        Args:
+            url (str): URL to validate.
+
+        Returns:
+            bool: True if valid, False otherwise.
+        """
+        parsed = urlparse(url)
+        return all([parsed.scheme in ("http", "https"), parsed.netloc])
 
     # TODO: review timeout settings)
     def _request(self, method: str, endpoint: str, **kwargs) -> requests.Response:

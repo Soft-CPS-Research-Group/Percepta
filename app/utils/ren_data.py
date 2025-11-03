@@ -41,6 +41,7 @@ class ElectricityPriceFetcher:
         cls._scheduler = BackgroundScheduler()
         # Schedule daily job at 23:30
         cls._scheduler.add_job(cls._run_job, 'cron', hour=23, minute=30)
+
         cls._scheduler.start()
 
         # Ensure the scheduler shuts down on exit
@@ -83,8 +84,8 @@ class ElectricityPriceFetcher:
             # Extract Portugal prices
             pt_series = next((s for s in data.get("series", []) if s.get("name") == "PT"), None)
             if pt_series and "data" in pt_series:
-                cls.prices_pt = pt_series["data"]
-                print(f"[{datetime.now()}] Prices for {date_str} updated successfully.")
+                cls._prices = pt_series["data"]
+                print(f"[{datetime.now()}] Prices for {date_str} updated successfully. {cls._prices}\n")
             else:
                 print(f"[{datetime.now()}] Could not find Portugal prices in the response.")
 
@@ -117,8 +118,12 @@ class ElectricityPriceFetcher:
             float | None: price for the hour or None if not available
         """
         if 0 <= hour <= 23:
-            print(f"OLAAAA {cls.prices_pt[hour]}\n")
-            return cls.prices_pt[hour]
+            print(f"prices {cls._prices} for hour {hour}\n")
+            if cls._prices[hour] is None:
+                price = 0
+            else:
+                price = cls._prices[hour]
+            return price
         else:
             raise ValueError("Hour must be between 0 and 23")
 

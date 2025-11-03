@@ -1,5 +1,4 @@
 import datetime
-import pandas as pd
 from zoneinfo import ZoneInfo
 from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
@@ -71,9 +70,5 @@ class EnergyPriceTranslator(TranslatorRabbitMQBase):
             "timestamp": timestamp
         }]
 
-        self._logger.info(new_message)
         # Send the message to the environment queue
         self.send_message_to_environment_queue(new_message)
-
-        self._logger.info(f"APOS RABBITMQ {new_message}")
-
