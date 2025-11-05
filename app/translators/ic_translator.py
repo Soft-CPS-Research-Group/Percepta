@@ -148,7 +148,7 @@ class ICTranslator(TranslatorRabbitMQBase):
                 # TODO no caso da i-charging nao tenho a energia, o que faço?
 
                 value: dict = {
-                    "state_of_charge": [{
+                    "SoC": [{
                         "timestamp": timestamp,
                         "value": battery_soc
                     }]
@@ -228,7 +228,7 @@ class ICTranslator(TranslatorRabbitMQBase):
 
         # Initialize an empty list that will hold the translated messages.
         message_list: list = []
-        print(f"MESSAGES DICT {message_dict}")
+        self._logger.info(f"MESSAGES DICT {message_dict}")
         # Iterate through each attribute in the parsed message dictionary.
         for attr in message_dict:
 

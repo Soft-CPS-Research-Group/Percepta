@@ -47,6 +47,6 @@ class GridMeterHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                        "energy_in": 0.0,
+                        'energy_in': None,
                     }
         }

@@ -65,8 +65,8 @@ class BatteryHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "battery_charging_energy": 0.0,
-                "state_of_charge": -1
+                'battery_charging_energy': None,
+                'SoC': None
             }
         }
 

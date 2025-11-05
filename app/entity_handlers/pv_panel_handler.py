@@ -51,6 +51,6 @@ class PVPanelHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "solar_generation": 0.0,
+                'solar_generation': None,
             }
         }

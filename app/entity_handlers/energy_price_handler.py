@@ -39,6 +39,6 @@ class EnergyPriceHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                        "energy_price": 0,
+                        'energy_price': None,
                     }
         }

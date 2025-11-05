@@ -45,7 +45,14 @@ class EVHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                "SoC": -1,
-                "flexibility": {},
+                'SoC': None,
+                'flexibility': {
+                    'estimated_soc_at_arrival': None,
+                    'estimated_soc_at_departure': None,
+                    'estimated_time_at_arrival': '',
+                    'estimated_time_at_departure': '',
+                    'charger': '',
+                    'mode': ''
+                },
             }
         }
