@@ -80,7 +80,7 @@ class TranslatorBase:
             if param_name not in parameters_to_send:
                 # Required parameter missing → add NaN with metadata
                 parameters_to_send[param_name] = {
-                    "value": float('nan'),
+                    "value": None,
                     "metadata": "Parameter missing in receiver response"
                 }
             else:
@@ -88,7 +88,7 @@ class TranslatorBase:
                 # Treat empty list as NaN with metadata
                 if isinstance(param_values, list) and len(param_values) == 0:
                     parameters_to_send[param_name] = {
-                        "value": float('nan'),
+                        "value": None,
                         "metadata": "Parameter sent empty by receiver"
                     }
                     continue
@@ -97,7 +97,7 @@ class TranslatorBase:
                     if not validate_temporal_list(param_values, param_info.get("measurementUnit")):
                         # Invalid values → set NaN with metadata
                         parameters_to_send[param_name] = {
-                            "value": float('nan'),
+                            "value": None,
                             "metadata": "Parameter value invalid"
                         }
 

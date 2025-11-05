@@ -182,8 +182,15 @@
                 "label": "ev_charger",
                 "serialNumber": "ACEXT004",
                 "plug": 1
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    }
+                },
+                "label": "pv_panel"
             }
-
         }
     }
 }

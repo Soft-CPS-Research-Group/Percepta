@@ -61,7 +61,7 @@ class Manager:
             return True  # Return True if the operation succeeds
         except Exception as e:
             # Log any exception that occurs and return False
-            self._logger.error(f"An unexpected error occurred: {e}")
+            self._logger.error(f"An unexpected error occurred: {e} {messages_json}")
             return False
 
     def _send(self):

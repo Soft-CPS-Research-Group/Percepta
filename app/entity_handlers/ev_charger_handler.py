@@ -1,5 +1,5 @@
 from functools import total_ordering
-
+import copy
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
@@ -72,12 +72,20 @@ class EVChargerHandler(EntityHandlerBase):
 
     # TODO: If no charger data is found, should we retrieve the latest known session
     # and attach the flexibility entry associated with the user linked to that session?
-    def fallback(self, entity_id, last_known_data):
-        # Return a default EV charger session if no valid data is available
+    def fallback(self, entity_id, substitute_dict):
+        # Try to get substitute data for the device
+        device_substitute = copy.deepcopy(substitute_dict.get(entity_id))
+
+        if device_substitute:
+            return device_substitute
+
+        self._logger.warning(f"Device not found in substitute_dict: {entity_id}. Default data will be used instead.")
+
+        # If not valid or no substitute found, return fallback default
         return {
             'timestamp': 0,
             'data': {
-                "power": 0.0,
-                "electric_vehicle": ''
+                'power': None,
+                'electric_vehicle': ''
             }
         }

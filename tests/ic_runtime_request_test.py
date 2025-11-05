@@ -4,8 +4,8 @@ from app.ic_runtime_request import ICRuntimeRequest  # adjust import path to you
 
 # -------- Required configurations --------
 environments = {
-    "i-charging headquarters": {
-        "group": "i-charging headquarters",
+    "i-charging headquarters 3Phase": {
+        "group": "i-charging headquarters 3Phase",
         "entities": {
             "AC000001_1": {
                 "parameters": {
@@ -51,7 +51,7 @@ configurations = {
         },
     },
     "frequency": {
-        "value": 0,
+        "value": 1,
         "unit": "minutes"
     },
     "log_files": {
