@@ -7,7 +7,7 @@ class CWForwarder(ForwarderBase):
     def __init__(self, configurations, logger):
         super().__init__(configurations, logger)
 
-    def to_forward(self, result):
+    def to_forward(self, entity_id, result, entity_specs):
         #print(result)
         pass
     

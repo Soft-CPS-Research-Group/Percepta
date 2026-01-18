@@ -22,7 +22,7 @@ class ICRuntimeRequest:
     _message: dict  # Runtime request message, stored as dict before serialization
     _return_queue_name: str  # Name of the return queue created for responses
 
-    def __init__(self, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
+    def __init__(self, environments: list, configurations: dict, logger: LoggingUtils) -> None:
         """
         Initialize the ICRuntimeRequest instance.
 
@@ -37,7 +37,7 @@ class ICRuntimeRequest:
         self._message = {
             "type": "runtime",
             "value": {
-                "installations": list(environments.keys()),
+                "installations": environments,
                 "frequency": DataSet.calculate_interval(configurations.get("frequency")),
             },
         }

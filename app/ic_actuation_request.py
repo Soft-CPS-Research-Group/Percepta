@@ -33,28 +33,13 @@ class ICActuationRequest:
         self._server = configurations.get("i-charging").get("receiver_server")
         self._logger = logger
 
-        self._serial_number = "AC000012"
-        self._plug = 1
-        self._power = 1.9
-
-        self._message = {
-            "type": "setlimit",
-            "value": {
-                "serialnumber": self._serial_number,
-                "plug": self._plug,
-                "power": self._power
-            }
-        }
-
-        print(self._message)
-
-        self._logger.info(f"Request to set limit for {self._serial_number}_{self._plug} charger to {self._power} kW\n")
-
-        self._response_event: threading.Event = threading.Event()
+        self._stop_event: threading.Event = threading.Event()
 
         # Initialize both publisher and consumer connectors with retries
         with_retries(self._setup_consumer_service, logger=self._logger)
         with_retries(self._setup_publisher_service, logger=self._logger)
+
+        self._start_service()
 
 
     def _setup_publisher_service(self) -> None:
@@ -71,32 +56,30 @@ class ICActuationRequest:
         self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
         self._logger.info("IC Runtime Request: Consumer connection established.")
 
-    def start_service(self) -> None:
+    def _start_service(self) -> None:
         """
         Start the runtime request service.
         """
 
         # Thread to consume messages
-        consumer_thread = threading.Thread(
+        self._consumer_thread = threading.Thread(
             target=self._consumer_connector.consume,
             args=(self._return_queue_name, self._on_response),
-            daemon=True,
+            daemon=False,
         )
-        consumer_thread.start()
+        self._consumer_thread.start()
 
-        # Method to send the message
-        self._send_message()
+    def stop(self) -> None:
+        self._stop_event.set()
 
-        # Wait until the response arrives
-        self._response_event.wait()
+        self._consumer_thread.join()
 
         # Close connections
         self._consumer_connector.close()
         self._publisher_connector.close()
 
-        consumer_thread.join()
 
-    def _send_message(self) -> None:
+    def send_message(self, message) -> None:
         """
         Send the prepared runtime request message to the RabbitMQ broker.
 
@@ -104,10 +87,11 @@ class ICActuationRequest:
         - Sets message properties including reply queue and unique message ID.
         - Waits briefly before publishing to ensure the consumer is ready.
         """
-        time.sleep(1)
+
+
         self._publisher_connector.publish(
             "RPC",
-            self._message,
+            message,
             properties={
                 "reply_to": self._return_queue_name
             },
@@ -126,6 +110,6 @@ class ICActuationRequest:
         """
         self._logger.info(f"Received response: {body.decode()}")
 
-        # Stop the consuming loop once the response is received
-        self._consumer_connector.stop_consuming()
-        self._response_event.set()
+        if self._stop_event.is_set():
+            self._consumer_connector.stop_consuming()
+

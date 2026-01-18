@@ -12,20 +12,6 @@ configurations = DataSet.get_schema('./configs/runtime_configurations.json')
 # Initialize logger once for main process
 logger = LoggingUtils(component_name="entrypoint", configurations=configurations)
 
-def wait_for_next_interval_start(time_interval):
-    """
-    Wait until the next aligned time interval from the start of the hour,
-    plus 1 second. For example, if interval=120s, waits until hh:00:01, hh:02:01, etc.
-    """
-    now = datetime.now()
-    start_of_hour = now.replace(minute=0, second=0, microsecond=0)
-    seconds_since_hour = (now - start_of_hour).total_seconds()
-    next_multiple = ((seconds_since_hour // time_interval) + 1) * time_interval
-    wait_seconds = next_multiple - seconds_since_hour
-    target_time = now + timedelta(seconds=wait_seconds)
-    logger.info(f"Waiting {wait_seconds:.2f}s until {target_time.strftime('%H:%M:%S')} to start data requesters...")
-    time.sleep(wait_seconds)
-
 def start_data_requesters(specs_repo):
     """
     Starts multiple data receiver/requester processes in parallel,
@@ -61,10 +47,6 @@ def launch_app():
     )
 
     accumulator_process.start()
-
-    # Wait until next aligned time interval before starting requesters
-    wait_for_next_interval_start(time_interval)
-
 
     # Start data requesters after the wait
     start_data_requesters(environment_repository)

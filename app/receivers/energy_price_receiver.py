@@ -28,6 +28,8 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
 
         self._translator = EnergyPriceTranslator(environment, environment_specs, configurations, logger)
 
+        self._job()
+
     def stop(self):
         """
         Stops the receiver and gracefully stops the Electricity Price Fetcher.
@@ -45,7 +47,7 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
             - Passes collected data to CWTranslator after all requests complete.
         """
         utc_hour = datetime.datetime.now(datetime.timezone.utc).hour
-
+        self._logger.info("Energy Price called")
         self._translator.translate(
             {
                 "value" : ElectricityPriceFetcher.get_price(utc_hour),

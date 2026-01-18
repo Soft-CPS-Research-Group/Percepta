@@ -218,7 +218,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         Args:
             message (bytes): Dictionary containing i-charging-format environment data, encoded as bytes.
         """
-        print("TRANSLATE CHAMADO\n")
+        #print("TRANSLATE CHAMADO\n")
         # Decode the incoming bytes message to a UTF-8 string, then parse it as JSON.
         # Extract the 'observation' key which contains the relevant data.
         message_dict: dict = json.loads(message.decode('utf-8')).get('observation')

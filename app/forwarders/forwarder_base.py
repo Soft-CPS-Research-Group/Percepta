@@ -8,7 +8,7 @@ class ForwarderBase(ABC):
         self._logger = logger
 
     @abstractmethod
-    def to_forward(self, result):
+    def to_forward(self, entity_id, result, entity_specs):
         """
         Determines where the given result should be forwarded for further processing.
 

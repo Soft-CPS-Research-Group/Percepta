@@ -53,7 +53,7 @@ class HTTPConnector:
         parsed = urlparse(url)
         return all([parsed.scheme in ("http", "https"), parsed.netloc])
 
-    # TODO: review timeout settings)
+    # TODO: review timeout settings
     def _request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """
         Performs HTTP requests with error handling and JSON validation.
