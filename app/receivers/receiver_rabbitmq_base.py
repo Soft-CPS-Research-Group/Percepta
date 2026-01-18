@@ -51,7 +51,7 @@ class ReceiverRabbitMQBase(ReceiverBase):
         self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._rabbitmq_connector.connect()
         self._rabbitmq_connector.declare_exchange(self._exchange_name)
-        queue_name = self._rabbitmq_connector.declare_queue(queue_name= f"percepta_{self.provider}_{self._environment}",exchange_name=self._exchange_name)
+        queue_name = self._rabbitmq_connector.declare_queue(queue_name= f"percepta_local_{self.provider}_{self._environment}",exchange_name=self._exchange_name)
         self._rabbitmq_connector.consume(queue_name, self._callback)
 
     def _callback(self, ch, method, properties, body):

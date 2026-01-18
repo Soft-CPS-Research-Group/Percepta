@@ -37,6 +37,7 @@ class Accumulator(threading.Thread):
         self._environment = environment
         self._manager = manager
         self._configurations = configurations
+        self._logger.info(f"Entrei aqui!!. ACC")
 
         self._stop_event = threading.Event()
 
@@ -55,7 +56,7 @@ class Accumulator(threading.Thread):
             self._rabbitmq_connector.connect()
             self._rabbitmq_connector.declare_queue(self._environment)
 
-            self._logger.info(f"Connection successfully established.")
+            self._logger.info(f"Connection successfully established. ACC")
 
             self._rabbitmq_connector.consume(
                 queue_name=self._environment,

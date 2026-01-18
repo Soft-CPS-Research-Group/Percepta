@@ -30,10 +30,13 @@ class Manager:
         self._logger = logger
         self._harmonizer = Harmonizer(self._time_interval, self._logger)
 
+        #self._logger.info("ENTREI AQUI!\n")
 
         self._timer_ended = Condition()
 
     def new_message(self, messages):
+
+        #self._logger.info("ENTREI AQUIIIII\n")
         # Decode the incoming message bytes to a UTF-8 string
         messages_decode = messages.decode('utf-8')
 

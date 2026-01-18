@@ -76,11 +76,12 @@ class EnergyPrice:
     def get_energy_price(cls):
         """Return the energy price for the current hour."""
         if cls._energy_price is None:
+            cls._logger.warning("Price data not loaded yet!")
             return None  # Price data not loaded yet
 
         # Get the current hour (0-23)
         current_hour = datetime.now().hour
-
+        print(cls._energy_price)
         try:
             # Assuming self._energy_price is a list of 24 elements (one per hour)
             return cls._energy_price[current_hour]

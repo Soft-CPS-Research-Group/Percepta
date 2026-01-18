@@ -126,7 +126,7 @@ class ReceiverHTTPBase(ReceiverBase):
         )
 
         # Run the job immediately once before scheduling
-        self._job()
+        # self._job()
 
         # Start the scheduler loop
         self._scheduler.start()

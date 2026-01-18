@@ -1,0 +1,16 @@
+{
+    "i-charging headquarters 3Phase": {
+        "group": "i-charging headquarters 3Phase",
+        "entities": {
+            "EP" :  {
+                "parameters" : {
+                    "energy_price" : {
+                        "measurementUnit": "Euros per Megawatt-Hour"
+                    }
+                },
+                "label": "energy_price"
+            }
+        }
+    },
+    "provider": "ren"
+}

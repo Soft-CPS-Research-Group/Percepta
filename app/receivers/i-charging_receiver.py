@@ -1,10 +1,12 @@
 import threading
+import time
 from typing import Dict, Any
 from app.ic_runtime_request import ICRuntimeRequest
 from app.translators.ic_translator import ICTranslator
 from app.receivers.receiver_rabbitmq_base import ReceiverRabbitMQBase
 from app.utils.logger import LoggingUtils
 from app.utils.providers import Provider
+from app.utils.data import DataSet
 
 
 class ICReceiver(ReceiverRabbitMQBase):
@@ -19,6 +21,7 @@ class ICReceiver(ReceiverRabbitMQBase):
 
     provider: str = Provider.ICHARGING.value
     _translator: ICTranslator
+    _time_interval: int # Interval in seconds for scheduling the periodic job
 
     def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
         """
@@ -35,6 +38,30 @@ class ICReceiver(ReceiverRabbitMQBase):
         super().__init__(environment, environment_specs, configurations, logger)
 
         self._translator = ICTranslator(environment, environment_specs, configurations, logger)
+
+        self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
+
+        self._first_message = False
+
+        messages_monitor = threading.Thread(
+            target=self._messages_monitor,
+            daemon=True
+        )
+
+        messages_monitor.start()
+
+    def _messages_monitor(self) -> None:
+        ic_runtime_request = ICRuntimeRequest([self._environment], self._configurations, self._logger)
+        ic_runtime_request.start_service()
+
+        if self._first_message:
+            while True:
+                if time.time() - self._arrival_time > self._time_interval*2:
+                    ic_runtime_request.start_service()
+                    self._logger.warning("i-charging receiver isn't communicating correctly. Communication will be restarted.")
+                else:
+                    self._logger.info("i-charging receiver is communicating correctly.")
+                time.sleep(self._time_interval)
 
     def stop(self) -> None:
         """
@@ -54,21 +81,10 @@ class ICReceiver(ReceiverRabbitMQBase):
             body (Any): The message payload received from RabbitMQ.
                         Can be a dict, str, or serialized data structure.
         """
+        self._arrival_time = time.time()
+        self._first_message = True
         if not self._stop_event.is_set():
             self._translator.translate(body)
-
-    @classmethod
-    def post_start(cls, environments: dict, configurations: dict, logger: LoggingUtils) -> None:
-        """
-        Perform initialization tasks after the receiver has started.
-        Specifically, initializes the runtime request handler.
-
-        Args:
-            environments (dict): List of available environments.
-            configurations (dict): Application-specific configurations.
-            logger (Logger): Logger instance for logging events.
-        """
-        ICRuntimeRequest(environments, configurations, logger).start_service()
 
     @classmethod
     def launch(cls, environments: dict, configurations: dict):
@@ -79,18 +95,5 @@ class ICReceiver(ReceiverRabbitMQBase):
             receiver = cls(environment, environment_specs, configurations, logger_per_environment)
             receiver.start()
             threads.append(receiver)
-
-        logger_cw_session = LoggingUtils(f"{cls.provider}_runtime_request", configurations)
-
-        ic_runtime_request = ICRuntimeRequest(environments, configurations, logger_cw_session)
-
-        ic_runtime_request_service = threading.Thread(
-            target= ic_runtime_request.start_service,
-            daemon=True
-        )
-
-        ic_runtime_request_service.start()
-
-        threads.append(ic_runtime_request_service)
 
         return threads
