@@ -51,8 +51,8 @@ configurations = {
         },
     },
     "frequency": {
-        "value": 1,
-        "unit": "minutes"
+        "value": 0,
+        "unit": "seconds"
     },
     "log_files": {
         "max_size": 10485760
@@ -65,7 +65,7 @@ logger = LoggingUtils("ic_runtime_request_test", configurations)
 # -------- Integration Test --------
 if __name__ == "__main__":
     try:
-        ic_runtime = ICRuntimeRequest(environments, configurations, logger)
+        ic_runtime = ICRuntimeRequest(["i-charging headquarters 3Phase"], configurations, logger)
         logger.info("Initializing runtime request...")
 
         # Start background service (sends request and listens for responses)

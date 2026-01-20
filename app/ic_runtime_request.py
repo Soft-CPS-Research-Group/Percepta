@@ -1,6 +1,8 @@
+import datetime
 import uuid
 import time
 import threading
+from apscheduler.schedulers.background import BackgroundScheduler
 from typing import Any
 from app.connectors.rabbitmq_connector import RabbitMQConnector
 from app.utils.data import DataSet
@@ -50,7 +52,6 @@ class ICRuntimeRequest:
         with_retries(self._setup_consumer_service, logger=self._logger)
         with_retries(self._setup_publisher_service, logger=self._logger)
 
-
     def _setup_publisher_service(self) -> None:
         """Initialize RabbitMQ connection for publishing."""
         self._publisher_connector = RabbitMQConnector(self._server)
@@ -77,9 +78,24 @@ class ICRuntimeRequest:
             daemon=True,
         )
         consumer_thread.start()
+        scheduler = BackgroundScheduler()
+        scheduler.start()
 
-        # Method to send the message
-        self._send_message()
+        now = datetime.datetime.now()
+        next_minute = (now + datetime.timedelta(minutes=1)).replace(second=0, microsecond=0)
+
+        if next_minute <= now:
+            next_minute += datetime.timedelta(minutes=1)
+
+        self._logger.info(f"Agendando envio da mensagem para: {next_minute}")
+
+        scheduler.add_job(
+            self._send_message,
+            trigger='date',
+            run_date=next_minute,
+            id='send_runtime_request',
+            misfire_grace_time=2
+        )
 
         # Wait until the response arrives
         self._response_event.wait()

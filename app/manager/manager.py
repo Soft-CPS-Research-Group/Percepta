@@ -58,7 +58,7 @@ class Manager:
 
                     # Store the data in the dictionary using the ID as key
                     self._dict[entity_id] = {'timestamp': timestamp, 'data': value}
-                    self._logger.info(f"{entity_id} : {json.dumps(self._dict[entity_id], indent=4)}")
+                    #self._logger.info(f"{entity_id} : {json.dumps(self._dict[entity_id], indent=4)}")
 
 
             return True  # Return True if the operation succeeds
@@ -88,7 +88,7 @@ class Manager:
             self._predictor.predict(message)
 
             # Print the final message prepared for the AI model (for debugging)
-            self._logger.info(f"Message to the AI Model: {message}\n")
+            # self._logger.info(f"Message to the AI Model: {message}\n")
             # Clear the dictionary for the next cycle
             self._dict.clear()
             self._send_event.set()
@@ -174,14 +174,22 @@ class Manager:
         interval_minutes = self._time_interval // 60
 
         # Add a cron job to the scheduler that triggers the _send method at every interval_minutes
-        self._scheduler.add_job(
+        '''self._scheduler.add_job(
             self._send,
             'cron',
             minute=f'*/{interval_minutes}',  # Run every 'interval_minutes' minutes
             second=10,  # Run 10 seconds after the start of the minute
             misfire_grace_time=10,  # Allow a 10-second window to catch missed jobs
             coalesce=True  # Combine missed job runs into one if delayed
+        )'''
+
+        self._scheduler.add_job(
+            self._send,
+            'cron',
+            second= '2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57', # Run 5 seconds after the start of the minute
+            coalesce=True  # Combine missed job runs into one if delayed
         )
+
         self._scheduler.configure(wakeup_interval=0.1)
 
         # Start the scheduler to begin executing jobs
