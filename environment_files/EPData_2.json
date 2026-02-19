@@ -1,6 +1,6 @@
 {
-    "i-charging headquarters 3Phase": {
-        "group": "i-charging headquarters 3Phase",
+    "SaoMamede": {
+        "group": "SaoMamede",
         "entities": {
             "EP" :  {
                 "parameters" : {
