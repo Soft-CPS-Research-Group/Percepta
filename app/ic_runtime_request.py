@@ -94,7 +94,7 @@ class ICRuntimeRequest:
             trigger='date',
             run_date=next_minute,
             id='send_runtime_request',
-            misfire_grace_time=2
+            misfire_grace_time=10
         )
 
         # Wait until the response arrives

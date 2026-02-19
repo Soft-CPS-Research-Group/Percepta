@@ -1,0 +1,46 @@
+{
+    "provider": "i-charging",
+    "SaoMamede" : {
+        "group": "SaoMamede",
+        "entities": {
+            "BB000SMI_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "BB000SMI",
+                "plug": 1
+            },
+            "M1123089-5_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "M1123089-5",
+                "plug": 1
+            },
+            "M1123089-6_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "M1123089-6",
+                "plug": 1
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    }
+                },
+                "label": "pv_panel"
+            }
+        }
+    }
+}

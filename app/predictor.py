@@ -7,7 +7,7 @@ from app.utils.retry import with_retries
 
 
 class Predictor:
-    _http_connector: HTTPConnector # HTTP connector instance for performing HTTP requests
+    _http_connector: HTTPConnector = {} # HTTP connector instance for performing HTTP requests
 
     def __init__(self, environment : str, environment_specs : dict, time_series_repository : TimeSeriesRepository, forwarders : dict, configurations : dict, logger : LoggingUtils):
         self._entities = environment_specs["entities"]
@@ -24,14 +24,16 @@ class Predictor:
         """
         Initializes the HTTP service by creating a connection to the server.
         """
-        self._http_connector = HTTPConnector(f"{self._test_server.get('url')}:{self._test_server.get('port')}")
+        if self._test_server.get('url'):
+            self._http_connector = HTTPConnector(f"{self._test_server.get('url')}:{self._test_server.get('port')}")
 
         self._logger.info(f"Connection successfully established.")
 
     def predict(self, message):
         #self._logger.info(f"Received message: {message}")
         result = self._energaize(copy.deepcopy(message))
-        self._forwarder(result)
+        if self._http_connector:
+            self._forwarder(result)
         self._save_data(message, result)
         
     def _energaize(self, message) -> dict:
@@ -49,16 +51,15 @@ class Predictor:
             "features" : message
         }
 
+        result = {}
+        if self._http_connector:
+            result = self._http_connector.post(self._test_server.get('resources').get('inference'),to_ai)
 
-
-        result = self._http_connector.post(self._test_server.get('resources').get('inference'),to_ai)
-
-        if result.status_code != 200:
-            self._logger.error(f"HTTP request failed with status code: {result.status_code}")
-            result = {}
-        else:
-            self._logger.debug(f"HTTP request succeeded with result: {result}")
-            result = result.json().get('actions').get('0')
+            if result.status_code != 200:
+                self._logger.error(f"HTTP request failed with status code: {result.status_code}")
+            else:
+                self._logger.debug(f"HTTP request succeeded with result: {result}")
+                result = result.json().get('actions').get('0')
 
         return result
 
