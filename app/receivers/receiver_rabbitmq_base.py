@@ -34,8 +34,8 @@ class ReceiverRabbitMQBase(ReceiverBase):
         """
         super().__init__(environment, environment_specs, configurations, logger)
 
-        self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._server = self._provider_configurations.get('receiver_server')
+        self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._stop_event = threading.Event()
         self._thread = None
 

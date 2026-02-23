@@ -153,7 +153,7 @@ class ICRuntimeRequest:
                     self._scheduler.remove_job('send_runtime_request')
                 except:
                     pass
-                
+
             # Ensure the consumer thread is joined to prevent resource leaks
             if 'consumer_thread' in locals() and consumer_thread.is_alive():
                 self._consumer_connector.stop_consuming_safely()
