@@ -22,6 +22,7 @@ class ICReceiver(ReceiverRabbitMQBase):
     provider: str = Provider.ICHARGING.value
     _translator: ICTranslator
     _time_interval: int # Interval in seconds for scheduling the periodic job
+    _first_message: threading.Event
 
     def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
         """
@@ -41,7 +42,7 @@ class ICReceiver(ReceiverRabbitMQBase):
 
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
 
-        self._first_message = False
+        self._first_message = threading.Event()
 
         messages_monitor = threading.Thread(
             target=self._messages_monitor,
@@ -52,17 +53,25 @@ class ICReceiver(ReceiverRabbitMQBase):
 
     def _messages_monitor(self) -> None:
         ic_runtime_request = ICRuntimeRequest([self._environment], self._configurations, self._time_interval, self._logger)
-        ic_runtime_request.start_service()
 
-        if self._first_message:
-            while True:
-                if time.time() - self._arrival_time > self._time_interval*2:
-                    self._logger.warning("i-charging receiver isn't communicating correctly. Communication will be restarted.")
-                    if not ic_runtime_request.start_service():
-                        continue
-                else:
-                    self._logger.info("i-charging receiver is communicating correctly.")
-                time.sleep(self._time_interval*2) # Allow time for a new observation to come in.
+        # The ICRuntimeRequest is designed to request real-time data from i-charging at a specific frequency.
+        # The request fails if no response is received within one minute.
+        # This loop retries the request until a successful response is received and
+        # the service starts sending observations. The sleep interval prevents excessive CPU usage.
+        while not ic_runtime_request.start_service():
+            self._logger.warning("i-charging Runtime Request failed. Retrying in 1 second...")
+            time.sleep(1)
+
+        self._first_message.wait()
+
+        while True:
+            if time.time() - self._arrival_time > self._time_interval*2:
+                self._logger.warning("i-charging receiver isn't communicating correctly. Communication will be restarted.")
+                if not ic_runtime_request.start_service():
+                    continue
+            else:
+                self._logger.info("i-charging receiver is communicating correctly.")
+            time.sleep(self._time_interval*2) # Allow time for a new observation to come in.
 
     def stop(self) -> None:
         """
@@ -83,7 +92,10 @@ class ICReceiver(ReceiverRabbitMQBase):
                         Can be a dict, str, or serialized data structure.
         """
         self._arrival_time = time.time()
-        self._first_message = True
+
+        if not self._first_message.is_set():
+            self._first_message.set()
+
         if not self._stop_event.is_set():
             self._translator.translate(body)
 
