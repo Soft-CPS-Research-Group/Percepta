@@ -225,3 +225,13 @@ class RabbitMQConnector:
             return self._connection and self._connection.is_open and self._channel and self._channel.is_open
         except AttributeError:
             return False
+
+    def stop_consuming_safely(self) -> None:
+        """
+        Safely stops the consuming loop from a different thread.
+        Uses add_callback_threadsafe to ensure the stop command is executed
+        within the I/O loop of the connection's owner thread.
+        """
+        if self._connection and self._connection.is_open:
+            # Schedule the stop command to be executed by the thread that owns the connection
+            self._connection.add_callback_threadsafe(self._channel.stop_consuming)

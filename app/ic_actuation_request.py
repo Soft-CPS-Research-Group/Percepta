@@ -46,7 +46,7 @@ class ICActuationRequest:
         """Initialize RabbitMQ connection for publishing."""
         self._publisher_connector = RabbitMQConnector(self._server)
         self._publisher_connector.connect()
-        self._publisher_connector.declare_queue("RPC")
+        self._publisher_connector.declare_queue("test_expiration")
         self._logger.info("IC Runtime Request: Publisher connection established.")
 
     def _setup_consumer_service(self) -> None:
@@ -93,7 +93,8 @@ class ICActuationRequest:
             "RPC",
             message,
             properties={
-                "reply_to": self._return_queue_name
+                "reply_to": self._return_queue_name,
+                "expiration": "10000"
             },
         )
         self._logger.info("Actuation request message published.")
