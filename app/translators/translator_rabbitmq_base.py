@@ -53,16 +53,16 @@ class TranslatorRabbitMQBase(TranslatorBase):
         message (str or dict): The message to send. Can be a string or JSON-serializable object.
         """
         def send_message_to_environment_queue_auxiliar():
-                if not self._rabbitmq_connector.is_connected():
-                    # Close existing connection if any, then reconnect
-                    try:
-                        self._rabbitmq_connector.close()
-                    except Exception:
-                        pass
+            if not self._rabbitmq_connector.is_connected():
+                # Close existing connection if any, then reconnect
+                try:
+                    self._rabbitmq_connector.close()
+                except Exception:
+                    pass
 
-                    self._rabbitmq_connector.connect()
+                self._rabbitmq_connector.connect()
 
-                self._rabbitmq_connector.publish(self._environment, message)
+            self._rabbitmq_connector.publish(self._environment, message)
 
         with_retries(send_message_to_environment_queue_auxiliar,error_msg=f"RabbitMQ Translator - {self._environment}: Sending message failed",logger = self._logger)
 
