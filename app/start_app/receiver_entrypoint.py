@@ -12,6 +12,8 @@ RECEIVER_REGISTRY: dict = discover_subclasses(
     required_suffix="_receiver"
 )
 
+_LOG_PREFIX = "Receiver Launcher |"
+
 
 def start_receivers(environment_repository: EnvironmentRepository, configurations: dict, logger: LoggingUtils) -> list:
     """
@@ -28,7 +30,7 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
 
             # If there are no environments for a certain provider, skip starting its receiver
             if environments is None:
-                logger.info(f"There is no environment for provider {provider}.")
+                logger.info(f"{_LOG_PREFIX} There is no environment for provider {provider}.")
                 continue
         else:
             # Fetch all environments if the receiver is provider-agnostic
@@ -55,11 +57,11 @@ def launch_receivers(environment_repository: EnvironmentRepository, configuratio
                 time.sleep(0.1)
 
     except KeyboardInterrupt:
-        logger.info("Receiver Launcher: Stopping all threads...")
+        logger.info(f"{_LOG_PREFIX} Stopping all threads...")
         # Stop all active receiver threads gracefully
         for thread in threads:
             thread.stop()
         # Wait for all threads to finish
         for thread in threads:
             thread.join()
-        logger.info("Receiver Launcher: All threads stopped.")
+        logger.info(f"{_LOG_PREFIX} All threads stopped.")

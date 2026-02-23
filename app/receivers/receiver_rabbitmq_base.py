@@ -34,8 +34,10 @@ class ReceiverRabbitMQBase(ReceiverBase):
         """
         super().__init__(environment, environment_specs, configurations, logger)
 
+        self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._server = self._provider_configurations.get('receiver_server')
         self._stop_event = threading.Event()
+        self._thread = None
 
     @abstractmethod
     def _process_message(self, body: bytes):
@@ -48,7 +50,6 @@ class ReceiverRabbitMQBase(ReceiverBase):
            Raises an exception if maximum reconnection attempts are reached.
         """
         # Initialize the RabbitMQ connector with the internal message hub server
-        self._rabbitmq_connector = RabbitMQConnector(self._server)
         self._rabbitmq_connector.connect()
         self._rabbitmq_connector.declare_exchange(self._exchange_name)
         queue_name = self._rabbitmq_connector.declare_queue(queue_name= f"percepta_local_{self.provider}_{self._environment}",exchange_name=self._exchange_name)
@@ -68,9 +69,16 @@ class ReceiverRabbitMQBase(ReceiverBase):
         This method shuts down the scheduler and closes the underlying HTTP connection.
         """
         self._stop_event.set()
+
+        self._rabbitmq_connector.stop_consuming_safely()
+
+        if self._thread and self._thread.is_alive():
+            self._thread.join()
+
         self._rabbitmq_connector.close()
 
     def run(self):
+        self._thread = threading.current_thread()
         with_retries(func=self._start_messaging_service, logger=self._logger)
 
 
