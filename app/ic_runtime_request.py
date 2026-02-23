@@ -17,7 +17,7 @@ class ICRuntimeRequest:
     This class manages initialization of the messaging service, sending requests,
     and handling responses from RabbitMQ.
     """
-    _LOG_PREFIX = "IC Runtime Request |"
+    _LOG_PREFIX = "i-charging Runtime Request |"
     _RPC_QUEUE_NAME = "RPC"
     _TIMEOUT_SECONDS = 60
 
@@ -109,8 +109,12 @@ class ICRuntimeRequest:
             )
             consumer_thread.start()
 
-            # Start a local background scheduler for message dispatch
-            self._scheduler.start()
+            # Start the background scheduler, if not already started, for message dispatch
+            if not self._scheduler.running:
+                self._scheduler.start()
+                self._logger.info(f"{self._LOG_PREFIX} Scheduler started.")
+            else:
+                self._logger.info(f"{self._LOG_PREFIX} Scheduler already running, skipping start.")
 
             # Call the new helper method
             next_run = self._calculate_next_run_time()
