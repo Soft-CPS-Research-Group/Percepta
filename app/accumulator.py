@@ -34,10 +34,11 @@ class Accumulator(threading.Thread):
         self._logger = logger
         # TODO: If the configuration file key changes, update this as well.
         self._internal_message_hub_server = configurations.get('internal_amqp_server').get('server')
+        self._rabbitmq_connector = RabbitMQConnector(self._internal_message_hub_server)
         self._environment = environment
         self._manager = manager
         self._configurations = configurations
-        self._logger.info(f"Entrei aqui!!. ACC")
+        self._thread = None
 
         self._stop_event = threading.Event()
 
@@ -51,8 +52,6 @@ class Accumulator(threading.Thread):
             Helper function to initialize RabbitMQ connector, declare the queue,
             and start consuming messages.
             """
-
-            self._rabbitmq_connector = RabbitMQConnector(self._internal_message_hub_server)
             self._rabbitmq_connector.connect()
             self._rabbitmq_connector.declare_queue(self._environment)
 
@@ -74,8 +73,12 @@ class Accumulator(threading.Thread):
         """
         Signals the thread to stop and closes the RabbitMQ connection.
         """
-        self._logger.info(f"Stopping thread!")
         self._stop_event.set()
+        self._rabbitmq_connector.stop_consuming_safely()
+
+        if self._thread and self._thread.is_alive():
+            self._thread.join()
+
         self._rabbitmq_connector.close()
 
     def _callback(self, ch: Any, method: Any, properties: Any, body: bytes) -> None:
@@ -101,4 +104,5 @@ class Accumulator(threading.Thread):
         Main thread execution method.
         Starts the messaging service with retry logic.
         """
+        self._thread = threading.current_thread()
         with_retries(func=self._start_messaging_service, logger=self._logger)
