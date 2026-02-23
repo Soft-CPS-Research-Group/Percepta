@@ -18,7 +18,7 @@ class ICRuntimeRequest:
     and handling responses from RabbitMQ.
     """
     _LOG_PREFIX = "IC Runtime Request |"
-    _RPC_QUEUE_NAME = "RPC_test"
+    _RPC_QUEUE_NAME = "RPC"
     _TIMEOUT_SECONDS = 60
 
     _server: dict  # Server configuration dictionary containing environment-specific settings
@@ -149,8 +149,11 @@ class ICRuntimeRequest:
 
             # Shut down the scheduler without waiting for pending jobs
             if self._scheduler.running:
-                self._scheduler.shutdown(wait=False)
-
+                try:
+                    self._scheduler.remove_job('send_runtime_request')
+                except:
+                    pass
+                
             # Ensure the consumer thread is joined to prevent resource leaks
             if 'consumer_thread' in locals() and consumer_thread.is_alive():
                 self._consumer_connector.stop_consuming_safely()
