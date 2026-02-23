@@ -204,15 +204,7 @@ class RabbitMQConnector:
         else:
             raise RabbitMQError("Cannot nack message: channel is not open.")
 
-    def stop_consuming(self) -> None:
-        """Stop consuming messages safely."""
-        if getattr(self, "_consuming", False) and self._channel.is_open:
-            self._channel.stop_consuming()
-            self._consuming = False
-
     def close(self) -> None:
-        """Stop consuming messages safely."""
-        self.stop_consuming()
         """Close the channel and connection cleanly if they are open."""
         if hasattr(self, "_channel") and self._channel and self._channel.is_open:
             self._channel.close()
@@ -225,6 +217,12 @@ class RabbitMQConnector:
             return self._connection and self._connection.is_open and self._channel and self._channel.is_open
         except AttributeError:
             return False
+
+    def stop_consuming(self) -> None:
+        """Stop consuming messages safely."""
+        if getattr(self, "_consuming", False) and self._channel.is_open:
+            self._channel.stop_consuming()
+            self._consuming = False
 
     def stop_consuming_safely(self) -> None:
         """

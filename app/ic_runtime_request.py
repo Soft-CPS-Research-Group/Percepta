@@ -41,6 +41,11 @@ class ICRuntimeRequest:
         self._logger = logger
         self._time_interval = time_interval
 
+        self._scheduler = BackgroundScheduler()
+
+        self._publisher_connector = RabbitMQConnector(self._server)
+        self._consumer_connector = RabbitMQConnector(self._server)
+
         self._message = {
             "type": "runtime",
             "value": {
@@ -55,14 +60,12 @@ class ICRuntimeRequest:
 
     def _setup_publisher_service(self) -> None:
         """Initialize RabbitMQ connection for publishing."""
-        self._publisher_connector = RabbitMQConnector(self._server)
         self._publisher_connector.connect()
         self._publisher_connector.declare_queue(self._RPC_QUEUE_NAME)
         self._logger.info(f"{self._LOG_PREFIX} Publisher connection established.")
 
     def _setup_consumer_service(self) -> None:
         """Initialize RabbitMQ connection for consuming responses."""
-        self._consumer_connector = RabbitMQConnector(self._server)
         self._consumer_connector.connect()
         self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
         self._logger.info(f"{self._LOG_PREFIX} Consumer connection established (Queue: {self._return_queue_name}).")
@@ -106,9 +109,8 @@ class ICRuntimeRequest:
             )
             consumer_thread.start()
 
-            # Initialize and start a local background scheduler for message dispatch
-            scheduler = BackgroundScheduler()
-            scheduler.start()
+            # Start a local background scheduler for message dispatch
+            self._scheduler.start()
 
             # Call the new helper method
             next_run = self._calculate_next_run_time()
@@ -117,7 +119,7 @@ class ICRuntimeRequest:
             self._logger.info(f"{self._LOG_PREFIX} Message dispatch scheduled for: {next_run}")
 
             # Add the one-time job to the scheduler
-            scheduler.add_job(
+            self._scheduler.add_job(
                 self._send_message,
                 trigger='date',
                 run_date=next_run,
@@ -135,7 +137,6 @@ class ICRuntimeRequest:
                 self._logger.warning(
                     f"{self._LOG_PREFIX} Timeout: No response received after {self._TIMEOUT_SECONDS}s."
                 )
-                self._consumer_connector.stop_consuming_safely()
             else:
                 final_state = True
 
@@ -147,16 +148,18 @@ class ICRuntimeRequest:
             self._logger.info(f"{self._LOG_PREFIX} Closing connections and cleaning up resources...")
 
             # Shut down the scheduler without waiting for pending jobs
-            if 'scheduler' in locals():
-                scheduler.shutdown(wait=False)
+            if self._scheduler.running:
+                self._scheduler.shutdown(wait=False)
 
             # Ensure the consumer thread is joined to prevent resource leaks
             if 'consumer_thread' in locals() and consumer_thread.is_alive():
-                consumer_thread.join(timeout=2)
+                self._consumer_connector.stop_consuming_safely()
 
-                # Close RabbitMQ consumer and publisher connections
-                self._consumer_connector.close()
-                self._publisher_connector.close()
+                consumer_thread.join()
+
+            # Close RabbitMQ consumer and publisher connections
+            self._consumer_connector.close()
+            self._publisher_connector.close()
 
             return final_state
 
@@ -200,6 +203,4 @@ class ICRuntimeRequest:
         """
         self._logger.info(f"{self._LOG_PREFIX} Response received: {body.decode()}")
 
-        # Stop the consuming loop once the response is received
-        self._consumer_connector.stop_consuming_safely()
         self._response_event.set()
