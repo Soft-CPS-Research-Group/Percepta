@@ -51,17 +51,18 @@ class ICReceiver(ReceiverRabbitMQBase):
         messages_monitor.start()
 
     def _messages_monitor(self) -> None:
-        ic_runtime_request = ICRuntimeRequest([self._environment], self._configurations, self._logger)
+        ic_runtime_request = ICRuntimeRequest([self._environment], self._configurations, self._time_interval, self._logger)
         ic_runtime_request.start_service()
 
         if self._first_message:
             while True:
                 if time.time() - self._arrival_time > self._time_interval*2:
-                    ic_runtime_request.start_service()
                     self._logger.warning("i-charging receiver isn't communicating correctly. Communication will be restarted.")
+                    if not ic_runtime_request.start_service():
+                        continue
                 else:
                     self._logger.info("i-charging receiver is communicating correctly.")
-                time.sleep(self._time_interval)
+                time.sleep(self._time_interval*2) # Allow time for a new observation to come in.
 
     def stop(self) -> None:
         """

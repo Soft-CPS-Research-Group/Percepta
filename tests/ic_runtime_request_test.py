@@ -1,4 +1,4 @@
-import time
+from app.utils.data import DataSet
 from app.utils.logger import LoggingUtils
 from app.ic_runtime_request import ICRuntimeRequest  # adjust import path to your project
 
@@ -32,7 +32,7 @@ configurations = {
         "type": "amqp",
         "receiver_server": {
             "host": "softcps.dei.isep.ipp.pt",
-            "port": 5672,
+            "port": 5673,
             "heartbeat": 660,
             "auth": {
                 "username": "dataprovider",
@@ -51,7 +51,7 @@ configurations = {
         },
     },
     "frequency": {
-        "value": 0,
+        "value": 300,
         "unit": "seconds"
     },
     "log_files": {
@@ -65,10 +65,14 @@ logger = LoggingUtils("ic_runtime_request_test", configurations)
 # -------- Integration Test --------
 if __name__ == "__main__":
     try:
-        ic_runtime = ICRuntimeRequest(["i-charging headquarters 3Phase"], configurations, logger)
+        time_interval = DataSet.calculate_interval(configurations.get('frequency'))
+
+        ic_runtime = ICRuntimeRequest(["i-charging headquarters 3Phase"], configurations, time_interval, logger)
         logger.info("Initializing runtime request...")
 
         # Start background service (sends request and listens for responses)
+        ic_runtime.start_service()
+        # Teste 2
         ic_runtime.start_service()
 
     except Exception as e:

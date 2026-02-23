@@ -31,7 +31,7 @@ configurations = {
         "type": "amqp",
         "receiver_server": {
             "host": "softcps.dei.isep.ipp.pt",
-            "port": 5672,
+            "port": 5673,
             "heartbeat": 660,
             "auth": {
                 "username": "dataprovider",
