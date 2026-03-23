@@ -49,7 +49,7 @@ class ICForwarder(ForwarderBase):
             raise ValueError(f"Mapping strategy '{label}' is not supported.")
 
 
-        message = handler(result, entity_specs)
+        message = handler(self, result, entity_specs)
         self._logger.info(f"Message to IC: {message}")
 
         self._protocol.send_message(message)
