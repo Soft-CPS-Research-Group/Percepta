@@ -6,4 +6,4 @@ loguru
 apscheduler
 paho-mqtt
 pandas
-git+https://github.com/luuuis/pyomie.git
+https://github.com/luuuis/pyomie/archive/refs/heads/main.zip
