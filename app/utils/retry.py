@@ -1,6 +1,8 @@
 import time
 from app.utils.logger import LoggingUtils
 
+
+# TODO colocar ramping, tipo espaçamento entre tentativas vai aumentando
 def with_retries(func, retry_config: dict = None, error_msg : str ="Operation failed", logger : LoggingUtils = None):
     """
     Executes a function with retries and logging.

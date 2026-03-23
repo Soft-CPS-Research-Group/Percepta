@@ -5,7 +5,7 @@ from .entity_handlers.entity_handler_factory import build_entity_handler
 from .forwarders.decision_forwarder_factory import build_forwarder
 from app.utils.logger import LoggingUtils
 from app.aggregators.energy_aggregator import EnergyAggregator
-
+from app.repositories.irepositories.environment_repository import EnvironmentRepository
 
 class AccumulatorContextFactory:
     def __init__(self, environment, environment_specs, configurations, logger):
@@ -25,9 +25,9 @@ class AccumulatorContextFactory:
                 label_map[label].append(entity_id)
         return label_map
 
-    def build_predictor(self, time_series_repository):
+    def build_predictor(self, all_provider_configs, time_series_repository):
         predictor_logger = LoggingUtils("predictor", self._configurations, self._environment)
-        forwarders = build_forwarder(self._configurations, predictor_logger)
+        forwarders = build_forwarder(all_provider_configs, self._configurations, predictor_logger)
         return Predictor(self._environment, self._environment_specs, time_series_repository, forwarders, self._configurations, predictor_logger)
 
     def build_manager(self, time_series_repository, predictor):

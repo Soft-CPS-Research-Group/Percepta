@@ -49,12 +49,12 @@ class RepositoryFactory:
 
             if self._mongo_client is None:
                 from pymongo import MongoClient
-                credentials = connection_parameters['credentials']
+                credentials = connection_parameters.get('credentials', {})
                 self._mongo_client = MongoClient(
                     host=connection_parameters['host'],
                     port=connection_parameters['port'],
-                    username=credentials['username'],
-                    password=credentials['password'],
+                    username=credentials.get('username', None),
+                    password=credentials.get('password', None),
                     authSource=connection_parameters.get('authSource', 'admin'),
                     serverSelectionTimeoutMS=connection_parameters.get('serverSelectionTimeoutMS', 5000)
                 )

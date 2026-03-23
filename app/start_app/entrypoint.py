@@ -34,7 +34,7 @@ def launch_app():
 
     frequency = configurations.get('frequency')
 
-    time_interval = DataSet.calculate_interval(frequency)
+    # time_interval = DataSet.calculate_interval(frequency)
 
     repository_factory = RepositoryFactory(configurations, logger)
 

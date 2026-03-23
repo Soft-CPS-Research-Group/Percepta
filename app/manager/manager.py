@@ -2,6 +2,7 @@ import json
 import datetime
 import copy
 import threading
+import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from threading import Condition
 from app.utils.data import DataSet
@@ -12,6 +13,7 @@ from app.manager.harmonizer import Harmonizer
 class Manager:
     def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, aggregator, predictor, entities_handlers, configurations, logger):
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
+        self._grace_period = DataSet.calculate_interval(configurations.get('grace_period')) # TODO definir default considerando o time_interval
         self._start_sched()
         self._environment = environment
         self._entities = environment_specs.get('entities')
@@ -30,19 +32,14 @@ class Manager:
         self._logger = logger
         self._harmonizer = Harmonizer(self._time_interval, self._logger)
 
-        #self._logger.info("ENTREI AQUI!\n")
-
         self._timer_ended = Condition()
 
     def new_message(self, messages):
-
-        #self._logger.info("ENTREI AQUIIIII\n")
         # Decode the incoming message bytes to a UTF-8 string
         messages_decode = messages.decode('utf-8')
 
         # Parse the JSON string into a Python list
         messages_json = json.loads(messages_decode)
-
         try:
 
             with self._timer_ended:
@@ -55,10 +52,8 @@ class Manager:
                     entity_id = str(message['id'])  # Extract and convert the message ID to string
                     timestamp = message['timestamp']  # Extract the timestamp
                     value = message['value']  # Extract the value
-
                     # Store the data in the dictionary using the ID as key
                     self._dict[entity_id] = {'timestamp': timestamp, 'data': value}
-                    #self._logger.info(f"{entity_id} : {json.dumps(self._dict[entity_id], indent=4)}")
 
 
             return True  # Return True if the operation succeeds
@@ -67,14 +62,20 @@ class Manager:
             self._logger.error(f"An unexpected error occurred: {e} {messages_json}")
             return False
 
-    def _send(self):
+    def _send(self, scheduled_run_time=None):
+        if scheduled_run_time is None:
+            return
+
+        self._timestamp = scheduled_run_time
+
+        if self._grace_period > 0:
+            time.sleep(self._grace_period) # Isto só funciona bem se o processamento demorar menos que o time_interval - grace_period
 
         self._send_event.clear()
 
         # Acquire the lock or condition to safely proceed with processing
         with self._timer_ended:
-            # Format timestamp using the configured timezone
-            self._timestamp = datetime.datetime.now(self._tz)
+            operation_start_timestamp = datetime.datetime.now()
             self._period_harmonizer(self._dict)
 
             # Fill in missing data if necessary
@@ -87,18 +88,21 @@ class Manager:
             # Perform prediction
             self._predictor.predict(message)
 
-            # Print the final message prepared for the AI model (for debugging)
-            # self._logger.info(f"Message to the AI Model: {message}\n")
             # Clear the dictionary for the next cycle
             self._dict.clear()
+            operation_end_timestamp = datetime.datetime.now()
+
+            self._logger.info(
+                f"\nStart: {operation_start_timestamp} End: {operation_end_timestamp}\n"
+                f"Operation duration: {operation_end_timestamp - operation_start_timestamp}"
+            )
             self._send_event.set()
 
             self._timer_ended.notify_all()
 
     def _period_harmonizer(self, data):
 
-        period_start_time = self._timestamp.replace(second=0, microsecond=0)
-        period_end_time = period_start_time + datetime.timedelta(seconds=self._time_interval)
+        period_start_time = self._timestamp - datetime.timedelta(seconds=self._time_interval)
 
         for entity_id, entity_values in self._entities.items():
 
@@ -106,7 +110,6 @@ class Manager:
                 continue
 
             entity_params = data.get(entity_id).get('data')
-            print(f"ENTITY PARAMS: {entity_params}\n")
             # TODO: Isto serve para não dar erro quando o parâmetro está a NaN
             for param, param_data in entity_params.items():
                 if isinstance(param_data, list):
@@ -115,7 +118,7 @@ class Manager:
                     if temporal_behavior is not None:
 
                         # Replace the original list in the dictionary
-                        data[entity_id]['data'][param] = self._harmonizer.period_harmonizer(f"{entity_id}_{param}",period_start_time, period_end_time, temporal_behavior, param_data)
+                        data[entity_id]['data'][param] = self._harmonizer.period_harmonizer(f"{entity_id}_{param}",period_start_time, self._timestamp, temporal_behavior, param_data)
 
 
     #TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
@@ -151,7 +154,9 @@ class Manager:
     def _format_data(self, data) -> dict:
         # Set the current timestamp in the message
         message = {
-            'timestamp' : self._timestamp
+            'timestamp' : self._timestamp,
+            'observations' : {},
+            'forecasts' : {}
         }
 
         # Iterate over all labels in the pre-built label-to-IDs mapping
@@ -170,24 +175,34 @@ class Manager:
         # Initialize the background scheduler for periodic task execution
         self._scheduler = BackgroundScheduler()
 
-        # Calculate the interval in minutes based on the configured time interval (assumed in seconds)
-        interval_minutes = self._time_interval // 60
+        def job_wrapper():
+            """
+            Wrapper to extract precise scheduled execution time.
+            Subtracts interval from next_run_time to find current intended trigger time.
+            """
+            # Retrieve specific job instance via unique identifier
+            job = self._scheduler.get_job(job_id='send_data_job')
 
+            if job and job.next_run_time:
+                # Calculate time this specific run was meant to occur
+                # e.g. if next run is 10:00:10, current intended run is 10:00:05
+                next_run_tz = job.next_run_time.astimezone(self._tz)
+                run_time = next_run_tz - datetime.timedelta(seconds=self._time_interval)
+            else:
+                # Fallback to current clock time if job metadata is inaccessible
+                run_time = datetime.datetime.now(self._tz)
+
+            # Execute main send logic with synchronised timestamp
+            self._send(scheduled_run_time=run_time)
+
+        cron_kwargs = DataSet.get_cron_expressions(self._time_interval)
         # Add a cron job to the scheduler that triggers the _send method at every interval_minutes
-        '''self._scheduler.add_job(
-            self._send,
-            'cron',
-            minute=f'*/{interval_minutes}',  # Run every 'interval_minutes' minutes
-            second=10,  # Run 10 seconds after the start of the minute
-            misfire_grace_time=10,  # Allow a 10-second window to catch missed jobs
-            coalesce=True  # Combine missed job runs into one if delayed
-        )'''
-
         self._scheduler.add_job(
-            self._send,
-            'cron',
-            second= '2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57', # Run 5 seconds after the start of the minute
-            coalesce=True  # Combine missed job runs into one if delayed
+            job_wrapper,
+            'cron', # It does not work with values lower than 1 second. TODO ver alternativas que o permitam mas ter atenção ao tempo que o processo demora
+            coalesce=True,  # Combine missed job runs into one if delayed
+            id='send_data_job',
+            **cron_kwargs
         )
 
         self._scheduler.configure(wakeup_interval=0.1)

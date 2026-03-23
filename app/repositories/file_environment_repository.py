@@ -27,6 +27,7 @@ class FileEnvironmentRepository(EnvironmentRepository):
         """
         self._all_environments = {}
         self._environments_by_provider = {}
+        self._configurations_by_provider = {}
         self._logger = logger
 
         # Process all JSON files in the folder specified in configurations
@@ -60,6 +61,25 @@ class FileEnvironmentRepository(EnvironmentRepository):
         """
         return self._environments_by_provider.get(provider)
 
+    def get_configurations_by_provider(self, provider: str) -> dict:
+        """
+        Returns all configurations related to a specific provider.
+        args:
+           provider (str): Name or ID of the data provider to filter environments by
+
+        Returns:
+           dict -> A dictionary of configurations provided by the specified provider.
+        """
+        return self._configurations_by_provider.get(provider)
+
+    def get_all_configurations(self) -> dict:
+        """
+        Returns all configurations.
+        Returns:
+           dict -> A dictionary of all configurations provided all the providers.
+        """
+        return self._configurations_by_provider
+
     def process_json_files_in_folder(self, folder_path: str) -> None:
         """
         Processes all JSON files in a given folder.
@@ -84,10 +104,13 @@ class FileEnvironmentRepository(EnvironmentRepository):
             provider: str = schema.pop('provider')
 
             # Store schema by provider
-            self._environments_by_provider[provider] = copy.deepcopy(schema)
+            self._environments_by_provider[provider] = copy.deepcopy(schema.get('environments'))
+
+            # Store configurations by provider
+            self._configurations_by_provider[provider] = copy.deepcopy(schema.get('configurations'))
 
             # Process the environment data and store it
-            self._house_identifier(copy.deepcopy(schema), provider)
+            self._house_identifier(copy.deepcopy(schema.get('environments')), provider)
 
     def _house_identifier(self, schema: dict, provider: str) -> None:
         """

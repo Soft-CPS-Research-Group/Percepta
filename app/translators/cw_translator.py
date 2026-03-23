@@ -130,6 +130,9 @@ class CWTranslator(TranslatorRabbitMQBase):
                         where keys represent parameters and values are lists of readings.
         """
 
+        # Format timestamp using the configured timezone
+        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
+
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | translate expected dict, got {type(messages)}")
 
@@ -137,12 +140,10 @@ class CWTranslator(TranslatorRabbitMQBase):
         label = messages.get("label")
         parameters_readings = messages.get("parameters")
 
+        print(f"TESTEEEE {messages}")
         self._entities_parameters = self._entities.get(entity_id).get('parameters')
 
         value = {}
-
-        # Format timestamp using the configured timezone
-        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         if label in self._labels_functions_mapper:
             # Use label-specific translation method

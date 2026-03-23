@@ -1,4 +1,5 @@
 import threading
+from functools import partial
 from abc import abstractmethod
 from app.receivers.receiver_base import ReceiverBase
 from app.connectors.rabbitmq_connector import RabbitMQConnector
@@ -20,19 +21,18 @@ class ReceiverRabbitMQBase(ReceiverBase):
     _server: dict # Server configuration dictionary containing environment-specific settings
     _rabbitmq_connector: RabbitMQConnector  # RabbitMQ connector instance for handling messaging
     _stop_event: threading.Event # Signals that the thread will stop
-    _exchange_name : str
 
-    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
+    def __init__(self, environment_name: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initialize the receiver with environment settings, HTTP connector, and scheduling interval.
 
         Args:
-            environment (str): Current environment (e.g., production, staging).
+            environment_name (str): Current environment (e.g., production, staging).
             environment_specs (dict): Environment-specific configurations.
             configurations (dict): General configurations including provider info and frequency.
             logger (LoggingUtils): Logger instance for logging messages.
         """
-        super().__init__(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
 
         self._server = self._provider_configurations.get('receiver_server')
         self._rabbitmq_connector = RabbitMQConnector(self._server)
@@ -40,7 +40,7 @@ class ReceiverRabbitMQBase(ReceiverBase):
         self._thread = None
 
     @abstractmethod
-    def _process_message(self, body: bytes):
+    def _process_message(self, body: bytes, source : str):
         raise NotImplementedError
 
     def _start_messaging_service(self):
@@ -50,16 +50,27 @@ class ReceiverRabbitMQBase(ReceiverBase):
            Raises an exception if maximum reconnection attempts are reached.
         """
         # Initialize the RabbitMQ connector with the internal message hub server
+
         self._rabbitmq_connector.connect()
-        self._rabbitmq_connector.declare_exchange(self._exchange_name)
-        queue_name = self._rabbitmq_connector.declare_queue(queue_name= f"percepta_local_{self.provider}_{self._environment}",exchange_name=self._exchange_name)
-        self._rabbitmq_connector.consume(queue_name, self._callback)
+
+        for _, ex_name in self._resources_rules.items():
+            self._rabbitmq_connector.declare_exchange(ex_name)
+
+            real_queue_name = self._rabbitmq_connector.declare_queue(
+                self._environment_name,
+                ex_name
+            )
+
+
+            self._rabbitmq_connector.setup_consumer(real_queue_name, self._callback)
+
+        self._rabbitmq_connector.start_listening()
 
     def _callback(self, ch, method, properties, body):
         """
         Rabbitmq callback.
         """
-        self._process_message(body)
+        self._process_message(body, method.exchange)
         self._rabbitmq_connector.ack(method.delivery_tag)
 
     def stop(self):

@@ -32,9 +32,9 @@ class PVPanelHandler(EntityHandlerBase):
 
                 pv_panels.update({pv_panel_entity: {"energy": total_solar_generation}})
 
-        message['pv_panels'] = pv_panels
+        message["observations"]['pv_panels'] = pv_panels
         # Include the final solar generation total in the message payload
-        message["solar_generation"] = total_solar_generation
+        message["observations"]["solar_generation"] = total_solar_generation
 
     def fallback(self, device_id, substitute_dict):
 

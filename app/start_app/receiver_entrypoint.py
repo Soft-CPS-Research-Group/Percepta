@@ -22,12 +22,12 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
     threads = []
 
     for ReceiverClass in RECEIVER_REGISTRY.values():
-
+        provider_configurations = {}
         provider = getattr(ReceiverClass, "provider", None)
         if provider is not None:
             # Fetch environments specific to the current provider
             environments = environment_repository.get_environments_by_provider(provider)
-
+            provider_configurations = environment_repository.get_configurations_by_provider(provider)
             # If there are no environments for a certain provider, skip starting its receiver
             if environments is None:
                 logger.info(f"{_LOG_PREFIX} There is no environment for provider {provider}.")
@@ -36,7 +36,8 @@ def start_receivers(environment_repository: EnvironmentRepository, configuration
             # Fetch all environments if the receiver is provider-agnostic
             environments = environment_repository.get_environments()
 
-        receiver_threads = ReceiverClass.launch(environments, configurations)
+        merged_config = {**configurations, **provider_configurations}
+        receiver_threads = ReceiverClass.launch(environments, merged_config)
 
         threads.extend(receiver_threads)
 

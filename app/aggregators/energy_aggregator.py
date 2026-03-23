@@ -23,14 +23,18 @@ class EnergyAggregator(AggregatorBase):
         """
         # --- Sum total energy from grid meters ---
         grid_meters = message.get("grid_meters", {})
-        total_grid_in = sum(g.get("energy_in", 0) for g in grid_meters.values())
+        total_grid_in = sum(g.get("energy_in_total", 0) for g in grid_meters.values())
+        total_grid_out = sum(g.get("energy_out_total", 0) for g in grid_meters.values())
 
         # --- Sum total charging energy from batteries ---
         batteries = message.get("batteries", {})
         total_battery_charge = sum(b.get("energy_in", 0) for b in batteries.values())
+        total_battery_discharge = sum(b.get("energy_out", 0) for b in batteries.values())
+
+        solar_generation = message.get("solar_generation", 0)
 
         # --- Calculate non_shiftable_load ---
-        non_shiftable_load = total_grid_in - total_battery_charge
+        non_shiftable_load = total_grid_in + solar_generation - total_grid_out + total_battery_discharge - total_battery_charge
 
         if self._logger:
             self._logger.info(
@@ -38,4 +42,4 @@ class EnergyAggregator(AggregatorBase):
                 f"Non-Shiftable Load: {non_shiftable_load}"
             )
 
-        message["non_shiftable_load"] = non_shiftable_load
+        message["observations"]["non_shiftable_load"] = non_shiftable_load

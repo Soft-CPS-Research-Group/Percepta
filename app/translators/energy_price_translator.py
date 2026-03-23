@@ -48,27 +48,35 @@ class EnergyPriceTranslator(TranslatorRabbitMQBase):
                         the data type identifier, and the corresponding readings,
                         where keys represent parameters and values are lists of readings.
         """
+        # Format timestamp using the configured timezone
+        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | translate expected dict, got {type(messages)}")
 
         entity_id = messages.get("entity_id")
-        value = messages.get("value")
-        # Format timestamp using the configured timezone
-        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
-        # Construct standardized message with ID, values, and timestamp
-        new_message = [{
-            "id": entity_id,
-            "value": {
-                "energy_price" : [
-                    {
-                        "timestamp": timestamp,
-                        "value" : value
-                    }]
-            },
-            "timestamp": timestamp
-        }]
+        if messages.get("value"): # TODO verificar se este é o melhor sítio para meter mas basicamente não existem dados
+            value = self._build_values_array(messages.get("value"))
 
-        # Send the message to the environment queue
-        self.send_message_to_environment_queue(new_message)
+            # Construct standardized message with ID, values, and timestamp
+            new_message = [{
+                "id": entity_id,
+                "value": {
+                    "energy_price" : value
+                },
+                "timestamp": timestamp
+            }]
+
+            # Send the message to the environment queue
+            self.send_message_to_environment_queue(new_message)
+
+
+    @staticmethod
+    def _build_values_array(prices_with_timestamp: dict) -> list:
+        returned_dict = []
+
+        for date in prices_with_timestamp.keys():
+            returned_dict.append({"timestamp": date.strftime("%Y-%m-%d %H:%M:%S %z"), "value": round(prices_with_timestamp[date]/1000,8)})
+
+        return returned_dict

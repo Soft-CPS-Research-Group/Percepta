@@ -42,5 +42,8 @@
                 "label": "pv_panel"
             }
         }
+    },
+    "sourceMapping": {
+        "strategy": "Environment"
     }
 }

@@ -24,21 +24,21 @@ class ICReceiver(ReceiverRabbitMQBase):
     _time_interval: int # Interval in seconds for scheduling the periodic job
     _first_message: threading.Event
 
-    def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
+    def __init__(self, environment_name: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
         """
         Initialize the ICReceiver instance.
 
         Args:
-            environment (str): Environment name.
+            environment_name (str): Environment name.
             environment_specs (dict): Environment-specific configurations.
             configurations (dict): General configurations for the receiver.
             logger (LoggingUtils): Logger instance for logging events.
         """
-        self._exchange_name : str = environment
+        self._exchange_name : str = environment_name
 
-        super().__init__(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
 
-        self._translator = ICTranslator(environment, environment_specs, configurations, logger)
+        self._translator = ICTranslator(environment_name, environment_specs, configurations, logger)
 
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
 
@@ -52,7 +52,7 @@ class ICReceiver(ReceiverRabbitMQBase):
         messages_monitor.start()
 
     def _messages_monitor(self) -> None:
-        ic_runtime_request = ICRuntimeRequest([self._environment], self._configurations, self._time_interval, self._logger)
+        ic_runtime_request = ICRuntimeRequest([self._environment_name], self._configurations, self._time_interval, self._logger)
 
         # The ICRuntimeRequest is designed to request real-time data from i-charging at a specific frequency.
         # The request fails if no response is received within one minute.
@@ -78,12 +78,12 @@ class ICReceiver(ReceiverRabbitMQBase):
         Stop the receiver and translator threads gracefully.
         Ensures proper cleanup and logs stop events.
         """
-        self._logger.info(f"i-charging | Stopping thread {self._environment}...")
+        self._logger.info(f"i-charging | Stopping thread {self._environment_name}...")
         super().stop()
         self._translator.stop()
-        self._logger.info(f"i-charging | Thread {self._environment} stopped.")
+        self._logger.info(f"i-charging | Thread {self._environment_name} stopped.")
 
-    def _process_message(self, body: Any) -> None:
+    def _process_message(self, body: Any, source : str) -> None:
         """
         Process an incoming message by sending it to the translator.
 

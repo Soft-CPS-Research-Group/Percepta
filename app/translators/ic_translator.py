@@ -115,7 +115,7 @@ class ICTranslator(TranslatorRabbitMQBase):
 
                 # Create and return a message using pv_production data and timestamp
                 value: dict = {
-                    "energy": [{
+                    "energy_out_total": [{
                         "timestamp": timestamp,
                         "value": pv_production
                     }]

@@ -1,6 +1,8 @@
 import requests
-from datetime import date, datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from apscheduler.schedulers.background import BackgroundScheduler
+from app.utils.retry import with_retries
 
 class EnergyPrice:
     _energy_price = None
@@ -11,14 +13,15 @@ class EnergyPrice:
         cls._scheduler.shutdown()
 
     @classmethod
-    def _update_energy_price(cls):
-        today_str = date.today().strftime("%Y-%m-%d")  # Formato yyyy-mm-dd
-        # Supondo que a API aceite a data como query parameter "date"
-        url_with_date = f"{cls._connection_params}{today_str}"
+    def _update_energy_price(cls, date = None):
+        if not date:
+            date = datetime.today()
 
-        max_retries = 3
-        for attempt in range(1, max_retries + 1):
+        date_str = date.strftime("%Y-%m-%d") # Formato yyyy-mm-dd
 
+        url_with_date = f"{cls._connection_params}{date_str}"
+
+        def _update_energy_price_aux():
             try:
                 response = requests.get(url_with_date)
 
@@ -32,26 +35,26 @@ class EnergyPrice:
 
                 elif response.status_code == 401:
                     # Unauthorized: refresh token and retry
-                    cls._logger.warning(f"EnergyPrice: Unauthorized access on attempt {attempt}, refreshing token.")
+                    raise Exception(f"EnergyPrice: Unauthorized access refreshing token.")
 
                 else:
                     # Other HTTP errors: log warning and retry
-                    cls._logger.warning(f"EnergyPrice: Failed to get energy price, status code: {response.status_code}")
+                    raise Exception(f"EnergyPrice: Failed to get energy price, status code: {response.status_code}")
 
-            except requests.exceptions.Timeout:
+            except requests.exceptions.Timeout as e:
                 # Timeout error: log and retry
-                cls._logger.error(f"EnergyPrice: Connection timeout during price update on attempt {attempt}.")
+                raise Exception(f"EnergyPrice: Connection timeout during price update: {e}")
 
             except requests.exceptions.ConnectionError as e:
                 # Connection error: log and retry
-                cls._logger.error(f"EnergyPrice: Connection error during price update on attempt {attempt}: {e}")
+                raise Exception(f"EnergyPrice: Connection error during price update: {e}")
 
             except requests.exceptions.RequestException as e:
                 # Any other requests exception: log and retry
-                cls._logger.error(f"EnergyPrice: Unexpected error during price update on attempt {attempt}: {e}")
+                raise Exception(f"EnergyPrice: Unexpected error during price update: {e}")
 
-        # After max retries, log failure
-        cls._logger.error("EnergyPrice: Failed to update energy price after 3 attempts.")
+        with_retries(_update_energy_price_aux, logger=cls._logger)
+
 
     @classmethod
     def start_service(cls, logger, configurations):
@@ -59,6 +62,11 @@ class EnergyPrice:
         cls._connection_params = configurations.get('connection_params')
 
         cls._update_energy_price()
+        tz_cet = ZoneInfo("Europe/Madrid")
+        now_cet = datetime.now(tz_cet)
+
+        if now_cet.hour >= 12:
+            cls._update_energy_price(date=now_cet + timedelta(days=1))
         
         cls._scheduler = BackgroundScheduler()
 
@@ -90,3 +98,4 @@ class EnergyPrice:
             cls._logger.error(f"EnergyPrice: No price data for current hour ({current_hour})")
             return None
 
+EnergyPrice._update_energy_price()

@@ -43,17 +43,17 @@ class CWReceiver(ReceiverHTTPBase):
 
     _translator: CWTranslator   # Translator which translates Cleanwatts-specific format into Percepta-specific format
 
-    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
+    def __init__(self, environment_name: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initializes the CWReceiver instance.
 
         Args:
-            environment (str): Name of the environment the receiver will operate in.
+            environment_name (str): Name of the environment the receiver will operate in.
             environment_specs (dict): Specifications for the environment, including entities.
             configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
             logger (LoggingUtils): Logger instance for structured logging.
         """
-        super().__init__(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
 
         # The Cleanwatts data always comes in Lisbon Timezone
         self._tz = ZoneInfo("Europe/Lisbon")
@@ -66,27 +66,26 @@ class CWReceiver(ReceiverHTTPBase):
         self._start = self._end - self._time_interval_timedelta
 
         # Translator instance is created
-        self._translator = CWTranslator(environment, environment_specs, configurations, logger)
+        self._translator = CWTranslator(environment_name, environment_specs, configurations, logger)
 
     def stop(self):
         """
         Stops the receiver and gracefully stops the Cleanwatts token refresher.
         """
-        self._logger.info(f"Stopping thread {self._environment}...")
+        self._logger.info(f"Stopping thread {self._environment_name}...")
         super().stop()
 
         #TODO não faz sentido isto estar aqui! Várias threads vão executar isto...
         CWSession.stop_token_refresher_service()
 
 
-    def fetch_entity_parameter_data(self, entity_id, param_name, param_attr):
+    def fetch_entity_parameter_data(self, entity_id, param_name):
         """
         Fetch data for a single parameter of a single entity.
 
         Args:
             entity_id (str): ID of the entity.
             param_name (str): Name of the parameter.
-            param_attr (dict): Parameter attributes, including the tag ID.
 
         Returns:
             tuple: (entity_id, {param_name: data})
@@ -94,12 +93,12 @@ class CWReceiver(ReceiverHTTPBase):
         all_entity_parameter_data = {}
 
         try:
-            if param_attr:
-                tag_id = param_attr.get('id')
+            resource = self._resources_rules.get(param_name)
+            if resource:
 
                 # Perform the GET request with specified time range
                 data = self.retrieve_data(
-                    f"{self._server.get('resources').get('data')}{tag_id}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 5,
+                    f"{self._server.get('resources').get('data')}{resource}&from={self._start.strftime('%Y-%m-%dT%H:%M:%S')}&to={self._end.strftime('%Y-%m-%dT%H:%M:%S')}", 5,
                     self._header_updater()
                 )
 
@@ -108,7 +107,7 @@ class CWReceiver(ReceiverHTTPBase):
                     fallback_from = (self._start - datetime.timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%S')
 
                     data = self.retrieve_data(
-                        f"{self._server.get('resources').get('last_value')}{tag_id}&from={fallback_from}&",
+                        f"{self._server.get('resources').get('last_value')}{resource}&from={fallback_from}&",
                         5,
                         self._header_updater()
                     )
@@ -134,8 +133,8 @@ class CWReceiver(ReceiverHTTPBase):
             future_to_entity_param = {}
 
             for entity_id, values in self._entities.items():
-                for param_name, param_attr in values.get('parameters', {}).items():
-                    future = executor.submit(self.fetch_entity_parameter_data, entity_id, param_name, param_attr)
+                for param_name in values.get('parameters', {}).keys():
+                    future = executor.submit(self.fetch_entity_parameter_data, entity_id, param_name)
                     future_to_entity_param[future] = (entity_id, param_name)
 
             # Collect results as they complete

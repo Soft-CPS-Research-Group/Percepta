@@ -65,7 +65,7 @@ class EVChargerHandler(EntityHandlerBase):
                 }})
 
         # Attach processed EV charger sessions to the message
-        message["charging_sessions"] = charging_sessions
+        message["observations"]["charging_sessions"] = charging_sessions
 
         # TODO: Implement logic to associate flexibility data with charging sessions.
         # Each session should contain user_id or VIN, and flexibility data must be mapped using this identifier.

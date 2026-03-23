@@ -3,7 +3,6 @@ from app.utils.providers import Provider
 from app.ic_actuation_request import ICActuationRequest
 
 def _ev_charger(result, entity_specs):
-    #print(f"{math.floor(valor * 10) / 10}")
     result = float(f"{result:.1f}")
 
     return {
@@ -30,9 +29,6 @@ class ICForwarder(ForwarderBase):
 
     # Se eu passar as specs assim por parâmetro secalhar é mais fácil depois tornar o Percepta dinâmico
     def to_forward(self, entity, result, entity_specs):
-        #if result == 0:
-         #   result = 1.6
-
         message = self._labels_functions_mapper[entity_specs['label']](result, entity_specs)
         self._logger.info(f"Message to IC: {message}")
 

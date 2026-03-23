@@ -1,0 +1,103 @@
+{
+    "R-H-01": {
+        "group": "living lab",
+        "entities": {
+            "GR01" : {
+                "parameters" : {
+                    "energy_in" : {
+                        "id" : "33682",
+                        "type": "Active energy+",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "TOTAL_COMSUMPTION_FORECAST"
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "id" : "33711",
+                        "type": "PV energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "pv_panel"
+            },
+            "B01" :  {
+                "parameters" : {
+                    "battery_charging_energy" : {
+                        "id" : "35927",
+                        "type": "Battery charging energy",
+                        "measurementUnit": "Kilowatt Hour",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        }
+                    },
+                    "state_of_charge" : {
+                        "id" : "33690",
+                        "type": "Battery State of charge",
+                        "measurementUnit": "Percentage",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "battery"
+            },
+            "EVC01" :  {
+                "parameters" : {
+                    "session_status" : {
+                        "id" : "37507",
+                        "type": "Session status",
+                        "measurementUnit": "Status"
+                    },
+                    "power" : {
+                        "id" : "41836",
+                        "type": "Power",
+                        "measurementUnit": "Kilowatt",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "mean",
+                            "fill_operation": "linear"
+                        }
+                    }
+                },
+                "label": "ev_charger"
+            }
+        }
+    },
+    "provider": "cleanwatts"
+}

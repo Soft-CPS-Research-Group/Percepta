@@ -11,7 +11,6 @@ class Harmonizer:
         self._logger = logger
         self._time_interval = time_interval
 
-    # TODO está a meter um intervalo a mais no inicio mas não faz muito muito mal, é só desnecessário
     def _calculate_time_index(self, timestamps: pd.DatetimeIndex, freq: int, unit: str, period_start_time: datetime.datetime,
                               period_end_time: datetime.datetime) -> pd.DatetimeIndex:
         # Find the first timestamp for the time_index
@@ -24,13 +23,14 @@ class Harmonizer:
         # Find the last timestamp for the time_index
         last = timestamps.max()  # take the largest real timestamp
         # Adjust so it ends >= period_end
+
         while last < period_end_time:
             last += pd.to_timedelta(freq, unit=unit)
 
         # Generate the complete sequence
         return pd.date_range(start=first, end=last, freq=f"{freq}{unit}")
 
-    def _data_trimmer(self, data: pd.DataFrame, start: datetime.datetime, end: datetime.datetime) -> None:
+    def _data_trimmer(self, entity_param, data: pd.DataFrame, start: datetime.datetime, end: datetime.datetime) -> None:
         """
         Trims and normalizes data intervals to fit within the period [start, end].
         Each row represents an interval [row_start, row_end] with an associated value.
@@ -45,6 +45,9 @@ class Harmonizer:
         Returns:
             pd.DataFrame: DataFrame with the original 'value' column adjusted to the window.
         """
+
+        print(f"Entity Param: {entity_param} DF4: \n\n{data}\n\n")
+
 
         for row in data.itertuples():
             row_start = getattr(row, "start")
@@ -80,11 +83,12 @@ class Harmonizer:
         value = periodicity.get("value")
         unit = periodicity.get("unit")  # e.g. "min", "s", "h"
         delta = pd.to_timedelta(value, unit=unit)
-
+        print(f"\nEntity Param: {entity_param} Period Start Time: {period_start_time} Period End Time: {period_end_time} Value: {value} Unit: {unit} Delta: {delta}\n")
         # Build expected time index for reindexing
         time_index = self._calculate_time_index(
             df.index, value, unit, period_start_time, period_end_time
         )
+
         df = df.reindex(time_index)
 
         # Apply filling method
@@ -99,7 +103,7 @@ class Harmonizer:
         df['start'] = df.index - delta
 
         if cumulative:
-            self._data_trimmer(df, period_start_time, period_end_time)
+            self._data_trimmer(entity_param, df, period_start_time, period_end_time)
 
         # Convert back to list of dicts
         updated_list = [

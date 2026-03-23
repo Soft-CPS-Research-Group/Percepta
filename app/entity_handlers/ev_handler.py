@@ -26,7 +26,7 @@ class EVHandler(EntityHandlerBase):
                     evs.update({ev_id: ev.get('data')})
 
         # Attach ev data to the outgoing message
-        message["electric_vehicles"] = evs
+        message["observations"]["electric_vehicles"] = evs
 
 
     def fallback(self, device_id, substitute_dict):
