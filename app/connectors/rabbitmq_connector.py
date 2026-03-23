@@ -143,23 +143,34 @@ class RabbitMQConnector:
 
     def declare_exchange(self, exchange_name: str = '', **kwargs) -> None:
         """
-        Declares an exchange with support for default configs (from init)
-        and overrides (via kwargs).
+        Declares an exchange. Checks if it exists first using passive=True.
+        If it doesn't exist, recovers the channel and declares it.
         """
         try:
-            # Check if the exchange already exists without creating it
+            # 1. Passive check: does not create, only verifies if exchange exists
+            # If it fails, RabbitMQ will force close the channel (404 Not Found)
             self._channel.exchange_declare(exchange=exchange_name, passive=True)
-            print(f"Exchange '{exchange_name}' already exists. Skipping.")
-        except Exception:
-            # If passive check fails, the exchange does not exist; proceed with declaration
-            print(f"Exchange '{exchange_name}' not found. Declaring...")
+            print(f"Exchange '{exchange_name}' already exists. Skipping declaration.")
 
+        except Exception:
+            # 2. Channel recovery: The previous channel is now invalid due to the 404 error
+            print(f"Exchange '{exchange_name}' not found or channel closed. Recovering channel...")
+
+            if self._connection and self._connection.is_open:
+                self._channel = self._connection.channel()
+            else:
+                raise RabbitMQError("Connection is closed; cannot recover channel to declare exchange.")
+
+            # 3. Actual declaration
             # Merge configuration: defaults + instance settings + method overrides
             exchange_conf = {**DEFAULT_EXCHANGE_CONF, **(self._exchange_conf or {}), **kwargs}
             filtered_conf = filter_keys(exchange_conf, ALLOWED_EXCHANGE_KEYS, 'exchange')
 
-            # Declare with the resolved configuration
-            self._channel.exchange_declare(exchange=exchange_name, **filtered_conf)
+            try:
+                self._channel.exchange_declare(exchange=exchange_name, **filtered_conf)
+                print(f"Exchange '{exchange_name}' declared successfully.")
+            except Exception as decl_error:
+                raise RabbitMQError(f"Critical error declaring exchange '{exchange_name}': {decl_error}")
 
     def declare_queue(self, queue_name: str = '', exchange_name: str = '', **kwargs) -> str:
         """
