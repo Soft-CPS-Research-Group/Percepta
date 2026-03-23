@@ -72,12 +72,8 @@ class Predictor:
                     self._forwarders[entity_provider].to_forward(entity, result.get(entity), self._entities[entity])
 
     def _save_data(self, message, result):
-        timestamp = message.pop('timestamp')
-        to_save : dict = {
-            "timestamp" : timestamp,
-            "observations" : message,
-            "decisions" : result
-        }
-        self._time_series_repository.write(to_save)
+        message['decisions'] = result
+
+        self._time_series_repository.write(message)
 
         return 0

@@ -2,6 +2,8 @@ import copy
 from app.entity_handlers.entity_handler_base import EntityHandlerBase
 from app.utils.labels import Label
 
+GRID_METER_PARAMETERS = ['energy_in_l1', 'energy_in_l2', "energy_in_l3", "energy_in_total", "energy_out_l1", "energy_out_l2", "energy_out_l3", "energy_out_total"]
+
 class GridMeterHandler(EntityHandlerBase):
     label = Label.GRID_METER.value
 
@@ -14,25 +16,30 @@ class GridMeterHandler(EntityHandlerBase):
     def process(self, message, all_data):
 
         # Retrieve the list of grid meter entities from the input data
-        grid_meter_entities = self._entities_ids.get('grid_meter')
+        grid_meter_entities = self._entities_ids.get('grid_meter', [])
 
         grid_meters = {}
 
         # Sum up the energy consumption (energy_in) from each grid meter entity
-        if grid_meter_entities:
-            for grid_meter_entity in grid_meter_entities:
-                grid_meter_values = all_data[grid_meter_entity]
-                energy_in = grid_meter_values.get('data', 0).get('energy_in', [])
+        for grid_meter_entity_id in grid_meter_entities:
+            grid_meter_values = all_data.get(grid_meter_entity_id, {})
+            data = grid_meter_values.get('data', {})
 
-                sum_aux = 0
+            if data:
+                entity_summary = {}
+                for param in GRID_METER_PARAMETERS:
+                    # Sum the values if the parameter exists and is a list
+                    values_list = data.get(param, [])
+                    if isinstance(values_list, list):
+                        accumulated_value = sum(item.get("value", 0) for item in values_list)
+                        entity_summary[param] = accumulated_value
+                    else:
+                        entity_summary[param] = 0
 
-                if isinstance(energy_in, list):
-                    for ei in energy_in:
-                        sum_aux += ei.get("value", 0)
+                grid_meters[grid_meter_entity_id] = entity_summary
 
-                    grid_meters.update({grid_meter_entity: {"energy_in" : sum_aux}})
 
-        message["grid_meters"] = grid_meters
+        message["observations"]["grid_meters"] = grid_meters
 
     def fallback(self, device_id, substitute_dict):
         # Try to get substitute data for the device
@@ -46,7 +53,5 @@ class GridMeterHandler(EntityHandlerBase):
         # If not valid or no substitute found, return fallback default
         return {
             'timestamp': 0,
-            'data': {
-                        'energy_in': None,
-                    }
+            'data': {param: 0.0 for param in GRID_METER_PARAMETERS}
         }

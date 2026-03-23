@@ -79,5 +79,35 @@ class DataSet:
            return value * 60
         else:
            return value
-       
-            
+
+    @staticmethod
+    def get_cron_expressions(total_seconds: int) -> dict:
+        """
+        Converts total seconds into an APScheduler Cron parameter dictionary.
+        Ensures the job runs at the most appropriate time unit to avoid 60-second limit issues.
+        """
+        if total_seconds <= 0:
+            raise ValueError("Time interval must be greater than zero.")
+
+        # Scenario 1: Interval is less than 1 minute
+        if total_seconds < 60:
+            return {"second": f"*/{total_seconds}"}
+
+        # Scenario 2: Interval is exactly in minutes (e.g., 120s, 300s)
+        if total_seconds % 60 == 0:
+            total_minutes = total_seconds // 60
+
+            # If it fits within an hour (e.g., every 2 or 45 minutes)
+            if total_minutes < 60:
+                return {"minute": f"*/{total_minutes}", "second": "0"}
+
+            # Scenario 3: Interval is exactly in hours (e.g., 3600s, 7200s)
+            if total_minutes % 60 == 0:
+                return {"hour": f"*/{total_minutes // 60}", "minute": "0", "second": "0"}
+
+            # Fallback for large minute intervals that aren't exact hours
+            return {"minute": f"*/{total_minutes}", "second": "0"}
+
+        # Fallback: For "uneven" intervals (e.g., 90s), cron might align poorly.
+        # It will trigger at second 0 and 30 of every minute.
+        return {"second": f"*/{total_seconds}"}

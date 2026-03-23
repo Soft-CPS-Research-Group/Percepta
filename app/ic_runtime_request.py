@@ -62,12 +62,17 @@ class ICRuntimeRequest:
         """Initialize RabbitMQ connection for publishing."""
         self._publisher_connector.connect()
         self._publisher_connector.declare_queue(self._RPC_QUEUE_NAME)
+
         self._logger.info(f"{self._LOG_PREFIX} Publisher connection established.")
 
     def _setup_consumer_service(self) -> None:
         """Initialize RabbitMQ connection for consuming responses."""
         self._consumer_connector.connect()
         self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
+        self._consumer_connector.setup_consumer(
+            queue_name=self._return_queue_name,
+            callback=self._on_response
+        )
         self._logger.info(f"{self._LOG_PREFIX} Consumer connection established (Queue: {self._return_queue_name}).")
 
     def _calculate_next_run_time(self) -> datetime.datetime:
@@ -103,8 +108,7 @@ class ICRuntimeRequest:
 
             # Start the consumer thread as a daemon to handle incoming responses
             consumer_thread = threading.Thread(
-                target=self._consumer_connector.consume,
-                args=(self._return_queue_name, self._on_response),
+                target=self._consumer_connector.start_listening,
                 daemon=True,
             )
             consumer_thread.start()

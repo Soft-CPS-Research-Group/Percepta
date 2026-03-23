@@ -12,29 +12,30 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
 
     _translator: EnergyPriceTranslator   # Translator which translates EnergyPrice-specific format into Percepta-specific format
 
-    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
+    def __init__(self, environment_name: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initializes the EnergyPriceReceiver instance.
 
         Args:
-            environment (str): Name of the environment the receiver will operate in.
+            environment_name (str): Name of the environment the receiver will operate in.
             environment_specs (dict): Specifications for the environment, including entities.
             configurations (dict): General configurations for the receiver, e.g., max reconnect attempts, frequency.
             logger (LoggingUtils): Logger instance for structured logging.
         """
-        super().__init__(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
 
-        self._time_interval = 3600
+        self._time_interval = 15*60
 
-        self._translator = EnergyPriceTranslator(environment, environment_specs, configurations, logger)
+        self._translator = EnergyPriceTranslator(environment_name, environment_specs, configurations, logger)
 
-        self._job()
+        #time.sleep(2) # TODO dar tempo para que os preços atualizem do outro lado, verificar se é a melhor alternativa
+        #self._job()
 
     def stop(self):
         """
         Stops the receiver and gracefully stops the Electricity Price Fetcher.
         """
-        self._logger.info(f"Stopping thread {self._environment}...")
+        self._logger.info(f"Stopping thread {self._environment_name}...")
         super().stop()
 
         ElectricityPriceFetcher.stop_electricity_price_fetcher_service()
@@ -46,13 +47,14 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
             - Retrieves raw data for all configured entities and parameters in parallel.
             - Passes collected data to CWTranslator after all requests complete.
         """
-        utc_hour = datetime.datetime.now(datetime.timezone.utc).hour
         self._logger.info("Energy Price called")
-        self._translator.translate(
-            {
-                "value" : ElectricityPriceFetcher.get_price(utc_hour),
-                "entity_id" : "EP"
-            })
+
+        message_to_translate = {
+                "value" : ElectricityPriceFetcher.get_future_prices(),
+                "entity_id" : "OMIE" # TODO arranjar maneira de ir buscar as configurações o nome
+            }
+
+        self._translator.translate(message_to_translate)
 
     @classmethod
     def launch(cls, environments : dict, configurations : dict):

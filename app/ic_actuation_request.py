@@ -1,9 +1,6 @@
-import uuid
-import time
 import threading
 from typing import Any
 from app.connectors.rabbitmq_connector import RabbitMQConnector
-from app.utils.data import DataSet
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
 
@@ -54,6 +51,10 @@ class ICActuationRequest:
         self._consumer_connector = RabbitMQConnector(self._server)
         self._consumer_connector.connect()
         self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
+        self._consumer_connector.setup_consumer(
+            queue_name=self._return_queue_name,
+            callback=self._on_response
+        )
         self._logger.info("IC Runtime Request: Consumer connection established.")
 
     def _start_service(self) -> None:
@@ -63,8 +64,7 @@ class ICActuationRequest:
 
         # Thread to consume messages
         self._consumer_thread = threading.Thread(
-            target=self._consumer_connector.consume,
-            args=(self._return_queue_name, self._on_response),
+            target=self._consumer_connector.start_listening,
             daemon=False,
         )
         self._consumer_thread.start()
@@ -87,7 +87,6 @@ class ICActuationRequest:
         - Sets message properties including reply queue and unique message ID.
         - Waits briefly before publishing to ensure the consumer is ready.
         """
-
 
         self._publisher_connector.publish(
             "RPC",

@@ -44,11 +44,11 @@ class BatteryHandler(EntityHandlerBase):
 
                 batteries.update({battery_id: {
                     "energy_in": total_battery_changing_energy,
-                    "last_soc": last_soc,
+                    "SoC": last_soc,
                 }})
 
         # Attach battery data to the outgoing message
-        message["batteries"] = batteries
+        message["observations"]["batteries"] = batteries
 
 
     def fallback(self, device_id, substitute_dict):
@@ -65,7 +65,8 @@ class BatteryHandler(EntityHandlerBase):
         return {
             'timestamp': 0,
             'data': {
-                'battery_charging_energy': None,
+                'energy_in': None,
+                'energy_out': None,
                 'SoC': None
             }
         }

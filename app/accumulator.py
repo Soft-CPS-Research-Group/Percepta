@@ -56,12 +56,13 @@ class Accumulator(threading.Thread):
             self._rabbitmq_connector.declare_queue(self._environment)
 
             self._logger.info(f"Connection successfully established. ACC")
-
-            self._rabbitmq_connector.consume(
+            self._rabbitmq_connector.setup_consumer(
                 queue_name=self._environment,
                 callback=self._callback,
                 auto_ack=False
             )
+
+            self._rabbitmq_connector.start_listening()
 
         with_retries(
             _start_messaging_service_auxiliar,

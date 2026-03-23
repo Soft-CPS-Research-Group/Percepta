@@ -1,10 +1,13 @@
-import atexit
+import threading
+import json
+import subprocess
 from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from app.utils.logger import LoggingUtils
 from app.exceptions import general_exceptions
-from app.utils.retry import with_persistent_retries
+from app.utils.retry import with_retries
+from zoneinfo import ZoneInfo
 
 
 class ElectricityPriceFetcher:
@@ -34,21 +37,21 @@ class ElectricityPriceFetcher:
         cls._max_reconnect_attempts = configurations.get('max_reconnect_attempts')
         cls._server = cls._ren_configurations.get('receiver_server')
         cls._data_resource = cls._server.get('resources').get("data")
-        cls._start_http_service()
-        cls._fetch_prices(datetime.now())
 
-        # Configure the scheduler
-        cls._scheduler = BackgroundScheduler()
-        # Schedule daily job at 23:30
-        cls._scheduler.add_job(cls._run_job, 'cron', hour=23, minute=30)
+        cls._time_interval = 900 # seconds
 
-        cls._scheduler.start()
+        cls._send_event = threading.Event()
+        cls._timer_ended = threading.Condition()
 
-        # Ensure the scheduler shuts down on exit
-        # atexit.register(lambda: cls._scheduler.shutdown())
+        cls._tz_cet = ZoneInfo("Europe/Madrid")
+        cls._tz_utc = ZoneInfo("UTC")
+
+        cls._prices_with_timestamps = {}
+
+        cls._start_service()
 
     @classmethod
-    def _start_http_service(cls):
+    def _start_service(cls):
         """
         Initializes the HTTP service by creating a connection to the server.
         Retries the connection using the `with_retries` utility.
@@ -59,38 +62,124 @@ class ElectricityPriceFetcher:
 
         def _start_http_service_auxiliar():
             cls._http_connector = HTTPConnector(cls._server.get('url'))
-            cls._logger.info(f"CWLogin: Connection successfully established.")
+            cls._logger.info(f"Electricity Price Fetcher: Connection successfully established.")
 
-        with_persistent_retries(func=_start_http_service_auxiliar, logger=cls._logger)
+            cls._update_energy_price()
+
+            cls._scheduler = BackgroundScheduler(timezone=cls._tz_cet)
+
+            cls._scheduler.add_job(
+                cls._run_job,
+                trigger='cron',
+                hour=13,
+                minute=5,
+                misfire_grace_time=300,
+                next_run_time=datetime.now(cls._tz_cet),
+                coalesce=True,
+                id='daily_price_fetch'
+            )
+
+            # Publicação em Portugal: Como Portugal está no fuso horário WET (uma hora a menos que Espanha/CET), o leilão termina às 11:00 (hora de Lisboa).
+            # Disponibilidade dos Resultados: Os preços horários finais são normalmente publicados no site por volta das 12:45 CET, o que equivale às 11:45 em Portugal continental.
+
+            cls._scheduler.start()
+
+        with_retries(func=_start_http_service_auxiliar, logger=cls._logger)
 
     @classmethod
-    def _fetch_next_day_prices(cls):
-        tomorrow = datetime.now() + timedelta(days=1)
-        cls._fetch_prices(tomorrow)
+    def _update_dates(cls, prices: list, date: datetime):
+        """
+        Converts the price list (received in CET/CEST) to UTC keys and updates the internal dictionary.
+        Handles potential errors during timezone conversion or list iteration.
 
-    @classmethod
-    def _fetch_prices(cls, date):
+        Args:
+            prices (list): A list of prices (e.g., 96 for 15-min intervals).
+            date (datetime): The reference date for the received prices.
         """
-        Sends a request to the API for the next day's prices and updates self.prices_pt
-        """
+        if not prices:
+            raise Exception("Electricity Price Fetcher: Received empty price list. Skipping update.")
 
         try:
 
-            date_str = date.strftime("%Y-%m-%d")
+            # Start at midnight of the provided date in the Madrid timezone
+            # Using .replace to ensure we have a clean start at 00:00:00
+            current_time_madrid = datetime(
+                date.year, date.month, date.day, 0, 0, tzinfo=cls._tz_cet
+            )
 
-            response = cls._http_connector.get(endpoint=f"{cls._data_resource}?culture=pt-PT&date={date_str}",timeout=5)
-            data = response.json()
+            cls._logger.info(f"Electricity Price Fetcher: Processing {len(prices)} price points for {date.date()}...")
 
-            # Extract Portugal prices
-            pt_series = next((s for s in data.get("series", []) if s.get("name") == "PT"), None)
-            if pt_series and "data" in pt_series:
-                cls._prices = pt_series["data"]
-                print(f"[{datetime.now()}] Prices for {date_str} updated successfully. {cls._prices}\n")
-            else:
-                print(f"[{datetime.now()}] Could not find Portugal prices in the response.")
+            for index, price in enumerate(prices):
+                try:
+                    # Convert the Madrid local time to UTC
+                    time_utc = current_time_madrid.astimezone(cls._tz_utc)
+
+                    # Store in the dictionary: { datetime(UTC) : price }
+                    cls._prices_with_timestamps[time_utc] = price
+
+                    # Increment by the defined interval (e.g., 15 minutes)
+                    current_time_madrid += timedelta(seconds=cls._time_interval)
+
+                except Exception as e:
+                    cls._logger.error(f"Electricity Price Fetcher: Error processing price point at index {index}: {e}")
+                    # We continue to the next price point instead of failing the whole batch
+                    continue
+
+            cls._logger.info(f"Electricity Price Fetcher: Successfully updated UTC price map.")
+
+            try:
+                # Define a safety margin: keep data from the last 2 hours to avoid "not found"
+                # errors during slight clock skews or overlapping requests.
+                expiry_limit = datetime.now(cls._tz_utc) - timedelta(hours=2)
+
+                # Create a new dictionary filtering out old timestamps.
+                # This operation is atomic-like and prevents "dict size changed" errors.
+                cls._prices_with_timestamps = {
+                    ts: p for ts, p in cls._prices_with_timestamps.items()
+                    if ts >= expiry_limit
+                }
+                cls._logger.info(
+                    f"Electricity Price Fetcher: Cleanup successful. Cache size: {len(cls._prices_with_timestamps)}")
+
+            except Exception as e:
+                raise Exception(f"Electricity Price Fetcher: Error during memory cleanup: {e}")
 
         except Exception as e:
-            print(f"[{datetime.now()}] Error fetching prices: {e}")
+            # Catch-all for initialization errors (e.g., invalid ZoneInfo or Date)
+            raise Exception(f"Electricity Price Fetcher: Critical error during _update_dates: {e}")
+
+    @classmethod
+    def _update_energy_price(cls, date=None):
+        if not date:
+            date = datetime.now()
+
+        date_str = date.strftime("%Y-%m-%d")  # Formato yyyy-mm-dd
+
+        prices = []
+
+        def _update_energy_price_aux():
+
+            nonlocal prices
+
+            cmd = ["pyomie", date_str]
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                prices = (json.loads(result.stdout)).get("pt_spot_price")
+            except Exception as e:
+                raise Exception(f"{e}") # TODO arranjar texto para meter aqui
+
+        with_retries(_update_energy_price_aux, retry_config={"max_retries": 100, "timeout": 60*5}, logger=cls._logger)  # TODO Ver melhor estas partes dos retries
+
+        if prices:
+            cls._send_event.clear()
+            with cls._timer_ended:
+
+                cls._update_dates(prices, date)
+
+                cls._send_event.set()
+
+                cls._timer_ended.notify_all()
+
 
     @classmethod
     def _run_job(cls):
@@ -101,32 +190,43 @@ class ElectricityPriceFetcher:
             general_exceptions.SchedulerJobError: If the scheduled job fails.
         """
         try:
-            cls._fetch_next_day_prices()
+            tomorrow = datetime.now() + timedelta(days=1)
+            cls._update_energy_price(tomorrow)
         except Exception as e:
             cls._logger.error(f"CWLogin: Scheduled job failed: {e}")
             raise general_exceptions.SchedulerJobError(f"Scheduled job error: {e}") from e
 
+    # TODO se for útil adicionar método que envia todos os dados daquele dia ao em vez de todos os dados a partir daquele momento
     @classmethod
-    def get_price(cls, hour: int):
+    def get_future_prices(cls):
         """
-        Returns the price for a specific hour (0-23)
-
-        Args:
-            hour (int): hour of the day (0 to 23)
-
-        Returns:
-            float | None: price for the hour or None if not available
+        Returns a list of all available prices from the current 15-min block onwards.
         """
-        if 0 <= hour <= 23:
-            print(f"prices {cls._prices} for hour {hour}\n")
-            if cls._prices[hour] is None:
-                price = 0
-            else:
-                price = cls._prices[hour]
-            return price
-        else:
-            raise ValueError("Hour must be between 0 and 23")
+        # 1. Get current time in UTC, rounded down to the nearest 15-min interval
+        now_utc = datetime.now(ZoneInfo("UTC"))
 
+        time_interval_minutes = cls._time_interval // 60
+        current_block = now_utc.replace(
+            minute=(now_utc.minute // time_interval_minutes) * time_interval_minutes,
+            second=0,
+            microsecond=0
+        )
+
+        with cls._timer_ended:
+
+            while not cls._send_event.is_set():
+                cls._timer_ended.wait(timeout=10)
+
+            # 2. Filter the dictionary for all keys >= current_block
+            # We sort the keys to ensure the timeline is correct
+            # If there is no values, the dictionary returned will be empty
+            future_prices = {
+                ts: cls._prices_with_timestamps[ts]
+                for ts in sorted(cls._prices_with_timestamps.keys())
+                if ts >= current_block
+            }
+
+        return future_prices
 
     @classmethod
     def stop_electricity_price_fetcher_service(cls):

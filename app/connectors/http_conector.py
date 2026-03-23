@@ -36,6 +36,8 @@ class HTTPConnector:
             # Create a persistent HTTP session
             self._session = requests.Session()
 
+            self._session.verify = False # TODO para fase de testes
+
         except Exception as e:
             raise HTTPErrorWrapper(f"Error initializing HTTP session: {e}") from e
 
@@ -69,7 +71,6 @@ class HTTPConnector:
         try:
             # Send the HTTP request using the session object
             response = self._session.request(method=method, url=url, **kwargs)
-
             # Check if the response status code indicates an error (3xx, 4xx, 5xx)
             if 300 <= response.status_code < 600:
                 # Raise a custom wrapped error with details about the failed request

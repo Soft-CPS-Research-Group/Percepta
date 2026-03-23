@@ -38,3 +38,25 @@ class EnvironmentRepository(ABC):
                     limited to those provided by the specified provider.
         """
         raise NotImplementedError()
+
+    @abstractmethod
+    def get_configurations_by_provider(self, provider: str) -> dict:
+        """
+        Returns all configurations related to a specific provider.
+        args:
+          provider (str): Name or ID of the data provider to filter environments by
+
+        Returns:
+          dict -> A dictionary of configurations provided by the specified provider.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_all_configurations(self) -> dict:
+        """
+        Returns all configurations.
+        Returns:
+           dict -> A dictionary of all configurations provided all the providers.
+        """
+        raise NotImplementedError()
+

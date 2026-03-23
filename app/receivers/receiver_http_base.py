@@ -1,3 +1,4 @@
+import datetime
 from abc import abstractmethod
 from app.receivers.receiver_base import ReceiverBase
 from apscheduler.schedulers.background import BlockingScheduler
@@ -18,17 +19,17 @@ class ReceiverHTTPBase(ReceiverBase):
     _time_interval: int # Interval in seconds for scheduling the periodic job
     _scheduler: BlockingScheduler # Scheduler that blocks the main thread while running
 
-    def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
+    def __init__(self, environment_name: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
         Initialize the receiver with environment settings, HTTP connector, and scheduling interval.
 
         Args:
-            environment (str): Name of the environment the receiver will operate in.
+            environment_name (str): Name of the environment the receiver will operate in.
             environment_specs (dict): Specifications for the environment, including entities.
             configurations (dict): General configurations passed to the translator.
             logger (LoggingUtils): Logger instance for structured logging.
         """
-        super().__init__(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
 
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
         self._server = self._provider_configurations.get('receiver_server')
@@ -74,7 +75,6 @@ class ReceiverHTTPBase(ReceiverBase):
 
         # Perform GET request
         response = self._http_connector.get(resource, timeout)
-
         # Check HTTP status
         if response.status_code != 200:
             raise HTTPErrorWrapper(
@@ -104,29 +104,17 @@ class ReceiverHTTPBase(ReceiverBase):
         runs the job immediately once, and then starts the scheduler loop.
         """
         self._scheduler = BlockingScheduler()
-        total_seconds = self._time_interval
 
-        # Convert the interval from seconds to hours and minutes
-        hours = total_seconds // 3600
-        minutes = (total_seconds % 3600) // 60
-
-        # Dynamically define cron arguments based on the interval
-        cron_args = {}
-        if hours > 0:
-            cron_args['hour'] = f'*/{hours}'
-        if minutes > 0:
-            cron_args['minute'] = f'*/{minutes}'
+        cron_kwargs = DataSet.get_cron_expressions(self._time_interval)
 
         self._scheduler.add_job(
             self._job,
             'cron',
             misfire_grace_time=10,
+            next_run_time=datetime.datetime.now(),
             coalesce=True,
-            **cron_args
+            **cron_kwargs
         )
-
-        # Run the job immediately once before scheduling
-        # self._job()
 
         # Start the scheduler loop
         self._scheduler.start()

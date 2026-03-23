@@ -17,30 +17,30 @@ class PCReceiver(ReceiverRabbitMQBase):
     provider = Provider.PULSECHARGE.value
     _translator: PCTranslator
 
-    def __init__(self, environment: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
+    def __init__(self, environment_name: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
         """
         Initialize the ICReceiver instance.
 
         Args:
-            environment (str): Environment name.
+            environment_name (str): Environment name.
             environment_specs (dict): Environment-specific configurations.
             configurations (dict): General configurations for the receiver.
             logger (LoggingUtils): Logger instance for logging events.
         """
-        self._exchange_name: str = f"building_{environment.replace(' ', '_')}"
+        self._exchange_name: str = f"building_{environment_name.replace(' ', '_')}"
         print(f"INICIEI {self._exchange_name}\n")
-        super().__init__(environment, environment_specs, configurations, logger)
-        self._translator = PCTranslator(environment, environment_specs, configurations, logger)
+        super().__init__(environment_name, environment_specs, configurations, logger)
+        self._translator = PCTranslator(environment_name, environment_specs, configurations, logger)
 
     def stop(self) -> None:
         """
         Stop the receiver and translator threads gracefully.
         Ensures proper cleanup and logs stop events.
         """
-        self._logger.info(f"{self.provider} | Stopping thread {self._environment}...")
+        self._logger.info(f"{self.provider} | Stopping thread {self._environment_name}...")
         super().stop()
         self._translator.stop()
-        self._logger.info(f"{self.provider} | Thread {self._environment} stopped.")
+        self._logger.info(f"{self.provider} | Thread {self._environment_name} stopped.")
 
     def _process_message(self, body: Any) -> None:
         """

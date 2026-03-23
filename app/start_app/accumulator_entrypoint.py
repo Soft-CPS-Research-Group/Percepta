@@ -11,6 +11,7 @@ def launch_accumulator_service(environment_repository: EnvironmentRepository,
     logger.info("Starting Accumulator...")
 
     all_environments = environment_repository.get_environments()
+    all_provider_configs = environment_repository.get_all_configurations()
     threads = []
 
     try:
@@ -18,7 +19,7 @@ def launch_accumulator_service(environment_repository: EnvironmentRepository,
             group = environment_specs.get('group')
             time_series_repository = repository_factory.build_time_series_repository(group, current_environment)
             factory = AccumulatorContextFactory(current_environment, environment_specs, configurations, logger)
-            predictor = factory.build_predictor(time_series_repository)
+            predictor = factory.build_predictor(all_provider_configs, time_series_repository)
             manager = factory.build_manager(time_series_repository, predictor)
             accumulator = factory.build_accumulator(manager)
 
