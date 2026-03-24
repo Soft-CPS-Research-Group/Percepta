@@ -42,7 +42,7 @@ class PCReceiver(ReceiverRabbitMQBase):
         self._translator.stop()
         self._logger.info(f"{self.provider} | Thread {self._environment_name} stopped.")
 
-    def _process_message(self, body: Any) -> None:
+    def _process_message(self, body: Any, source: str) -> None:
         """
         Process an incoming message by sending it to the translator.
 
