@@ -18,7 +18,7 @@ class Harmonizer:
         first = timestamps.min()  # take the smallest real timestamp
         # Adjust so it starts <= period_start
 
-        tolerance = pd.to_timedelta(1, unit='s')
+        tolerance = pd.to_timedelta(1, unit='s') # TODO acho que isto é necessario porque o period_start_time e period_end_time não estão super precisos
 
         while first > (period_start_time + tolerance):
             first -= pd.to_timedelta(freq, unit=unit)

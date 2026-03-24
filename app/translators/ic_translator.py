@@ -246,6 +246,8 @@ class ICTranslator(TranslatorRabbitMQBase):
                 if attr_processed:
                     message_list.extend(attr_processed)
 
+        self._logger.info(f"MESSAGES LIST {message_list}")
+
         # Send the final standardized message list to the environment queue.
         self.send_message_to_environment_queue(message_list)
 
