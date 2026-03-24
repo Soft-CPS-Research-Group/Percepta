@@ -188,17 +188,18 @@ class RabbitMQConnector:
 
 
         # Declare the queue with the resolved configuration
-        self._channel.queue_declare(queue=queue_name, **filtered_conf)
+        declaration_result = self._channel.queue_declare(queue=queue_name, **filtered_conf)
+        real_queue_name = declaration_result.method.queue
 
         # Optionally bind the queue to an exchange
         if exchange_name:
 
             self._channel.queue_bind(
                 exchange=exchange_name,
-                queue=queue_name
+                queue=real_queue_name
             )
 
-        return queue_name
+        return real_queue_name
 
     def publish(self, queue_name: str, message: dict, exchange_name: str = "", **kwargs) -> None:
         """

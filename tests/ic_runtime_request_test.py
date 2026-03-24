@@ -4,8 +4,8 @@ from app.ic_runtime_request import ICRuntimeRequest  # adjust import path to you
 
 # -------- Required configurations --------
 environments = {
-    "i-charging headquarters 3Phase": {
-        "group": "i-charging headquarters 3Phase",
+    "SaoMamede": {
+        "group": "SaoMamede",
         "entities": {
             "AC000001_1": {
                 "parameters": {
@@ -32,7 +32,7 @@ configurations = {
         "type": "amqp",
         "receiver_server": {
             "host": "softcps.dei.isep.ipp.pt",
-            "port": 5673,
+            "port": 5674,
             "heartbeat": 660,
             "auth": {
                 "username": "dataprovider",
@@ -51,7 +51,7 @@ configurations = {
         },
     },
     "frequency": {
-        "value": 300,
+        "value": 0,
         "unit": "seconds"
     },
     "log_files": {
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     try:
         time_interval = DataSet.calculate_interval(configurations.get('frequency'))
 
-        ic_runtime = ICRuntimeRequest(["i-charging headquarters 3Phase"], configurations, time_interval, logger)
+        ic_runtime = ICRuntimeRequest(["SaoMamede"], configurations, time_interval, logger)
         logger.info("Initializing runtime request...")
 
         # Start background service (sends request and listens for responses)
