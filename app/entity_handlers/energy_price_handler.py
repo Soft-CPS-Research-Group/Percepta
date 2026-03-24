@@ -21,7 +21,7 @@ class EnergyPriceHandler(EntityHandlerBase):
         for energy_price_entity_id in energy_price_entities:
             energy_price_values = all_data.get(energy_price_entity_id, {})
             data = energy_price_values.get('data', {})
-
+            self._logger.info(f"Energy Price Data: {data}")
             if data:
                 entity_summary = {}
                 for param in ENERGY_TARIFFS_PARAMETERS:
