@@ -1,5 +1,4 @@
 import threading
-from functools import partial
 from abc import abstractmethod
 from app.receivers.receiver_base import ReceiverBase
 from app.connectors.rabbitmq_connector import RabbitMQConnector
