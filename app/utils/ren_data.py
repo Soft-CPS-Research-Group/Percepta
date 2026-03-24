@@ -68,13 +68,17 @@ class ElectricityPriceFetcher:
 
             cls._scheduler = BackgroundScheduler(timezone=cls._tz_cet)
 
+            now_cet = datetime.now(cls._tz_cet)
+            cutoff_today = now_cet.replace(hour=13, minute=5, second=0, microsecond=0)
+            run_immediately = now_cet if now_cet > cutoff_today else None
+
             cls._scheduler.add_job(
                 cls._run_job,
                 trigger='cron',
                 hour=13,
                 minute=5,
                 misfire_grace_time=300,
-                next_run_time=datetime.now(cls._tz_cet),
+                next_run_time=run_immediately,
                 coalesce=True,
                 id='daily_price_fetch'
             )
