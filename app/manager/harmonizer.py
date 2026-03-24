@@ -17,14 +17,17 @@ class Harmonizer:
         # It should be a multiple of the frequency and <= period_start
         first = timestamps.min()  # take the smallest real timestamp
         # Adjust so it starts <= period_start
-        while first > period_start_time:
+
+        tolerance = pd.to_timedelta(1, unit='s')
+
+        while first > (period_start_time + tolerance):
             first -= pd.to_timedelta(freq, unit=unit)
 
         # Find the last timestamp for the time_index
         last = timestamps.max()  # take the largest real timestamp
         # Adjust so it ends >= period_end
 
-        while last < period_end_time:
+        while last < (period_end_time - tolerance):
             last += pd.to_timedelta(freq, unit=unit)
 
         # Generate the complete sequence
