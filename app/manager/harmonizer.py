@@ -83,7 +83,7 @@ class Harmonizer:
         value = periodicity.get("value")
         unit = periodicity.get("unit")  # e.g. "min", "s", "h"
         delta = pd.to_timedelta(value, unit=unit)
-        print(f"\nEntity Param: {entity_param} Period Start Time: {period_start_time} Period End Time: {period_end_time} Value: {value} Unit: {unit} Delta: {delta}\n")
+        self._logger.info(f"\nEntity Param: {entity_param} Period Start Time: {period_start_time} Period End Time: {period_end_time} Value: {value} Unit: {unit} Delta: {delta}\n")
         # Build expected time index for reindexing
         time_index = self._calculate_time_index(
             df.index, value, unit, period_start_time, period_end_time
