@@ -225,7 +225,7 @@ class ElectricityPriceFetcher:
                 for ts in sorted(cls._prices_with_timestamps.keys())
                 if ts >= current_block
             }
-
+        cls._logger.info(f"Future Prices: {future_prices}")
         return future_prices
 
     @classmethod
