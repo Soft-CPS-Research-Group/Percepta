@@ -110,6 +110,7 @@ class Manager:
                 continue
 
             entity_params = data.get(entity_id).get('data')
+            self._logger.info(f"ENTITY PARAMS: {entity_params}")
             # TODO: Isto serve para não dar erro quando o parâmetro está a NaN
             for param, param_data in entity_params.items():
                 if isinstance(param_data, list):
