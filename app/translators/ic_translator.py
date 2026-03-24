@@ -1,5 +1,6 @@
 import datetime
 import json
+from zoneinfo import ZoneInfo
 from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
 from app.utils.labels import Label
@@ -36,6 +37,19 @@ class ICTranslator(TranslatorRabbitMQBase):
             "meter.values": self._meter,
             "charging.session": self._ev_charger
         }
+
+        self._tz = self._set_time_zone()
+
+        # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
+
+    def _set_time_zone(self) -> ZoneInfo:
+        # Get the current timestamp in UTC without microseconds
+        tz_name = self._configurations.get("timezone", "UTC")
+        try:
+            return ZoneInfo(tz_name)
+        except Exception:
+            self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
+            return ZoneInfo("UTC")
 
     def _ev_charger(self, charging_sessions: list, timestamp: str) -> list:
         """
@@ -224,7 +238,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         message_dict: dict = json.loads(message.decode('utf-8')).get('observation')
 
         # Generate a timestamp for when the message is being processed.
-        timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp: str = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
 
         # Initialize an empty list that will hold the translated messages.
         message_list: list = []

@@ -69,6 +69,7 @@ class ICRuntimeRequest:
         """Initialize RabbitMQ connection for consuming responses."""
         self._consumer_connector.connect()
         self._return_queue_name: str = self._consumer_connector.declare_queue(exclusive=True)
+        print(f"Queue name {self._return_queue_name}")
         self._consumer_connector.setup_consumer(
             queue_name=self._return_queue_name,
             callback=self._on_response
@@ -81,6 +82,10 @@ class ICRuntimeRequest:
         Aligns the schedule to the next 'round' multiple of the interval (e.g., top of the hour).
         """
         now = datetime.datetime.now()
+
+        if self._time_interval <= 0:
+            return now.replace(microsecond=0)
+
         now_ts = now.timestamp()
 
         # Calculate seconds until the next multiple of the interval
