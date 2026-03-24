@@ -114,7 +114,7 @@ class Manager:
             # TODO: Isto serve para não dar erro quando o parâmetro está a NaN
             for param, param_data in entity_params.items():
                 if isinstance(param_data, list):
-                    temporal_behavior = entity_values.get('parameters').get(param).get('temporal_behavior')
+                    temporal_behavior = entity_values.get('parameters', {}).get(param, {}).get('temporal_behavior', {})
 
                     if temporal_behavior is not None:
 
