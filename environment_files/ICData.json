@@ -338,10 +338,10 @@
             }
         }
     }
-    },
-    "configurations" : {
-        "source_mapping": {
-            "strategy": "environment"
+        },
+        "configurations" : {
+            "source_mapping": {
+                "strategy": "environment"
+            }
         }
-    }
 }
