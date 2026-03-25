@@ -18,8 +18,8 @@ def _ev_charger(result, entity_specs):
 class ICForwarder(ForwarderBase):
     provider = Provider.ICHARGING.value
 
-    def __init__(self, configurations, logger):
-        super().__init__(configurations, logger)
+    def __init__(self, environment, environment_specs, configurations, logger):
+        super().__init__(environment, environment_specs, configurations, logger)
 
         self._ic_actuation_request = ICActuationRequest(configurations, logger)
 

@@ -18,8 +18,8 @@ def register_label_strategy(name):
 class ICForwarder(ForwarderBase):
     provider = Provider.ICHARGING.value
 
-    def __init__(self, configurations, logger):
-        super().__init__(configurations, logger)
+    def __init__(self, environment, environment_specs, configurations, logger):
+        super().__init__(environment, environment_specs, configurations, logger)
 
         server_config = configurations.get("i-charging").get("receiver_server")
         self._protocol = RabbitMQForwardingProtocol(server_config, logger)

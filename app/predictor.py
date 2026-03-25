@@ -38,12 +38,6 @@ class Predictor:
         
     def _energaize(self, message) -> dict:
         message['timestamp'] = message.get('timestamp').strftime("%Y-%m-%dT%H:%M:%SZ")
-        '''if message.get('electric_vehicles') is not None:
-            message['electric_vehicles']['2']['flexibility'] = {
-                        "estimated_soc_at_departure" : 1,
-                        "estimated_time_at_departure" : '2025-11-25T23:00:00Z'
-                    }
-            message['electric_vehicles']['2']['SoC'] = 0.53'''
 
         self._logger.info(f"EnergAIze message: {message}")
 
