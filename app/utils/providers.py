@@ -5,4 +5,5 @@ class Provider(Enum):
     CLEANWATTS_2 = "cleanwatts_2"
     ICHARGING = "i-charging"
     PULSECHARGE = "pulsecharge"
-    REN = "ren"
+    REN = "ren",
+    SOFTCPS = "softCPS"

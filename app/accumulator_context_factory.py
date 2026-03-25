@@ -25,9 +25,12 @@ class AccumulatorContextFactory:
                 label_map[label].append(entity_id)
         return label_map
 
-    def build_predictor(self, all_provider_configs, time_series_repository):
+    def build_forwarders(self, all_provider_configs):
+        forwarder_logger = LoggingUtils("forwarder", self._configurations, self._environment)
+        return build_forwarder(self._environment, self._environment_specs, all_provider_configs, self._configurations, forwarder_logger)
+
+    def build_predictor(self, forwarders, time_series_repository):
         predictor_logger = LoggingUtils("predictor", self._configurations, self._environment)
-        forwarders = build_forwarder(all_provider_configs, self._configurations, predictor_logger)
         return Predictor(self._environment, self._environment_specs, time_series_repository, forwarders, self._configurations, predictor_logger)
 
     def build_manager(self, time_series_repository, predictor):

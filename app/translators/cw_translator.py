@@ -36,18 +36,6 @@ class CWTranslator(TranslatorRabbitMQBase):
             "ev_charger": self._ev_charger
         }
 
-        self._tz = self._set_time_zone()
-
-    # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
-    def _set_time_zone(self) -> ZoneInfo:
-        # Get the current timestamp in UTC without microseconds
-        tz_name = self._configurations.get("timezone", "UTC")
-        try:
-            return ZoneInfo(tz_name)
-        except Exception:
-            self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
-            return ZoneInfo("UTC")
-
     def _build_result(self, param_values_list, default_value=0):
         if not param_values_list:
             return []

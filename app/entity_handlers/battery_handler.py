@@ -23,18 +23,24 @@ class BatteryHandler(EntityHandlerBase):
             for battery_id in batteries_entities:
                 battery = all_data.get(battery_id)
 
-                total_battery_changing_energy = 0.0
+                total_battery_charging_energy = 0.0
+                total_battery_discharging_energy = 0.0
                 last_soc = 0
 
                 if battery:
                     # Add battery data to the results list
                     battery_data = battery.get('data')
-                    battery_energy_array = battery_data.get('battery_charging_energy')
+                    battery_energy_array = battery_data.get('energy_in')
                     if battery_energy_array and isinstance(battery_energy_array, list):
                         for be in battery_energy_array:
-                            total_battery_changing_energy += be.get('value')
+                            total_battery_charging_energy += be.get('value')
 
-                    soc_array = battery_data.get('state_of_charge')
+                    battery_discharging_array = battery_data.get('energy_out')
+                    if battery_discharging_array and isinstance(battery_discharging_array, list):
+                        for be in battery_discharging_array:
+                            total_battery_discharging_energy += be.get('value')
+
+                    soc_array = battery_data.get('SoC')
                     if soc_array and isinstance(soc_array, list):
                         last_soc = max(
                             soc_array,
@@ -43,7 +49,8 @@ class BatteryHandler(EntityHandlerBase):
 
 
                 batteries.update({battery_id: {
-                    "energy_in": total_battery_changing_energy,
+                    "energy_in": total_battery_charging_energy,
+                    "energy_out": total_battery_discharging_energy,
                     "SoC": last_soc,
                 }})
 

@@ -19,7 +19,8 @@ def launch_accumulator_service(environment_repository: EnvironmentRepository,
             group = environment_specs.get('group')
             time_series_repository = repository_factory.build_time_series_repository(group, current_environment)
             factory = AccumulatorContextFactory(current_environment, environment_specs, configurations, logger)
-            predictor = factory.build_predictor(all_provider_configs, time_series_repository)
+            forwarders = factory.build_forwarders(all_provider_configs)
+            predictor = factory.build_predictor(forwarders, time_series_repository)
             manager = factory.build_manager(time_series_repository, predictor)
             accumulator = factory.build_accumulator(manager)
 

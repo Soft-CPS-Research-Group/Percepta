@@ -1,7 +1,7 @@
 import time
 import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
+from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
 from app.exceptions import general_exceptions
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries, with_persistent_retries

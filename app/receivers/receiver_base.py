@@ -30,6 +30,9 @@ class ReceiverBase(ABC, threading.Thread):
         self._entities = environment_specs.get('entities')
         self._configurations = configurations
         self._provider_configurations = configurations.get(self.provider)
+        if self._provider_configurations is None:
+            raise Exception(f'No provider configuration provided for {self.provider}. Please check the runtimeconfigurations.json file.')
+
         self._logger = logger
 
         source_mapper = SourceMapper(environment_name, environment_specs, configurations.get("source_mapping", {}), logger)
