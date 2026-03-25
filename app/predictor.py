@@ -1,6 +1,6 @@
 import copy
 
-from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
+from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
 from app.repositories.irepositories.time_series_repository import TimeSeriesRepository
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
@@ -30,7 +30,7 @@ class Predictor:
         self._logger.info(f"Connection successfully established.")
 
     def predict(self, message):
-        #self._logger.info(f"Received message: {message}")
+        self._logger.info(f"\n\nReceived message: {message}\n\n")
         result = self._energaize(copy.deepcopy(message))
         if self._http_connector:
             self._forwarder(result)

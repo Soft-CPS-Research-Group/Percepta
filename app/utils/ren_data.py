@@ -1,7 +1,7 @@
 import threading
 import json
 import subprocess
-from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
+from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from app.utils.logger import LoggingUtils

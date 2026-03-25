@@ -2,7 +2,7 @@ import datetime
 from abc import abstractmethod
 from app.receivers.receiver_base import ReceiverBase
 from apscheduler.schedulers.background import BlockingScheduler
-from app.connectors.http_conector import HTTPConnector, HTTPErrorWrapper
+from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
 from app.utils.logger import LoggingUtils
 from app.utils.data import DataSet
 from app.utils.retry import with_retries

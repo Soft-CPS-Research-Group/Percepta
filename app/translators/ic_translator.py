@@ -238,7 +238,7 @@ class ICTranslator(TranslatorRabbitMQBase):
         message_dict: dict = json.loads(message.decode('utf-8')).get('observation')
 
         # Generate a timestamp for when the message is being processed.
-        timestamp: str = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
+        timestamp: str = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S") # TODO adicionar timezone e perceber como vai implicar no restante código
 
         # Initialize an empty list that will hold the translated messages.
         message_list: list = []

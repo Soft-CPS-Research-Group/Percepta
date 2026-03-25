@@ -11,17 +11,47 @@ FORWARDER_REGISTRY: Dict[str, Type[ForwarderBase]] = discover_subclasses(
 )
 
 
-def build_forwarder(all_provider_configs, configurations, logger) -> dict:
+def build_forwarder(environment, environment_specs, all_provider_configs, configurations, logger) -> dict:
     """
     Instantiates all forwarder classes from the registry using shared dependencies.
 
     Args:
+        environment (Environment): Environment to use
+        environment_specs (EnvironmentSpec): Environment spec to use
+        all_provider_configs (dict): All provider configurations
         configurations: global configuration object or dict
         logger: logger instance used for tracking/logging
 
     Returns:
         dict[str, ]: mapping from label to forwarder instance
     """
+
+    """
+    Agrupa as entidades do environment_specs por provider.
+
+    Returns:
+        dict: { 'provider_name': { 'group': '...', 'entities': { ... } } }
+    """
+    grouped_data = {}
+    group_name = environment_specs.get('group')
+    entities = environment_specs.get('entities', {})
+
+    for entity_id, entity_info in entities.items():
+        provider = entity_info.get('provider')
+
+        if not provider:
+            continue  # Ou tratar erro caso o provider seja obrigatório
+
+        # Se o provider ainda não está no dicionário, inicializamos a estrutura
+        if provider not in grouped_data:
+            grouped_data[provider] = {
+                'group': group_name,
+                'entities': {}
+            }
+
+        # Adicionamos a entidade ao provider correspondente
+        grouped_data[provider]['entities'][entity_id] = entity_info
+
     forwarders = {}
     for forwarder_class in FORWARDER_REGISTRY.values():
         provider = forwarder_class.provider
@@ -30,6 +60,8 @@ def build_forwarder(all_provider_configs, configurations, logger) -> dict:
             merged_config = {**configurations, **provider_configurations}
 
             forwarders[provider] = forwarder_class(
+                environment=environment,
+                environment_specs=grouped_data.get(provider, {}),
                 configurations=merged_config,
                 logger=logger
             )

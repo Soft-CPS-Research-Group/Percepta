@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from app.utils.logger import LoggingUtils
 from typing import Any
+from zoneinfo import ZoneInfo
 from app.utils.measurement_unit_validation import is_type_compatible
 
 def validate_temporal_list(value_list : list, measurement_unit : str):
@@ -28,6 +29,7 @@ class TranslatorBase:
     _internal_message_hub_server: dict  # Configuration details for the internal message hub (for example, AMQP server)
     _configurations: dict  # General configurations passed to the translator
     _logger: LoggingUtils  # Logger instance for structured logging
+    _tz : ZoneInfo
 
     def __init__(self, environment : str, configurations: dict, logger: LoggingUtils):
         """Initializes the translator with configuration and logging details.
@@ -41,6 +43,17 @@ class TranslatorBase:
         self._internal_message_hub_server = configurations.get('internal_amqp_server').get('server')
         self._configurations = configurations
         self._logger = logger
+        self._tz = self._set_time_zone()
+
+    # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
+    def _set_time_zone(self) -> ZoneInfo:
+        # Get the current timestamp in UTC without microseconds
+        tz_name = self._configurations.get("timezone", "UTC")
+        try:
+            return ZoneInfo(tz_name)
+        except Exception:
+            self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
+            return ZoneInfo("UTC")
 
     @abstractmethod
     def translate(self, data : Any) -> None:
