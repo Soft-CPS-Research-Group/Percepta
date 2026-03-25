@@ -42,11 +42,11 @@ class PCTranslator(TranslatorRabbitMQBase):
 
         message_dict: dict = json.loads(message.decode('utf-8'))
         print(f"PulseCharge message {message_dict}\n")
-        vin = message_dict.get('vin')
+        user_id = message_dict.get('user_id')
         message = {}
         print(message_dict)
         for key, entity in self._entities.items():
-            if entity.get('vin') == vin:
+            if entity.get('user_id') == user_id:
                 value = {
                     "SoC" : message_dict.get('current_soc',None),
                     "flexibility" : {
