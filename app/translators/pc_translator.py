@@ -41,7 +41,7 @@ class PCTranslator(TranslatorRabbitMQBase):
         timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         message_dict: dict = json.loads(message.decode('utf-8'))
-        print(f"PulseCharge message {message_dict}\n")
+        self._logger.info(f"PulseCharge message {message_dict}\n")
         user_id = message_dict.get('user_id')
         message = {}
         print(message_dict)
