@@ -1,0 +1,113 @@
+{
+    "provider": "pulsecharge",
+"environments": {
+"i-charging headquarters 3Phase" : {
+        "group": "i-charging headquarters 3Phase",
+        "entities": {
+            "2" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                    "flexibility" :{
+
+                    }
+                },
+                "user_id": "oleksii.gylytskyy@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11823" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "joao.leal@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11832" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "marlene.ramos@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11824" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "ruben.silva@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11837" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "andre.sanches@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11827" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "maria.joao.costa@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "11834" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                   "flexibility" :{
+
+                    }
+                },
+                "user_id": "hugo.queiroz@i-charging.pt",
+                "label": "electric_vehicle"
+            },
+           "3" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+               	    "flexibility" :{
+
+                    }
+                },
+                "user_id": "paulo.rodrigues@i-charging.pt",
+                "label": "electric_vehicle"
+            }
+	}}
+    },
+"configurations" : {
+        "source_mapping": {
+            "strategy": "environment",
+"rules": {
+"i-charging headquarters 3Phase": "building_i-charging_headquarters"
+}
+        }
+    }
+}
