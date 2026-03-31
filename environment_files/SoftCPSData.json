@@ -4,34 +4,27 @@
         "i-charging headquarters 3Phase" : {
         "group": "i-charging headquarters 3Phase",
         "entities": {
-            "B01": {
+            "GR01": {
                 "parameters": {
-                    "energy_in": {
+                    "energy_in_total": {
                         "measurementUnit": "Kilowatt"
                     },
-                    "energy_out": {
-                        "measurementUnit": "Kilowatt"
-                    },
-                    "SoC": {
+                    "energy_out_total": {
                         "measurementUnit": "Kilowatt"
                     }
                 },
-                "actuators" : {
-                    "power" : {
-                        "measurementUnit": "Kilowatt",
-                        "label": "power_actuation"
-                    }
-                },
-                "label": "battery"
+                "label": "grid_meter"
             }
         }
     }
         },
+
         "configurations" : {
             "source_mapping": {
                 "strategy": "entity",
                 "rules": {
-                    "B01" : "sao-mamede-battery"
+                    "B01" : "sao-mamede-battery",
+                    "GR01" : "hq-grid-meter"
                 }
             }
         }
