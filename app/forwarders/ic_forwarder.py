@@ -1,6 +1,6 @@
 from app.forwarders.forwarder_base import ForwarderBase
 from app.utils.providers import Provider
-from app.rabbitMQ_forwarding_protocol import RabbitMQForwardingProtocol
+from app.rabbitMQ_publisher import RabbitMQPublisher
 
 # Strategy handlers: links JSON strategy names to their respective logic methods
 _LABEL_STRATEGIES = {}
@@ -21,8 +21,8 @@ class ICForwarder(ForwarderBase):
     def __init__(self, environment, environment_specs, configurations, logger):
         super().__init__(environment, environment_specs, configurations, logger)
 
-        server_config = configurations.get("i-charging").get("receiver_server")
-        self._protocol = RabbitMQForwardingProtocol(server_config, logger)
+        server_config = configurations.get("i-charging").get("publisher_settings")
+        self._protocol = RabbitMQPublisher(server_config, logger)
 
 
     @register_label_strategy("ev_charger")
