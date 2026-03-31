@@ -32,6 +32,34 @@ class SoftCPSTranslator(TranslatorRabbitMQBase):
 
         self._entities = environment_specs.get('entities')
 
+    @register_label_strategy(Label.GRID_METER.value)
+    def _grid_meter(self, entity_id: str, messages: dict) -> dict:
+        if not isinstance(messages, dict):
+            raise TypeError(f"Translator | grid_meter expected dict, got {type(messages)}")
+
+        # Extract data nested under the entity ID (e.g., "GR01")
+        entity_data = messages.get(entity_id, {})
+
+        # Fallback to current time if timestamp is missing in the message
+        raw_ts = messages.get('timestamp') or datetime.datetime.now().isoformat()
+        timestamp = datetime.datetime.fromisoformat(raw_ts.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S %z")
+
+        values = {}
+
+        # List of expected fields to translate
+        fields = [
+            "energy_in_total", "energy_in_l1", "energy_in_l2", "energy_in_l3",
+            "energy_out_total", "energy_out_l1", "energy_out_l2", "energy_out_l3"
+        ]
+
+        for field in fields:
+            val = entity_data.get(field)
+            # Only add to the dictionary if the value is not None (null)
+            if val is not None:
+                values[field] = [{"timestamp": timestamp, "value": val}]
+
+        return values
+
 
     @register_label_strategy(Label.BATTERY.value)
     def _battery(self, entity_id : str, messages: dict) -> dict:
