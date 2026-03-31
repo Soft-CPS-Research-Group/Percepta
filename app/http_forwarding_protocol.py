@@ -45,7 +45,7 @@ class HTTPForwardingProtocol:
         self._publisher_connector.close()
 
 
-    def send_message(self, message, endpoint) -> None:
+    def send_message(self, message, endpoint, header = None) -> None:
         """
         Send the prepared runtime request message to the RabbitMQ broker.
 
@@ -53,7 +53,11 @@ class HTTPForwardingProtocol:
         - Sets message properties including reply queue and unique message ID.
         - Waits briefly before publishing to ensure the consumer is ready.
         """
-        result = self._publisher_connector.post(endpoint, message)
-        print(f"\n\nRESULTADOO {result}\n\n")
+        if header is not None:
+            self._publisher_connector.update_headers(header)
+            self._logger.info(f"Header {header}.")
+
+        #result = self._publisher_connector.post(endpoint, message)
+        #print(f"\n\nRESULTADOO {result}\n\n")
         self._logger.info(f"Message successfully sent to broker {endpoint}.")
 

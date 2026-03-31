@@ -1,7 +1,7 @@
 {
     "environments" : {
-        "i-charging headquarters 3Phase": {
-            "group": "i-charging headquarters 3Phase",
+        "R-H-01": {
+            "group": "living lab",
             "entities": {
                 "OMIE" :  {
                     "parameters" : {

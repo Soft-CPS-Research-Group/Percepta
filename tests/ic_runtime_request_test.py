@@ -1,6 +1,6 @@
 from app.utils.data import DataSet
 from app.utils.logger import LoggingUtils
-from app.ic_runtime_request import ICRuntimeRequest  # adjust import path to your project
+from app.ic_runtime_request_2 import ICRuntimeRequest  # adjust import path to your project
 
 # -------- Required configurations --------
 environments = {
@@ -49,9 +49,40 @@ configurations = {
                 "auto_ack": False
             }
         },
+        "publisher_settings": {
+        "connection": {
+          "host": "softcps.dei.isep.ipp.pt",
+          "port": 5674,
+          "vhost": "/",
+          "heartbeat": 600,
+          "auth": {
+            "username": "dataprovider",
+            "password": "dataprovidermq"
+          }
+        },
+        "topology": {
+            "exchange_name": "",
+            "exchange_properties": {
+            },
+            "routing_key": "RPC",
+            "message_properties": {
+              "expiration": "10000"
+            }
+        },
+        "rpc_config": {
+          "enabled": True,
+          "timeout_ms": 11000,
+          "reply_queue": {
+            "name": "",
+            "exclusive": True,
+            "auto_delete": True,
+            "durable": False
+          }
+        }
+        }
     },
     "frequency": {
-        "value": 0,
+        "value": 5,
         "unit": "seconds"
     },
     "log_files": {
@@ -74,6 +105,8 @@ if __name__ == "__main__":
         ic_runtime.start_service()
         # Teste 2
         ic_runtime.start_service()
+
+        ic_runtime.stop()
 
     except Exception as e:
         logger.error(f"Integration test error: {e}")
