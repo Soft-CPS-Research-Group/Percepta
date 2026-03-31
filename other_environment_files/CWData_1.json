@@ -25,7 +25,7 @@
                 },
                 "B01" :  {
                     "parameters" : {
-                        "battery_charging_energy" : {
+                        "energy_in" : {
                             "id" : "35927",
                             "type": "Battery charging energy",
                             "measurementUnit": "Kilowatt Hour",
@@ -39,7 +39,7 @@
                                 "fill_operation": "linear"
                             }
                         },
-                         "battery_discharging_energy" : {
+                        "energy_out" : {
                             "id" : "35928",
                             "type": "Battery discharging energy",
                             "measurementUnit": "Kilowatt Hour",
@@ -53,7 +53,7 @@
                                 "fill_operation": "linear"
                             }
                         },
-                        "state_of_charge" : {
+                        "SoC" : {
                             "id" : "33690",
                             "type": "Battery State of charge",
                             "measurementUnit": "Percentage",
@@ -66,6 +66,13 @@
                                 "aggregation_operation": "last",
                                 "fill_operation": "linear"
                             }
+                        }
+                    },
+                    "actuators" : {
+                        "power_actuation_bat" : {
+                            "type": "Actuation",
+                            "measurementUnit": "kW",
+                            "label" : "power_actuation"
                         }
                     },
                     "label": "battery"
@@ -92,6 +99,13 @@
                             }
                         }
                     },
+                    "actuators" : {
+                        "power_actuation_ev" : {
+                            "type": "Actuation",
+                            "measurementUnit": "kW",
+                            "label" : "power_actuation"
+                        }
+                    },
                     "label": "ev_charger"
                 }
             }
@@ -102,11 +116,13 @@
                "strategy": "parameter",
                 "rules" : {
                     "energy" : "33711",
-                    "battery_charging_energy" : "35927",
-                    "battery_discharging_energy" : "35928",
+                    "energy_in" : "35927",
+                    "energy_out" : "35928",
                     "power" : "41836",
-                    "state_of_charge" : "33690",
-                    "session_status" : "37507"
+                    "SoC" : "33690",
+                    "session_status" : "37507",
+                    "power_actuation_bat" : "35447",
+                    "power_actuation_ev" : ""
                 }
           }
     },

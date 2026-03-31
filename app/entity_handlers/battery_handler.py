@@ -47,6 +47,8 @@ class BatteryHandler(EntityHandlerBase):
                             key=lambda x: datetime.strptime(x['timestamp'], "%Y-%m-%d %H:%M:%S %z")
                         ).get('value')
 
+                if last_soc > 1:
+                    last_soc = last_soc/100
 
                 batteries.update({battery_id: {
                     "energy_in": total_battery_charging_energy,

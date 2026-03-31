@@ -201,7 +201,7 @@ class RabbitMQConnector:
 
         return real_queue_name
 
-    def publish(self, queue_name: str, message: dict, exchange_name: str = "", **kwargs) -> None:
+    def publish(self, routing_key: str, message: dict, exchange_name: str = "", **kwargs) -> None:
         """
         Publishes a message to a specified queue or exchange.
         """
@@ -217,7 +217,7 @@ class RabbitMQConnector:
         # Publish the message
         self._channel.basic_publish(
             exchange=exchange_name,
-            routing_key=queue_name,
+            routing_key=routing_key,
             body=json.dumps(message).encode("utf-8"),
             properties=basic_props,
             **filtered_conf  # other pika parameters like mandatory
