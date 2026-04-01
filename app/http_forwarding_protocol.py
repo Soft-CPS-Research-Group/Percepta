@@ -57,7 +57,6 @@ class HTTPForwardingProtocol:
             self._publisher_connector.update_headers(header)
             self._logger.info(f"Header {header}.")
 
-        #result = self._publisher_connector.post(endpoint, message)
-        #print(f"\n\nRESULTADOO {result}\n\n")
-        self._logger.info(f"Message successfully sent to broker {endpoint}.")
+        result = self._publisher_connector.post(endpoint, message)
+        self._logger.info(f"Message successfully sent to broker {endpoint}. Result {result}.")
 

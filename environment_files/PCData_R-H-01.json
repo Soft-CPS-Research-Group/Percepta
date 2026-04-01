@@ -1,0 +1,30 @@
+{
+    "provider": "pulsecharge",
+    "environments": {
+    "R-H-01" : {
+        "group": "living lab",
+        "entities": {
+            "EV01" : {
+                 "parameters": {
+                    "soc": {
+                        "measurementUnit": "Percentage"
+                    },
+                    "flexibility" :{
+
+                    }
+                },
+                "user_id": "jbs@cleanwattsdigital.com",
+                "label": "electric_vehicle"
+            }
+	    }
+      }
+    },
+    "configurations" : {
+        "source_mapping": {
+            "strategy": "environment",
+            "rules": {
+              "R-H-01": "building_R-H-01"
+            }
+        }
+    }
+}

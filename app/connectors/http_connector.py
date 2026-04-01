@@ -76,7 +76,7 @@ class HTTPConnector:
                 # Raise a custom wrapped error with details about the failed request
                 raise HTTPErrorWrapper(
                     f"HTTP error during {method.upper()} request for {url}: "
-                    f"status code {response.status_code}, response: {response.text[:500]}"
+                    f"status code {response.status_code}, response: {response.text[:500]}, kwargs = {kwargs}"
                 )
 
             # If no error, return the response object

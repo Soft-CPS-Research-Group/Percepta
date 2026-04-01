@@ -91,7 +91,15 @@ class Predictor:
             if entity in self._entities:
                 entity_provider = self._entities[entity].get('provider')
                 if entity_provider:
-                    self._forwarders[entity_provider].to_forward(entity, result.get(entity), self._entities[entity])
+                    try:
+                        self._forwarders[entity_provider].to_forward(
+                            entity,
+                            result.get(entity),
+                            self._entities[entity]
+                        )
+                    except Exception as e:
+                        self._logger.error(f"Error forwarding entity {entity} for provider {entity_provider}: {e}")
+
 
     def _save_data(self, message):
         message = copy.deepcopy(message)

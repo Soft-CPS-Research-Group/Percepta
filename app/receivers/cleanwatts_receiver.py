@@ -111,7 +111,6 @@ class CWReceiver(ReceiverHTTPBase):
                         5,
                         self._header_updater()
                     )
-
                 all_entity_parameter_data.update({param_name: data})
 
         except Exception as e:
