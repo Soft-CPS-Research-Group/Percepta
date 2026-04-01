@@ -85,7 +85,33 @@ class CWTranslator(TranslatorRabbitMQBase):
                 session_status = first_item
 
         # Extract the "Read" flag from session_status to determine if the session is valid (ready)
-        read_status = session_status.get("Read") if session_status.get("Read") else session_status.get("Value", 0)
+        read_status = session_status.get("Read") if session_status.get("Read") else session_status.get("Value", None)
+        current_time = datetime.datetime.now()
+
+        if read_status == 1:
+            date_str = session_status.get("Date")
+            if date_str:
+                try:
+                    # Convert string to datetime object for math operations
+                    self._last_session_status = datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    # Fallback to current time if string format is invalid
+                    self._last_session_status = current_time
+            else:
+                self._last_session_status = current_time
+
+        # 2. If status is missing (None), check if we are within the 15-minute window
+        elif read_status is None:
+            if self._last_session_status and isinstance(self._last_session_status, datetime.datetime):
+                # Calculate the difference between now and the last recorded '1' status
+                if (current_time - self._last_session_status) <= datetime.timedelta(minutes=15):
+                    read_status = 1
+                else:
+                    # Time expired, reset the status and clear memory
+                    read_status = 0
+                    self._last_session_status = None
+            else:
+                read_status = 0
 
         value = {}
 
@@ -98,14 +124,19 @@ class CWTranslator(TranslatorRabbitMQBase):
                         f"Parameter '{param}' of entity '{entity_id}' is missing."
                     )
                     value[param] = []
+
+            value['electric_vehicle'] = self._entities.get('parameters').get('electric_vehicle').get("id")
         else:
             for param, param_values_list in messages.items():
                 value[param] = self._build_result(param_values_list)
+
+            value['electric_vehicle'] = ""
 
         self._parameters_validation(value, self._entities_parameters, ['session_status'])
 
         # Return the dictionary of processed 'Read' values
         return value
+
 
     def translate(self, messages : dict) -> None:
         """
@@ -128,7 +159,7 @@ class CWTranslator(TranslatorRabbitMQBase):
         label = messages.get("label")
         parameters_readings = messages.get("parameters")
 
-        print(f"TESTEEEE {messages}")
+        #print(f"TESTEEEE {messages}")
         self._entities_parameters = self._entities.get(entity_id).get('parameters')
 
         value = {}

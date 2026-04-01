@@ -97,6 +97,10 @@
                                 "aggregation_operation": "mean",
                                 "fill_operation": "linear"
                             }
+                        },
+                        "electric_vehicle": {
+                            "id": "EV01",
+                            "type" : "Name"
                         }
                     },
                     "actuators" : {
@@ -122,7 +126,7 @@
                     "SoC" : "33690",
                     "session_status" : "37507",
                     "power_actuation_bat" : "35447",
-                    "power_actuation_ev" : ""
+                    "power_actuation_ev" : "39052"
                 }
           }
     },

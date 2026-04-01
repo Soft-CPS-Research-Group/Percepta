@@ -132,7 +132,7 @@ class CW2Translator(TranslatorRabbitMQBase):
 
                 readings_list.append({
                     "timestamp": reading_ts.strftime("%Y-%m-%d %H:%M:%S %z"),
-                    "value": round(value_per_period, 4)
+                    "value": round(value_per_period/1000, 4) # os dados vêm em watts
                 })
 
             translated_output[param_name] = readings_list

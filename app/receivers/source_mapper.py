@@ -101,11 +101,8 @@ class SourceMapper:
     @register_strategy("parameter")
     def _parameter_strategy(self) -> dict:
         """
-        Resolves addresses at the individual Parameter level.
-        Required for granular APIs where each sensor or metric requires a specific technical ID.
+        Returns an empty map to force reliance on explicit 'source_mapping' rules.
+        This prevents the Receiver from requesting parameters that lack a
+        technical ID (e.g., virtual or internal-only parameters).
         """
-        return {
-            name: name
-            for entity in self._entities.values()
-            for name in entity.get('parameters', {}).keys()
-        }
+        return {}
