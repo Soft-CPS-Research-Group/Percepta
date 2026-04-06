@@ -13,7 +13,7 @@ class RabbitMQPublisher:
     Handles asynchronous and synchronous message publishing with optional RPC support.
     """
 
-    _LOG_PREFIX = "[RabbitMQ Publisher]"
+    _LOG_PREFIX = "RabbitMQ Publisher |"
 
     def __init__(self, server_configurations : dict, logger : LoggingUtils):
         """

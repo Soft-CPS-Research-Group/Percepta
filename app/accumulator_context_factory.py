@@ -6,6 +6,7 @@ from .forwarders.decision_forwarder_factory import build_forwarder
 from app.utils.logger import LoggingUtils
 from app.aggregators.energy_aggregator import EnergyAggregator
 from app.repositories.irepositories.environment_repository import EnvironmentRepository
+from app.output_handlers.community_output_handler import CommunityOutputHandler
 
 class AccumulatorContextFactory:
     def __init__(self, environment, environment_specs, configurations, logger):
@@ -32,6 +33,10 @@ class AccumulatorContextFactory:
     def build_predictor(self, forwarders, time_series_repository):
         predictor_logger = LoggingUtils("predictor", self._configurations, self._environment)
         return Predictor(self._environment, self._environment_specs, time_series_repository, forwarders, self._configurations, predictor_logger)
+
+    def build_output_handler(self, predictor):
+        output_handler_logger = LoggingUtils("output_handler", self._configurations, self._environment)
+        return CommunityOutputHandler(self._environment, self._environment_specs, predictor, self._configurations, output_handler_logger) # TODO ver como fazer para não usar a classe em especifico
 
     def build_manager(self, time_series_repository, predictor):
         entity_ids_by_label = self._build_label_to_ids()
