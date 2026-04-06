@@ -11,14 +11,14 @@ from app.manager.harmonizer import Harmonizer
 
 
 class Manager:
-    def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, aggregator, predictor, entities_handlers, configurations, logger):
+    def __init__(self, environment, environment_specs, entities_ids_by_label, time_series_repository, aggregator, output_handler, entities_handlers, configurations, logger):
         self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
         self._grace_period = DataSet.calculate_interval(configurations.get('grace_period')) # TODO definir default considerando o time_interval
         self._start_sched()
         self._environment = environment
         self._entities = environment_specs.get('entities')
         self._entities_ids_by_label = entities_ids_by_label
-        self._predictor = predictor
+        self._output_handler = output_handler
         self._substitute_dict = {}
         self._dict = {}
         self._entities_handlers = entities_handlers
@@ -86,7 +86,7 @@ class Manager:
 
             self._aggregator.aggregate(message)
             # Perform prediction
-            self._predictor.predict(message)
+            self._output_handler.message_handler(message)
 
             # Clear the dictionary for the next cycle
             self._dict.clear()
