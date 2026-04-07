@@ -52,10 +52,7 @@ class Predictor:
 
     def predict(self, message):
         self._logger.info(f"\n\nReceived message: {message}\n\n")
-        #result = self._energaize(copy.deepcopy(message))
-        result = {
-            "B01" : -5
-        }
+        result = self._energaize(copy.deepcopy(message))
         if self._http_connector:
             self._forwarder(result)
 
