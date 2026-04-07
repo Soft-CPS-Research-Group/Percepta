@@ -143,9 +143,11 @@ class CommunityOutputHandler(OutputHandlerBase):
     def _create_message(self, message):
         energy_in_total = 0
         energy_out_total = 0
+        observations = message.get("observations", {})
 
-        if "grid_meters" in message:
-            grid_meters = message["grid_meters"]
+        if "grid_meters" in observations:
+            grid_meters = observations["grid_meters"]
+
             for gm in grid_meters.values():
                 energy_in_total += gm["energy_in_total"]
                 energy_out_total += gm["energy_out_total"]
