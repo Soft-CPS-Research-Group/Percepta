@@ -5,7 +5,7 @@ import time
 import datetime
 from app.output_handlers.output_handler_base import OutputHandlerBase
 from app.connectors.rabbitmq_connector import RabbitMQConnector
-from app.rabbitMQ_publisher import RabbitMQPublisher
+from app.connectors.rabbitMQ_publisher import RabbitMQPublisher
 
 
 class CommunityOutputHandler(OutputHandlerBase):
@@ -49,7 +49,7 @@ class CommunityOutputHandler(OutputHandlerBase):
         """
         Initializes and starts the messaging thread.
         """
-        self._logger.info("Starting background messaging service...")
+        #self._logger.info("Starting background messaging service...")
         self._messaging_thread = threading.Thread(
             target=self._start_messaging_service,
             name=f"CommunityThread_{self._id}",
@@ -90,7 +90,7 @@ class CommunityOutputHandler(OutputHandlerBase):
             topology["exchange_name"] = raw_name.format(environment_id=self._id)
 
             self._rabbitmq_publisher = RabbitMQPublisher(mq_config, self._logger)
-            self._logger.info(f"Output Handler MQ Publisher initialized for exchange: {topology['exchange_name']}")
+            #self._logger.info(f"Output Handler MQ Publisher initialized for exchange: {topology['exchange_name']}")
         except Exception as e:
             self._logger.error(f"Failed to initialize Output Handler MQ Publisher: {e}")
             self._rabbitmq_publisher = None
@@ -136,7 +136,7 @@ class CommunityOutputHandler(OutputHandlerBase):
             self._dict.update({installation_id : body})
             self._substitute_dict.update({installation_id : body})
 
-            self._logger.info(f"{self._id}: Received message: {body}")
+            #self._logger.info(f"{self._id}: Received message: {body}")
 
             self._rabbitmq_connector.ack(method.delivery_tag)
 
@@ -223,4 +223,4 @@ class CommunityOutputHandler(OutputHandlerBase):
             self._timer_ended.notify_all()
 
             duration = datetime.datetime.now() - start_time
-            self._logger.info(f"Community process finished in {duration}. Total In: {total_in} Total Out: {total_out}")
+            #self._logger.info(f"Community process finished in {duration}. Total In: {total_in} Total Out: {total_out}")

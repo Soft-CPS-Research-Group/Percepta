@@ -1,9 +1,7 @@
 import datetime
-import time
 from apscheduler.schedulers.blocking import BlockingScheduler
-from app.connectors.rabbitmq_connector import RabbitMQConnector
 from app.utils.logger import LoggingUtils
-from app.rabbitMQ_publisher import RabbitMQPublisher
+from app.connectors.rabbitMQ_publisher import RabbitMQPublisher
 
 
 class ICRuntimeRequest:

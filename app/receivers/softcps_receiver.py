@@ -57,7 +57,7 @@ class SoftCPSReceiver(ReceiverHTTPBase):
             resource = self._resources_rules.get(entity_id)
             if resource:
                 url_path = self._server.get('resources').get('data').format(entity_id=resource, time_interval=self._time_interval)
-                self._logger.info(f"URL {url_path}")
+                #self._logger.info(f"URL {url_path}")
                 # Perform the GET request with specified time range
                 data = self.retrieve_data(url_path, 5)
 

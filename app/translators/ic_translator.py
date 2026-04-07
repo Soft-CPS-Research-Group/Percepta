@@ -186,7 +186,6 @@ class ICTranslator(TranslatorRabbitMQBase):
             list: List of formatted messages for each valid grid meter.
         """
         messages: list = []
-        print(f"TESTE AHHHHH {meters_list}")
 
         for meter in meters_list:
             # Get id from the current meter
@@ -273,7 +272,7 @@ class ICTranslator(TranslatorRabbitMQBase):
                 if attr_processed:
                     message_list.extend(attr_processed)
 
-        self._logger.info(f"MESSAGES LIST {message_list}")
+        #self._logger.info(f"MESSAGES LIST {message_list}")
 
         # Send the final standardized message list to the environment queue.
         self.send_message_to_environment_queue(message_list)

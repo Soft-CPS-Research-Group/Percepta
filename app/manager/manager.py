@@ -92,10 +92,10 @@ class Manager:
             self._dict.clear()
             operation_end_timestamp = datetime.datetime.now()
 
-            self._logger.info(
+            '''self._logger.info(
                 f"\nStart: {operation_start_timestamp} End: {operation_end_timestamp}\n"
                 f"Operation duration: {operation_end_timestamp - operation_start_timestamp}"
-            )
+            )'''
             self._send_event.set()
 
             self._timer_ended.notify_all()

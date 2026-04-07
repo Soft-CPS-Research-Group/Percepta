@@ -51,7 +51,7 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
         """
 
         time.sleep(self._original_time_interval)
-        self._logger.info("Energy Price called")
+        #self._logger.info("Energy Price called")
 
         message_to_translate = {
                 "value" : ElectricityPriceFetcher.get_future_prices(),
