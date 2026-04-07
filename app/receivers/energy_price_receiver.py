@@ -1,4 +1,5 @@
 import datetime
+import time
 import threading
 from app.translators.energy_price_translator import EnergyPriceTranslator
 from app.utils.ren_data import ElectricityPriceFetcher
@@ -23,6 +24,7 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
             logger (LoggingUtils): Logger instance for structured logging.
         """
         super().__init__(environment_name, environment_specs, configurations, logger)
+        self._original_time_interval = self._time_interval
 
         self._time_interval = 15*60
 
@@ -47,6 +49,8 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
             - Retrieves raw data for all configured entities and parameters in parallel.
             - Passes collected data to CWTranslator after all requests complete.
         """
+
+        time.sleep(self._original_time_interval)
         self._logger.info("Energy Price called")
 
         message_to_translate = {
