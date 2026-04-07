@@ -1,6 +1,6 @@
 import threading
 from typing import Any
-from app.connectors.rabbitmq_connector_2 import RabbitMQConnector
+from others.rabbitmq_connector_2 import RabbitMQConnector
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
 

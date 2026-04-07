@@ -28,7 +28,7 @@ class PCReceiver(ReceiverRabbitMQBase):
             logger (LoggingUtils): Logger instance for logging events.
         """
         self._exchange_name: str = f"building_{environment_name.replace(' ', '_')}"
-        print(f"INICIEI {self._exchange_name}\n")
+        #print(f"INICIEI {self._exchange_name}\n")
         super().__init__(environment_name, environment_specs, configurations, logger)
         self._translator = PCTranslator(environment_name, environment_specs, configurations, logger)
 

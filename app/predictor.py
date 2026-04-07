@@ -1,9 +1,9 @@
 import copy
-from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
+from app.connectors.http_connector import HTTPConnector
 from app.repositories.irepositories.time_series_repository import TimeSeriesRepository
 from app.utils.logger import LoggingUtils
 from app.utils.retry import with_retries
-from app.rabbitMQ_publisher import RabbitMQPublisher
+from app.connectors.rabbitMQ_publisher import RabbitMQPublisher
 
 class Predictor:
     _http_connector: HTTPConnector = {} # HTTP connector instance for performing HTTP requests
@@ -68,7 +68,7 @@ class Predictor:
     def _energaize(self, message) -> dict:
         message['timestamp'] = message.get('timestamp').strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        self._logger.info(f"EnergAIze message: {message}")
+        #self._logger.info(f"EnergAIze message: {message}")
 
         to_ai : dict = {
             "features" : message

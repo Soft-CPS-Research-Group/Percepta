@@ -1,6 +1,6 @@
 from app.forwarders.forwarder_base import ForwarderBase
 from app.utils.providers import Provider
-from app.rabbitMQ_publisher import RabbitMQPublisher
+from app.connectors.rabbitMQ_publisher import RabbitMQPublisher
 
 # Strategy handlers: links JSON strategy names to their respective logic methods
 _LABEL_STRATEGIES = {}

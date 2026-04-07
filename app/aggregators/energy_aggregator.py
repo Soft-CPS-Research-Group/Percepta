@@ -36,10 +36,10 @@ class EnergyAggregator(AggregatorBase):
         # --- Calculate non_shiftable_load ---
         non_shiftable_load = total_grid_in + solar_generation - total_grid_out + total_battery_discharge - total_battery_charge
 
-        if self._logger:
+        '''if self._logger:
             self._logger.info(
                 f"Total Grid In: {total_grid_in}, Total Battery Charge: {total_battery_charge}, "
                 f"Non-Shiftable Load: {non_shiftable_load}"
-            )
+            )'''
 
         message["observations"]["non_shiftable_load"] = non_shiftable_load

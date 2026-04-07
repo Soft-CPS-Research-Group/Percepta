@@ -48,8 +48,8 @@ class SourceMapper:
         self._entities : dict = environment_specs.get('entities', {})
 
 
-        self._logger.info(
-            f"{self._LOG_PREFIX} Initialized for '{self._environment_name}' | Strategy: {self._strategy}")
+        '''self._logger.info(
+            f"{self._LOG_PREFIX} Initialized for '{self._environment_name}' | Strategy: {self._strategy}")'''
 
     def resolve_address(self) -> dict:
         """

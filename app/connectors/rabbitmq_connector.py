@@ -232,7 +232,7 @@ class RabbitMQConnector:
         # Merge default consume configuration with any overrides
         consume_conf = {**DEFAULT_CONSUME_CONF, **(self._consume_conf or {}), **kwargs}
         filtered_conf = filter_keys(consume_conf, ALLOWED_CONSUME_KEYS, 'consume')
-        print(f"{queue_name} {consume_conf} {filtered_conf}")
+        #print(f"{queue_name} {consume_conf} {filtered_conf}")
         try:
             self._channel.basic_consume(
                 queue=queue_name,
