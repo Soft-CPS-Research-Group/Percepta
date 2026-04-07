@@ -1,0 +1,38 @@
+{
+    "provider": "softCPS",
+    "environments": {
+        "SaoMamede" : {
+        "group": "SaoMamede",
+        "entities": {
+            "B01": {
+                "parameters": {
+                    "energy_in": {
+                        "measurementUnit": "Kilowatt"
+                    },
+                    "energy_out": {
+                        "measurementUnit": "Kilowatt"
+                    },
+                    "SoC": {
+                        "measurementUnit": "Kilowatt"
+                    }
+                },
+                "actuators" : {
+                    "power" : {
+                        "measurementUnit": "Kilowatt",
+                        "label": "power_actuation"
+                    }
+                },
+                "label": "battery"
+            }
+        }
+    }
+        },
+        "configurations" : {
+            "source_mapping": {
+                "strategy": "entity",
+                "rules": {
+                    "B01" : "sao-mamede-battery"
+                }
+            }
+        }
+}

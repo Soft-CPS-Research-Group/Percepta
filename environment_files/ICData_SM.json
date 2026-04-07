@@ -1,6 +1,7 @@
 {
     "provider": "i-charging",
-    "SaoMamede" : {
+    "environments": {
+        "SaoMamede" : {
         "group": "SaoMamede",
         "entities": {
             "BB000SMI_1": {
@@ -40,10 +41,30 @@
                     }
                 },
                 "label": "pv_panel"
+            },
+            "PT" :  {
+                "parameters" : {
+                    "energy_in_total" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    },
+                     "energy_in_l1" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    },
+                     "energy_in_l2" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    },
+                     "energy_in_l3" : {
+                        "measurementUnit": "Kilowatt Hour"
+                    }
+                },
+                "label": "grid_meter"
             }
         }
+    }
     },
-    "sourceMapping": {
-        "strategy": "Environment"
+    "configurations" : {
+        "sourceMapping": {
+            "strategy": "Environment"
+        }
     }
 }
