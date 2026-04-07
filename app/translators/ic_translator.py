@@ -186,6 +186,7 @@ class ICTranslator(TranslatorRabbitMQBase):
             list: List of formatted messages for each valid grid meter.
         """
         messages: list = []
+        print(f"TESTE AHHHHH {meters_list}")
 
         for meter in meters_list:
             # Get id from the current meter
@@ -208,7 +209,19 @@ class ICTranslator(TranslatorRabbitMQBase):
                         "energy_in_total": [{
                             "timestamp": timestamp,
                             "value": meter.get("l123")
-                        }]
+                        }],
+                        "energy_in_l1": [{
+                            "timestamp": timestamp,
+                            "value": meter.get("l1")
+                        }],
+                        "energy_in_l2": [{
+                            "timestamp": timestamp,
+                            "value": meter.get("l2")
+                        }],
+                        "energy_in_l3": [{
+                            "timestamp": timestamp,
+                            "value": meter.get("l3")
+                        }],
                     }
 
                     self._parameters_validation(value, _entity_parameters)
