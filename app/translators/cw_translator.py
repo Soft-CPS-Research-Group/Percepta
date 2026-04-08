@@ -126,7 +126,7 @@ class CWTranslator(TranslatorRabbitMQBase):
                     )
                     value[param] = []
 
-            value['electric_vehicle'] = self._entities.get('parameters').get('electric_vehicle').get("id")
+            value['electric_vehicle'] = self._entities.get(entity_id).get('parameters').get('electric_vehicle').get("id")
         else:
             for param, param_values_list in messages.items():
                 value[param] = self._build_result(param_values_list)
