@@ -1,7 +1,6 @@
 import threading
 import time
 from typing import Dict, Any
-from app.ic_runtime_request import ICRuntimeRequest
 from app.translators.forecast_translator import ForecastTranslator
 from app.receivers.receiver_rabbitmq_base import ReceiverRabbitMQBase
 from app.utils.logger import LoggingUtils
