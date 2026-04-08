@@ -35,6 +35,7 @@ class CWTranslator(TranslatorRabbitMQBase):
         self._labels_functions_mapper = {
             "ev_charger": self._ev_charger
         }
+        self._last_session_status = None
 
     def _build_result(self, param_values_list, default_value=0):
         if not param_values_list:
