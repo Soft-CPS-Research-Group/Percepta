@@ -7,4 +7,5 @@ class Label(Enum):
     EV_CHARGER = "ev_charger"
     EV = "electric_vehicle"
     ENERGY_PRICE = "energy_price"
-    FORECAST_SERVICE = "forecast_service"
+    CONSUMPTION_FORECAST_SERVICE = "consumption_forecast_service"
+    PRODUCTION_FORECAST_SERVICE = "production_forecast_service"

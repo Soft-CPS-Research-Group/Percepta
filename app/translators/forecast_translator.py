@@ -30,8 +30,12 @@ class ForecastTranslator(TranslatorRabbitMQBase):
 
         self._entities = environment_specs.get('entities')
 
-
         self._tz = self._set_time_zone()
+
+        self._labels_functions_mapper = {
+            "consumption": self._consumption_forecast_service,
+            "production": self._production_forecast_service
+        }
 
         # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
 
@@ -44,18 +48,48 @@ class ForecastTranslator(TranslatorRabbitMQBase):
             self._logger.warning(f"Invalid timezone '{tz_name}', falling back to UTC")
             return ZoneInfo("UTC")
 
-    def prepare_data_ignore_micros(self, start_iso_time, values_list, delta_minutes=15):
-        dt = datetime.datetime.fromisoformat(start_iso_time)
 
-        start_dt_utc = dt.astimezone(ZoneInfo("UTC")).replace(microsecond=0)
+    def _consumption_forecast_service(self, timestamp: str, data) -> list:
+
+        for entity_id, entity_data in self._entities.items():
+            if entity_data.get("label") == Label.CONSUMPTION_FORECAST_SERVICE.value:
+                _entity_parameters: dict = entity_data.get('parameters')
+
+                # Create and return a message using pv_production data and timestamp
+                value: dict = {
+                    "consumption_total":  data
+                }
+
+                self._parameters_validation(value, _entity_parameters)
+
+                return [ForecastTranslator._message_creator(value, entity_id, timestamp)]
+
+    def _production_forecast_service(self, timestamp: str, data) -> list:
+
+        for entity_id, entity_data in self._entities.items():
+            if entity_data.get("label") == Label.PRODUCTION_FORECAST_SERVICE.value:
+                _entity_parameters: dict = entity_data.get('parameters')
+
+                # Create and return a message using pv_production data and timestamp
+                value: dict = {
+                    "production_total": data
+                }
+
+                self._parameters_validation(value, _entity_parameters)
+
+                return [ForecastTranslator._message_creator(value, entity_id, timestamp)]
+
+
+    def prepare_data_ignore_micros(self, start_time, values_list, delta_minutes=15):
 
         formatted_dict = {}
 
         for i, value in enumerate(values_list):
-            current_dt = start_dt_utc + datetime.timedelta(minutes=i * delta_minutes)
+            current_dt = start_time + datetime.timedelta(minutes=i * delta_minutes)
             formatted_dict[current_dt] = value
 
         return formatted_dict
+
 
     def translate(self, message: bytes) -> None:
         """
@@ -65,7 +99,7 @@ class ForecastTranslator(TranslatorRabbitMQBase):
         Args:
             message (bytes): Dictionary containing i-charging-format environment data, encoded as bytes.
         """
-        #print("TRANSLATE CHAMADO\n")
+        print("TRANSLATE CHAMADO\n")
         # Decode the incoming bytes message to a UTF-8 string, then parse it as JSON.
         # Extract the 'observation' key which contains the relevant data.
         message_dict: dict = json.loads(message.decode('utf-8'))
@@ -73,14 +107,21 @@ class ForecastTranslator(TranslatorRabbitMQBase):
         # Generate a timestamp for when the message is being processed.
         timestamp: datetime.datetime = datetime.datetime.fromisoformat(message_dict.pop("target_time")).astimezone(ZoneInfo("UTC")).replace(microsecond=0)
 
+        message_dict.pop("house_id")
+
         # Initialize an empty list that will hold the translated messages.
         message_list: list = []
         self._logger.info(f"MESSAGES DICT {message_dict}")
         # Iterate through each attribute in the parsed message dictionary.
 
+        for key, value in message_dict.items():
+            formatted_list: list = ForecastTranslator._build_values_array(self.prepare_data_ignore_micros(timestamp, value))
+            handler = self._labels_functions_mapper[key]
+            value = handler(timestamp, formatted_list)
 
+            message_list.extend(value)
 
-        #self._logger.info(f"MESSAGES LIST {message_list}")
+        self._logger.info(f"MESSAGES LIST FORECAST {message_list}")
 
         # Send the final standardized message list to the environment queue.
         self.send_message_to_environment_queue(message_list)
@@ -105,5 +146,15 @@ class ForecastTranslator(TranslatorRabbitMQBase):
         }
 
         return new_message
+
+    @staticmethod
+    def _build_values_array(prices_with_timestamp: dict) -> list:
+        returned_dict = []
+
+        for date in prices_with_timestamp.keys():
+            returned_dict.append({"timestamp": date.strftime("%Y-%m-%d %H:%M:%S %z"),
+                                  "value": round(prices_with_timestamp[date] / 1000, 8)})
+
+        return returned_dict
 
 # Em caso de erro corro o risco da mensagem ser enviada duas vezes, mas não é um problema

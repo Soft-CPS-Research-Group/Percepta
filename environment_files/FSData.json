@@ -3,9 +3,9 @@
         "R-H-01": {
             "group": "living lab",
             "entities": {
-                "ForecastService" :  {
+                "ConsumptionForecastService" :  {
                     "parameters" : {
-                        "consumption" : {
+                        "consumption_total" : {
                             "measurementUnit": "Kilowatt-Hour",
                             "temporal_behavior": {
                                 "cumulative": false,
@@ -16,23 +16,28 @@
                                 "aggregation_operation": "mean",
                                 "fill_operation": "linear"
                             },
-                            "label" : "consumption_forecast"
-                        },
-                        "production" : {
-                            "measurementUnit": "Kilowatt-Hour",
-                            "temporal_behavior": {
-                                "cumulative": false,
-                                "periodicity": {
-                                    "value": 15,
-                                    "unit": "min"
-                                },
-                                "aggregation_operation": "mean",
-                                "fill_operation": "linear"
-                            },
-                            "label" : "production_forecast"
+                            "label" : "consumption_total"
                         }
                     },
-                    "label": "forecast_service"
+                    "label": "consumption_forecast_service"
+                },
+                "ProductionForecastService" :  {
+                    "parameters" : {
+                        "production_total" : {
+                            "measurementUnit": "Kilowatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                            "label" : "production_total"
+                        }
+                    },
+                    "label": "production_forecast_service"
                 }
             }
         }
