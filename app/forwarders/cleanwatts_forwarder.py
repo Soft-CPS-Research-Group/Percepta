@@ -42,13 +42,17 @@ class CWForwarder(ForwarderBase):
     @register_label_strategy(Label.EV_CHARGER.value)
     def _ev_charger(self, result, actuators):
         target_actuator_id = ""
+
+        voltage = 230
+        current_amps = result / voltage
+
         for actuator_id, actuator_values in actuators.items():
             if actuator_values.get('label') == "power_actuation":
                 target_actuator_id = self._resources_rules.get(actuator_id)
 
         return {
             "Action": 2,
-            "Value": result,
+            "Value": current_amps,
             "ValueFormat": 0,
             "TagIds": [target_actuator_id]
         }
