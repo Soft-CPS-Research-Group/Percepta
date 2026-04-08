@@ -1,0 +1,49 @@
+{
+    "environments" : {
+        "R-H-01": {
+            "group": "living lab",
+            "entities": {
+                "ForecastService" :  {
+                    "parameters" : {
+                        "consumption" : {
+                            "measurementUnit": "Kilowatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                            "label" : "consumption_forecast"
+                        },
+                        "production" : {
+                            "measurementUnit": "Kilowatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                            "label" : "production_forecast"
+                        }
+                    },
+                    "label": "forecast_service"
+                }
+            }
+        }
+    },
+    "configurations" : {
+        "source_mapping": {
+            "strategy": "environment",
+            "rules" : {
+                "R-H-01": "pred.R-H-01"
+            }
+        }
+    },
+    "provider": "forecast"
+}

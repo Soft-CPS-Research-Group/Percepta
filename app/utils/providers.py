@@ -7,3 +7,4 @@ class Provider(Enum):
     PULSECHARGE = "pulsecharge"
     REN = "ren"
     SOFTCPS = "softCPS"
+    FORECAST = "forecast"
