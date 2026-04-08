@@ -1,5 +1,6 @@
 import datetime
 import json
+from app.utils.data import DataSet
 from zoneinfo import ZoneInfo
 from app.translators.translator_rabbitmq_base import TranslatorRabbitMQBase
 from app.utils.logger import LoggingUtils
@@ -39,6 +40,9 @@ class ICTranslator(TranslatorRabbitMQBase):
         }
 
         self._tz = self._set_time_zone()
+
+        self._time_interval = DataSet.calculate_interval(configurations.get('frequency'))
+
 
         # TODO meter isto num ficheiro para reutilizar pois também é usado por pelo menos um tradutor
 
@@ -187,6 +191,8 @@ class ICTranslator(TranslatorRabbitMQBase):
         """
         messages: list = []
 
+        hours_factor = self._time_interval / 3600
+
         for meter in meters_list:
             # Get id from the current meter
             entity_id: str = meter.get("id")
@@ -207,19 +213,19 @@ class ICTranslator(TranslatorRabbitMQBase):
                     value: dict = {
                         "energy_in_total": [{
                             "timestamp": timestamp,
-                            "value": meter.get("l123")
+                            "value": meter.get("l123", 0) * hours_factor
                         }],
                         "energy_in_l1": [{
                             "timestamp": timestamp,
-                            "value": meter.get("l1")
+                            "value": meter.get("l1", 0) * hours_factor
                         }],
                         "energy_in_l2": [{
                             "timestamp": timestamp,
-                            "value": meter.get("l2")
+                            "value": meter.get("l2", 0) * hours_factor
                         }],
                         "energy_in_l3": [{
                             "timestamp": timestamp,
-                            "value": meter.get("l3")
+                            "value": meter.get("l3", 0) * hours_factor
                         }],
                     }
 
