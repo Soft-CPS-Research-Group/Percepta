@@ -44,7 +44,7 @@ class CWForwarder(ForwarderBase):
         target_actuator_id = ""
 
         voltage = 230
-        current_amps = result / voltage
+        current_amps = result*1000 / voltage
 
         for actuator_id, actuator_values in actuators.items():
             if actuator_values.get('label') == "power_actuation":
