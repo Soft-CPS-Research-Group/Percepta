@@ -117,7 +117,7 @@ class ForecastTranslator(TranslatorRabbitMQBase):
         for key, value in message_dict.items():
             formatted_list: list = ForecastTranslator._build_values_array(self.prepare_data_ignore_micros(timestamp, value))
             handler = self._labels_functions_mapper[key]
-            value = handler(timestamp, formatted_list)
+            value = handler(timestamp.strftime("%Y-%m-%d %H:%M:%S %z"), formatted_list)
 
             message_list.extend(value)
 

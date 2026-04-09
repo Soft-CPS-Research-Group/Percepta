@@ -74,6 +74,7 @@ class CWTranslator(TranslatorRabbitMQBase):
         # Ensure the input is a dictionary; raise an exception otherwise
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | _ev_charger expected dict, got {type(messages)}")
+        print(f"Messages {messages}")
 
         # Retrieve the 'session_status' param without modifying the original messages dictionary
         session_status_list = messages.pop("session_status", []) # TODO aqui poderia estar pop acho eu
@@ -85,12 +86,13 @@ class CWTranslator(TranslatorRabbitMQBase):
             if isinstance(first_item, dict):
                 session_status = first_item
 
+        print(f"Session status {session_status}")
         # Extract the "Read" flag from session_status to determine if the session is valid (ready)
         read_status = session_status.get("Read") if session_status.get("Read") else session_status.get("Value", None)
-        current_time = datetime.datetime.now()
+        current_time = datetime.datetime.now(self._tz)
 
         if read_status == 1:
-            date_str = session_status.get("Date")
+            date_str = session_status.get("DateUTC")
             if date_str:
                 try:
                     # Convert string to datetime object for math operations
@@ -113,6 +115,8 @@ class CWTranslator(TranslatorRabbitMQBase):
                     self._last_session_status = None
             else:
                 read_status = 0
+
+        print(f"Read status {read_status}")
 
         value = {}
 
