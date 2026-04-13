@@ -38,7 +38,7 @@ class PCTranslator(TranslatorRabbitMQBase):
         """
 
         # Generate a timestamp for when the message is being processed.
-        timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp: str = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S %z")
 
         message_dict: dict = json.loads(message.decode('utf-8'))
         self._logger.info(f"PulseCharge message {message_dict}\n")

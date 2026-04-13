@@ -49,7 +49,7 @@ class EnergyPriceTranslator(TranslatorRabbitMQBase):
                         where keys represent parameters and values are lists of readings.
         """
         # Format timestamp using the configured timezone
-        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S %z")
 
         if not isinstance(messages, dict):
             raise TypeError(f"Translator | translate expected dict, got {type(messages)}")
