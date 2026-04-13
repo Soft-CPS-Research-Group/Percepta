@@ -5,8 +5,8 @@ from app.utils.labels import Label
 class PVPanelHandler(EntityHandlerBase):
     label = Label.PV_PANEL.value
 
-    def __init__(self, repository, entities_ids, configurations, logger):
-        super().__init__(repository, entities_ids, configurations, logger)
+    def __init__(self, repository, entities_ids, environment_specs, configurations, logger):
+        super().__init__(repository, entities_ids, environment_specs, configurations, logger)
 
     def process(self, message, all_data):
         # Variable to accumulate total solar generation across all panels
@@ -19,18 +19,20 @@ class PVPanelHandler(EntityHandlerBase):
 
         # Iterate through each panel and add its solar generation value
         if pv_panel_entities:
-            for pv_panel_entity in pv_panel_entities:
-                sum_aux = 0
-                pv_panel_values = all_data.get(pv_panel_entity, {})
-                solar_generation = pv_panel_values.get('data', {}).get('energy', [])
-                if isinstance(solar_generation, list):
 
-                    for sg in solar_generation:
-                        sum_aux += sg.get('value', 0)
+            for pv_panel_id in pv_panel_entities:
+                pv_panel_values = all_data.get(pv_panel_id, {})
+                data = pv_panel_values.get('data', {})
 
-                    total_solar_generation += sum_aux
+                if data:
+                    sum_aux = 0
+                    values_list = data.get('energy', [])
 
-                pv_panels.update({pv_panel_entity: {"energy": total_solar_generation}})
+                    if isinstance(values_list, list):
+                        sum_aux = sum(item.get("value", 0) for item in values_list)
+                        total_solar_generation += sum_aux
+
+                    pv_panels.update({pv_panel_id: {"energy": sum_aux, "generated" : pv_panel_values.get('generated', True)}})
 
         message["observations"]['pv_panels'] = pv_panels
         # Include the final solar generation total in the message payload
@@ -52,5 +54,6 @@ class PVPanelHandler(EntityHandlerBase):
             'timestamp': 0,
             'data': {
                 'solar_generation': None,
-            }
+            },
+            "generated": True
         }

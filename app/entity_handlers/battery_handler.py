@@ -9,8 +9,8 @@ class BatteryHandler(EntityHandlerBase):
     # TODO: Consider relocating this setting—might make more sense to associate with a specific device rather than a general label
     data_deadline_seconds = 7200  # Threshold in seconds (2 hours)
 
-    def __init__(self, repository, entities_ids, configurations, logger):
-        super().__init__(repository, entities_ids, configurations, logger)
+    def __init__(self, repository, entities_ids, environment_specs, configurations, logger):
+        super().__init__(repository, entities_ids, environment_specs, configurations, logger)
 
     def process(self, message, all_data):
         # Retrieve the list of battery entities from the input data
@@ -21,40 +21,40 @@ class BatteryHandler(EntityHandlerBase):
         if batteries_entities:
             # Loop through all configured battery IDs
             for battery_id in batteries_entities:
-                battery = all_data.get(battery_id)
+                battery_values = all_data.get(battery_id, {})
+                data = battery_values.get('data', {})
 
-                total_battery_charging_energy = 0.0
-                total_battery_discharging_energy = 0.0
-                last_soc = 0
+                if data:
+                    total_battery_charging_energy = 0.0
+                    total_battery_discharging_energy = 0.0
+                    last_soc = 0
 
-                if battery:
-                    # Add battery data to the results list
-                    battery_data = battery.get('data')
-                    battery_energy_array = battery_data.get('energy_in')
+                    battery_energy_array = data.get('energy_in')
                     if battery_energy_array and isinstance(battery_energy_array, list):
                         for be in battery_energy_array:
                             total_battery_charging_energy += be.get('value')
 
-                    battery_discharging_array = battery_data.get('energy_out')
+                    battery_discharging_array = data.get('energy_out')
                     if battery_discharging_array and isinstance(battery_discharging_array, list):
                         for be in battery_discharging_array:
                             total_battery_discharging_energy += be.get('value')
 
-                    soc_array = battery_data.get('SoC')
+                    soc_array = data.get('SoC')
                     if soc_array and isinstance(soc_array, list):
                         last_soc = max(
                             soc_array,
-                            key=lambda x: datetime.strptime(x['timestamp'], "%Y-%m-%d %H:%M:%S %z")
+                            key=lambda x: x['timestamp']
                         ).get('value')
 
-                if last_soc > 1:
-                    last_soc = last_soc/100
+                    if last_soc > 1:
+                        last_soc = last_soc/100
 
-                batteries.update({battery_id: {
-                    "energy_in": total_battery_charging_energy,
-                    "energy_out": total_battery_discharging_energy,
-                    "SoC": last_soc,
-                }})
+                    batteries.update({battery_id: {
+                        'energy_in': total_battery_charging_energy,
+                        'energy_out': total_battery_discharging_energy,
+                        'SoC': last_soc,
+                        'generated': battery_values.get('generated', True)
+                    }})
 
         # Attach battery data to the outgoing message
         message["observations"]["batteries"] = batteries
@@ -77,7 +77,8 @@ class BatteryHandler(EntityHandlerBase):
                 'energy_in': None,
                 'energy_out': None,
                 'SoC': None
-            }
+            },
+            "generated" : True
         }
 
     # TODO: For batteries, does it make sense to send values like 0,0? Even if the data is a day old,

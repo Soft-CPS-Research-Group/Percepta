@@ -79,7 +79,7 @@ class Harmonizer:
         # Build dataframe
         df = pd.DataFrame(data).rename(columns={"timestamp": "end"})
 
-        df['end'] = pd.to_datetime(df['end'])
+        #df['end'] = pd.to_datetime(df['end'])
         df = df.set_index('end')
 
         # Calculate timedelta from periodicity definition
@@ -110,8 +110,7 @@ class Harmonizer:
 
         # Convert back to list of dicts
         updated_list = [
-            {"timestamp": ts.strftime("%Y-%m-%d %H:%M:%S %z") if ts.tzinfo else ts.strftime(
-                "%Y-%m-%d %H:%M:%S"),
+            {"timestamp": ts,
              "value": val}
             for ts, val in df['value'].items()
         ]

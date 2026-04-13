@@ -10,7 +10,7 @@ ENTITY_HANDLER_REGISTRY: Dict[str, Type[EntityHandlerBase]] = discover_subclasse
 )
 
 
-def build_entity_handler(repository, entities_ids, configurations, logger):
+def build_entity_handler(repository, entities_ids, configurations, logger, environment_specs):
     """
     Instantiates all handler classes from the registry using shared dependencies.
 
@@ -30,6 +30,7 @@ def build_entity_handler(repository, entities_ids, configurations, logger):
             repository=repository,
             logger=logger,
             entities_ids=entities_ids,
+            environment_specs=environment_specs,
             configurations=configurations
         )
     return handlers

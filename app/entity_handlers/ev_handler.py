@@ -8,8 +8,8 @@ class EVHandler(EntityHandlerBase):
     # TODO: Consider relocating this threshold—might make more sense to define it per device, not globally by label
     data_deadline_seconds = 7200  # Time limit in seconds (2 hours)
 
-    def __init__(self, repository, entities_ids, configurations, logger):
-        super().__init__(repository, entities_ids, configurations, logger)
+    def __init__(self, repository, entities_ids, environment_specs, configurations, logger):
+        super().__init__(repository, entities_ids, environment_specs, configurations, logger)
 
     def process(self, message, all_data):
         ev_entities = self._entities_ids.get(EVHandler.label)
@@ -20,10 +20,14 @@ class EVHandler(EntityHandlerBase):
             # Loop through all configured ev IDs
             for ev_id in ev_entities:
                 ev = all_data.get(ev_id)
+                data = ev.get('data', {})
 
-                if ev:
-                    # Add ev data to the results list
-                    evs.update({ev_id: ev.get('data')})
+                if data:
+                    evs[ev_id] = {
+                        **data,
+                        "generated": ev.get('generated', True)
+                    }
+
 
         # Attach ev data to the outgoing message
         message["observations"]["electric_vehicles"] = evs
@@ -54,5 +58,6 @@ class EVHandler(EntityHandlerBase):
                     'charger': '',
                     'mode': ''
                 },
-            }
+            },
+            "generated": True
         }

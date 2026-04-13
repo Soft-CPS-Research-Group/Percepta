@@ -37,7 +37,6 @@ class ElectricityPriceFetcher:
         cls._max_reconnect_attempts = configurations.get('max_reconnect_attempts')
         cls._server = cls._ren_configurations.get('receiver_server')
         cls._data_resource = cls._server.get('resources').get("data")
-
         cls._time_interval = 900 # seconds
 
         cls._send_event = threading.Event()
@@ -207,6 +206,7 @@ class ElectricityPriceFetcher:
         Returns a list of all available prices from the current 15-min block onwards.
         """
         # 1. Get current time in UTC, rounded down to the nearest 15-min interval
+
         now_utc = datetime.now(ZoneInfo("UTC"))
 
         time_interval_minutes = cls._time_interval // 60
@@ -230,6 +230,7 @@ class ElectricityPriceFetcher:
                 if ts >= current_block
             }
         cls._logger.info(f"Future Prices: {future_prices}")
+
         return future_prices
 
     @classmethod
