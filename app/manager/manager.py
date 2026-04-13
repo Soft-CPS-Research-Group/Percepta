@@ -51,10 +51,22 @@ class Manager:
                 for message in messages_json:
                     entity_id = str(message['id'])  # Extract and convert the message ID to string
                     timestamp = message['timestamp']  # Extract the timestamp
-                    value = message['value']  # Extract the value
-                    # Store the data in the dictionary using the ID as key
-                    self._dict[entity_id] = {'timestamp': timestamp, 'data': value}
+                    value = message['value']
 
+                    if isinstance(value, dict):
+                        for param, readings in value.items():
+                            if isinstance(readings, list):
+                                for reading in readings:
+                                    if 'timestamp' in reading:
+                                        ts_str = reading['timestamp']
+                                        reading['timestamp'] = datetime.datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S %z")
+
+                    self._dict[entity_id] = {
+                        'timestamp': timestamp,
+                        'data': value,
+                        'generated': False
+                    }
+                    # {"entity_id" : {"timestamp": timestamp, "data": {"param_1" : [{"timestamp": timestamp, "value" : value}, {}...]}, {}...}
 
             return True  # Return True if the operation succeeds
         except Exception as e:

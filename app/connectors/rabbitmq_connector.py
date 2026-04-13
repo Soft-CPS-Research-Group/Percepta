@@ -141,6 +141,8 @@ class RabbitMQConnector:
         # Open a new channel on the established connection
         self._channel = self._connection.channel()
 
+        self._channel.confirm_delivery()
+
     def declare_exchange(self, exchange_name: str = '', **kwargs) -> None:
         """
         Declares an exchange. Checks if it exists first using passive=True.

@@ -50,7 +50,7 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
             - Passes collected data to CWTranslator after all requests complete.
         """
 
-        time.sleep(self._original_time_interval)
+        time.sleep(self._original_time_interval) # TODO isto está um bocado remendado, ver qual a melhor forma para tratar isto
         #self._logger.info("Energy Price called")
 
         message_to_translate = {

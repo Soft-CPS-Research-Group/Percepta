@@ -60,9 +60,13 @@ class TranslatorRabbitMQBase(TranslatorBase):
                 except Exception:
                     pass
 
-                self._rabbitmq_connector.connect()
+                self._start_messaging_service()
 
-            self._rabbitmq_connector.publish(self._environment, message)
+            try:
+                self._rabbitmq_connector.publish(self._environment, message)
+            except Exception as e:
+                self._rabbitmq_connector.close()
+                raise e
 
         with_retries(send_message_to_environment_queue_auxiliar,error_msg=f"RabbitMQ Translator - {self._environment}: Sending message failed",logger = self._logger)
 

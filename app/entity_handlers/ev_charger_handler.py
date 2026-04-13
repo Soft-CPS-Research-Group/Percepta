@@ -7,8 +7,8 @@ from app.utils.labels import Label
 class EVChargerHandler(EntityHandlerBase):
     label = Label.EV_CHARGER.value
 
-    def __init__(self, repository, entities_ids, configurations, logger):
-        super().__init__(repository, entities_ids, configurations, logger)
+    def __init__(self, repository, entities_ids, environment_specs, configurations, logger):
+        super().__init__(repository, entities_ids, environment_specs, configurations, logger)
 
     def process(self, message, all_data):
         ev_chargers_entities = self._entities_ids.get(EVChargerHandler.label)
@@ -28,7 +28,6 @@ class EVChargerHandler(EntityHandlerBase):
                 if ev_charger:
                     # Access the 'data' payload for this EV charger
                     ev_charger_data = ev_charger.get('data')
-
                     power_array = ev_charger_data.get('power')
 
                     if power_array and isinstance(power_array, list):
@@ -62,6 +61,7 @@ class EVChargerHandler(EntityHandlerBase):
                 charging_sessions.update({ev_charger_id : {
                     'power' : power,
                     'electric_vehicle' : electric_vehicle,
+                    'generated' : ev_charger.get('generated', True)
                 }})
 
         # Attach processed EV charger sessions to the message
@@ -87,5 +87,6 @@ class EVChargerHandler(EntityHandlerBase):
             'data': {
                 'power': None,
                 'electric_vehicle': ''
-            }
+            },
+            "generated": True
         }

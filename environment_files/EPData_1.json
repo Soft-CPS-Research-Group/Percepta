@@ -15,7 +15,8 @@
                                 },
                                 "aggregation_operation": "mean",
                                 "fill_operation": "linear"
-                            }
+                            },
+                             "label": "energy_price"
                         }
                     },
                     "label": "energy_price"

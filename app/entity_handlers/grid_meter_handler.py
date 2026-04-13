@@ -10,8 +10,8 @@ class GridMeterHandler(EntityHandlerBase):
     # TODO perceber onde meter isto, secalhar faz mais sentido por dispositivo em concreto e não por label
     data_deadline_seconds = 7200  # 2 hours
 
-    def __init__(self, repository, entities_ids, configurations, logger):
-        super().__init__(repository, entities_ids, configurations, logger)
+    def __init__(self, repository, entities_ids, environment_specs, configurations, logger):
+        super().__init__(repository, entities_ids, environment_specs, configurations, logger)
 
     def process(self, message, all_data):
 
@@ -20,23 +20,25 @@ class GridMeterHandler(EntityHandlerBase):
 
         grid_meters = {}
 
-        # Sum up the energy consumption (energy_in) from each grid meter entity
-        for grid_meter_entity_id in grid_meter_entities:
-            grid_meter_values = all_data.get(grid_meter_entity_id, {})
-            data = grid_meter_values.get('data', {})
+        if grid_meter_entities:
+            # Sum up the energy consumption (energy_in) from each grid meter entity
+            for grid_meter_id in grid_meter_entities:
+                grid_meter_values = all_data.get(grid_meter_id, {})
+                data = grid_meter_values.get('data', {})
 
-            if data:
-                entity_summary = {}
-                for param in GRID_METER_PARAMETERS:
-                    # Sum the values if the parameter exists and is a list
-                    values_list = data.get(param, [])
-                    if isinstance(values_list, list):
-                        accumulated_value = sum(item.get("value", 0) for item in values_list)
-                        entity_summary[param] = accumulated_value
-                    else:
-                        entity_summary[param] = 0
+                if data:
+                    entity_summary = {}
+                    for param in GRID_METER_PARAMETERS:
+                        # Sum the values if the parameter exists and is a list
+                        values_list = data.get(param, [])
+                        if isinstance(values_list, list):
+                            accumulated_value = sum(item.get("value", 0) for item in values_list)
+                            entity_summary[param] = accumulated_value
+                        else:
+                            entity_summary[param] = 0
 
-                grid_meters[grid_meter_entity_id] = entity_summary
+                    entity_summary["generated"] = grid_meter_values.get('generated', True)
+                    grid_meters[grid_meter_id] = entity_summary
 
 
         message["observations"]["grid_meters"] = grid_meters
@@ -53,5 +55,6 @@ class GridMeterHandler(EntityHandlerBase):
         # If not valid or no substitute found, return fallback default
         return {
             'timestamp': 0,
-            'data': {param: 0.0 for param in GRID_METER_PARAMETERS}
+            'data': {param: 0.0 for param in GRID_METER_PARAMETERS},
+            "generated": True
         }
