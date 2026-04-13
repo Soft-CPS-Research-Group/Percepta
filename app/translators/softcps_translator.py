@@ -41,7 +41,7 @@ class SoftCPSTranslator(TranslatorRabbitMQBase):
         entity_data = messages.get(entity_id, {})
 
         # Fallback to current time if timestamp is missing in the message
-        raw_ts = messages.get('timestamp') or datetime.datetime.now().isoformat()
+        raw_ts = messages.get('timestamp') or datetime.datetime.now(self._tz).isoformat()
         timestamp = datetime.datetime.fromisoformat(raw_ts.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S %z")
 
         values = {}
