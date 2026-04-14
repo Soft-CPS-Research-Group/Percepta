@@ -106,7 +106,7 @@ class CommunityOutputHandler(OutputHandlerBase):
         self._rabbitmq_connector.connect()
 
         for ex_name in self._other_environments_ids:
-            community_name = f"community_{ex_name}"
+            community_name = f"percepta_community_{ex_name}"
 
             self._rabbitmq_connector.declare_exchange(community_name)
 
