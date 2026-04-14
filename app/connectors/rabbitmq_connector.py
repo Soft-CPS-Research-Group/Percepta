@@ -1,4 +1,5 @@
 import json
+import random
 import ssl
 from typing import Callable
 
@@ -185,7 +186,7 @@ class RabbitMQConnector:
 
 
         if queue_conf.get("queue_prefix"):
-            queue_name = f'{queue_conf.get("queue_prefix")}_{queue_name}'  # TODO pensar se queue_conf é o melhor sitio para ter o bound_queue_prefix
+            queue_name = f'{queue_conf.get("queue_prefix")}{random.randint(0, 999999):06d}_{queue_name}'  # TODO pensar se queue_conf é o melhor sitio para ter o bound_queue_prefix
 
 
         # Declare the queue with the resolved configuration
