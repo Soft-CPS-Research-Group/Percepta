@@ -105,15 +105,13 @@ class CommunityOutputHandler(OutputHandlerBase):
 
         self._rabbitmq_connector.connect()
 
-        queue_name = f"queue_community_{self._id}"
-
         for ex_name in self._other_environments_ids:
             community_name = f"community_{ex_name}"
 
             self._rabbitmq_connector.declare_exchange(community_name)
 
             real_queue_name = self._rabbitmq_connector.declare_queue(
-                queue_name,
+                self._id,
                 community_name
             )
 

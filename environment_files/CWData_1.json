@@ -16,9 +16,9 @@
                                     "unit": "min"
                                 },
                                 "aggregation_operation": "sum",
-                                "fill_operation": "linear",
-                                "label" : "energy_out"
-                            }
+                                "fill_operation": "linear"
+                            },
+                            "label" : "energy"
                         }
                     },
                     "label": "pv_panel"
@@ -37,7 +37,8 @@
                                 },
                                 "aggregation_operation": "sum",
                                 "fill_operation": "linear"
-                            }
+                            },
+                            "label": "energy_in"
                         },
                         "energy_out" : {
                             "id" : "35928",
@@ -51,7 +52,8 @@
                                 },
                                 "aggregation_operation": "sum",
                                 "fill_operation": "linear"
-                            }
+                            },
+                            "label": "energy_out"
                         },
                         "SoC" : {
                             "id" : "33690",
@@ -65,7 +67,8 @@
                                 },
                                 "aggregation_operation": "last",
                                 "fill_operation": "linear"
-                            }
+                            },
+                            "label": "state_of_charge"
                         }
                     },
                     "actuators" : {
@@ -82,7 +85,8 @@
                         "session_status" : {
                             "id" : "37507",
                             "type": "Session status",
-                            "measurementUnit": "Status"
+                            "measurementUnit": "Status",
+                            "label": "session_status"
                         },
                         "power" : {
                             "id" : "41836",
@@ -96,11 +100,13 @@
                                 },
                                 "aggregation_operation": "mean",
                                 "fill_operation": "linear"
-                            }
+                            },
+                            "label": "power"
                         },
                         "electric_vehicle": {
                             "id": "EV01",
-                            "type" : "Name"
+                            "type" : "Name",
+                            "label": "electric_vehicle"
                         }
                     },
                     "actuators" : {
