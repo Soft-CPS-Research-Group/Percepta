@@ -1,5 +1,4 @@
 import threading
-import random
 from abc import abstractmethod
 from app.receivers.receiver_base import ReceiverBase
 from app.connectors.rabbitmq_connector import RabbitMQConnector
@@ -57,7 +56,7 @@ class ReceiverRabbitMQBase(ReceiverBase):
             self._rabbitmq_connector.declare_exchange(ex_name)
 
             real_queue_name = self._rabbitmq_connector.declare_queue(
-                f"{random.randint(0, 999999):06d}_{self._environment_name}",
+                self._environment_name,
                 ex_name
             )
 
