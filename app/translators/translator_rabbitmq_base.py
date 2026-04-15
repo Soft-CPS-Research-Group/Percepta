@@ -64,6 +64,7 @@ class TranslatorRabbitMQBase(TranslatorBase):
 
             try:
                 self._rabbitmq_connector.publish(self._environment, message)
+                self._logger.info(f"Message {message} sent with success.")
             except Exception as e:
                 self._rabbitmq_connector.close()
                 raise e
