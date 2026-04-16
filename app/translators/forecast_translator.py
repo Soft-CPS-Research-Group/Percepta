@@ -122,7 +122,6 @@ class ForecastTranslator(TranslatorRabbitMQBase):
             message_list.extend(value)
 
         self._logger.info(f"MESSAGES LIST FORECAST {message_list}")
-
         # Send the final standardized message list to the environment queue.
         self.send_message_to_environment_queue(message_list)
 
@@ -153,7 +152,7 @@ class ForecastTranslator(TranslatorRabbitMQBase):
 
         for date in prices_with_timestamp.keys():
             returned_dict.append({"timestamp": date.strftime("%Y-%m-%d %H:%M:%S %z"),
-                                  "value": round(prices_with_timestamp[date] / 1000, 8)})
+                                  "value": prices_with_timestamp[date]})
 
         return returned_dict
 

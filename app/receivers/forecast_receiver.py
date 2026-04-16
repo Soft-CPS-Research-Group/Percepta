@@ -62,6 +62,7 @@ class ForecastReceiver(ReceiverRabbitMQBase):
         self._arrival_time = time.time()
 
         if not self._stop_event.is_set():
+            time.sleep(self._time_interval)
             self._translator.translate(body)
 
     @classmethod

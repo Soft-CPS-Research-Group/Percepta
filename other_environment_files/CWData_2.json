@@ -1,0 +1,609 @@
+{
+    "environments": {
+        "R-H-01": {
+            "group": "living lab",
+            "entities": {
+                "GR01": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        },
+         "R-H-02": {
+            "group": "living lab",
+            "entities": {
+                "GR02": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        },
+         "R-H-03": {
+            "group": "living lab",
+            "entities": {
+                "GR03": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        },
+         "R-H-04": {
+            "group": "living lab",
+            "entities": {
+                "GR04": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        },
+         "R-H-05": {
+            "group": "living lab",
+            "entities": {
+                "GR05": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "Kilowatt Hour",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        }
+    },
+    "provider": "cleanwatts_2",
+    "configurations" : {
+        "source_mapping": {
+            "R-H-01": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR01" : "Shelly-shellypro3em-0cb815fd4324"
+                }
+            },
+            "R-H-02": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR02" : "Shelly-shellyproem50-08f9e0e6a5a4"
+                }
+            },
+            "R-H-03": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR03" : "Shelly-shellyproem50-08f9e0eac4f4"
+                }
+            },
+            "R-H-04": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR04" : "Shelly-shellyproem50-08f9e0eac8e8"
+                }
+            },
+            "R-H-05": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR05" : "Shelly-shellyem-B9F0A6"
+                }
+            }
+        }
+    }
+}
