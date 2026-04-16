@@ -44,9 +44,11 @@
     },
     "configurations" : {
         "source_mapping": {
-            "strategy": "environment",
-            "rules" : {
-                "R-H-01": "pred.R-H-01"
+            "R-H-01": {
+                 "strategy": "environment",
+                "rules" : {
+                    "R-H-01": "pred.R-H-01"
+                }
             }
         }
     },

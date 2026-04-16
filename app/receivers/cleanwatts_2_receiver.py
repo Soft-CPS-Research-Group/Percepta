@@ -56,6 +56,7 @@ class CW2Receiver(ReceiverRabbitMQBase):
                         Can be a dict, str, or serialized data structure.
         """
         if not self._stop_event.is_set():
+            self._logger.info(f"Received message {body} from {self._environment_name}.")
             entity_id = self._source_to_entity[source]
             self._translator.translate(
                 {

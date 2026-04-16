@@ -42,9 +42,10 @@ class SourceMapper:
         self._environment_name : str = environment_name
         self._logger : LoggingUtils = logger
 
+        environment_source_mapping = source_mapping.get(self._environment_name) # TODO está aqui mas não deveria
         # Define the granularity of resolution (Environment, Entity, or Parameter)
-        self._strategy : str = source_mapping.get('strategy', 'environment')
-        self._rules : dict = source_mapping.get('rules', {})
+        self._strategy : str = environment_source_mapping.get('strategy', 'environment')
+        self._rules : dict = environment_source_mapping.get('rules', {})
         self._entities : dict = environment_specs.get('entities', {})
 
 

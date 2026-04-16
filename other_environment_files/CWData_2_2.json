@@ -1,9 +1,9 @@
 {
     "environments": {
-        "R-H-01": {
+         "R-H-05": {
             "group": "living lab",
             "entities": {
-                "GR01": {
+                "GR05": {
                     "parameters": {
                         "energy_in_l1": {
                             "measurementUnit": "Kilowatt Hour",
@@ -118,9 +118,11 @@
     "provider": "cleanwatts_2",
     "configurations" : {
         "source_mapping": {
-            "strategy": "entity",
-            "rules" : {
-                "GR01" : "Shelly-shellypro3em-0cb815fd4324"
+            "R-H-05": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR05" : "Shelly-shellyem-B9F0A6"
+                }
             }
         }
     }
