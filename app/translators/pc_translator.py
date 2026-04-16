@@ -12,6 +12,7 @@ class PCTranslator(TranslatorRabbitMQBase):
     """
 
     _entities: dict  # Stores entities defined in the environment specifications
+    _soc_cache: dict
 
     def __init__(self, environment: str, environment_specs: dict, configurations: dict, logger: LoggingUtils) -> None:
         """
@@ -27,6 +28,7 @@ class PCTranslator(TranslatorRabbitMQBase):
 
         self._entities = environment_specs.get('entities')
 
+        self._soc_cache = {}
 
     def translate(self, message: bytes) -> None:
         """
@@ -40,15 +42,35 @@ class PCTranslator(TranslatorRabbitMQBase):
         # Generate a timestamp for when the message is being processed.
         timestamp: str = datetime.datetime.now(self._tz).strftime("%Y-%m-%d %H:%M:%S %z")
 
-        message_dict: dict = json.loads(message.decode('utf-8'))
+        try:
+            message_dict: dict = json.loads(message.decode('utf-8'))
+        except Exception as e:
+            self._logger.error(f"Failed to decode JSON message: {e}")
+            return
+
         self._logger.info(f"PulseCharge message {message_dict}\n")
+
         user_id = message_dict.get('user_id')
+        if not user_id:
+            self._logger.warning("Message received without user_id. Skipping translation.")
+            return
+
+        current_soc = message_dict.get('current_soc')
+
+        if current_soc is not None:
+            # Update cache with the new SoC value
+            self._soc_cache[user_id] = current_soc
+        else:
+            # Attempt to retrieve the last known SoC from cache
+            current_soc = self._soc_cache.get(user_id)
+            self._logger.debug(f"Missing SoC in message. Using cached value for user {user_id}: {current_soc}")
+
         message = {}
         print(message_dict)
         for key, entity in self._entities.items():
             if entity.get('user_id') == user_id:
                 value = {
-                    "SoC" : message_dict.get('current_soc',None),
+                    "SoC" : current_soc,
                     "flexibility" : {
                         "estimated_soc_at_arrival" : message_dict.get('estimated_soc_at_arrival',None),
                         "estimated_soc_at_departure" : message_dict.get('estimated_soc_at_departure',None),
