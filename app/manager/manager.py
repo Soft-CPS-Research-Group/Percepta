@@ -160,8 +160,9 @@ class Manager:
                 # Use fallback data provided by the appropriate handler
                 data[entity_id] = handler.fallback(entity_id, self._substitute_dict)
             else:
-                # Store a copy of valid data for potential substitution later
+                # Store a copy of valid data for potential substitution later and change generated to True
                 self._substitute_dict[entity_id] = copy.deepcopy(data[entity_id])
+                self._substitute_dict[entity_id]['generated'] = True
 
     #TODO se o handler não existir fazer formatação normal
     def _format_data(self, data) -> dict:
