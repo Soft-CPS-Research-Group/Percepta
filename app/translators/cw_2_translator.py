@@ -13,7 +13,9 @@ grid_meter_mapper = {
     "c_total_act_energy": "energy_in_l3",
     "c_total_act_ret_energy": "energy_out_l3",
     "total_act": "energy_in_total",
-    "total_act_ret": "energy_out_total"
+    "total_act_ret": "energy_out_total",
+    "total_act_energy": "energy_in_total",
+    "total_act_ret_energy": "energy_out_total"
 }
 
 # Strategy handlers: links JSON strategy names to their respective logic methods
@@ -69,12 +71,15 @@ class CW2Translator(TranslatorRabbitMQBase):
     def _grid_meter(self, entity_id, message, timestamp):
 
         topic = message.get('Topic')
-        if "emdata" not in topic:
+        if "emdata" not in topic and "em1data" not in topic:
             return []
+
+        self._logger.warning(f"TESTE {message}")
 
         payload = message.get('Message')
         current_data = json.loads(payload) if isinstance(payload, str) else payload
-        current_data.pop('id', None)
+        if current_data.pop('id', None) == 1:
+            return []
 
         # Initialize persistent storage for previous readings if not present
         # We use this to calculate the delta (difference) between cumulative readings
@@ -191,6 +196,14 @@ class CW2Translator(TranslatorRabbitMQBase):
         Returns:
             dict: Standardized message dictionary.
         """
+
+        if "energy_in_l1" not in value.keys():
+            value["energy_in_l1"] = value.get("energy_in_total", 0)
+
+        if "energy_out_l1" not in value.keys():
+            value["energy_out_l1"] = value.get("energy_out_total", 0)
+
+        print(f"TESTE {value}")
         new_message: dict = {
             "id": entity_id,
             "value": value,
