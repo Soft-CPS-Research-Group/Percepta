@@ -1,0 +1,81 @@
+{
+    "environments" : {
+        "R-H-02": {
+            "group": "living lab",
+            "entities": {
+                "OMIE" :  {
+                    "parameters" : {
+                        "energy_price" : {
+                            "measurementUnit": "Euros per Megawatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                             "label": "energy_price"
+                        }
+                    },
+                    "label": "energy_price"
+                }
+            }
+        },
+        "R-H-03": {
+            "group": "living lab",
+            "entities": {
+                "OMIE" :  {
+                    "parameters" : {
+                        "energy_price" : {
+                            "measurementUnit": "Euros per Megawatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                             "label": "energy_price"
+                        }
+                    },
+                    "label": "energy_price"
+                }
+            }
+        },
+        "R-H-04": {
+            "group": "living lab",
+            "entities": {
+                "OMIE" :  {
+                    "parameters" : {
+                        "energy_price" : {
+                            "measurementUnit": "Euros per Megawatt-Hour",
+                            "temporal_behavior": {
+                                "cumulative": false,
+                                "periodicity": {
+                                    "value": 15,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "mean",
+                                "fill_operation": "linear"
+                            },
+                             "label": "energy_price"
+                        }
+                    },
+                    "label": "energy_price"
+                }
+            }
+        }
+    },
+    "configurations" : {
+        "source_mapping": {
+            "R-H-02":{},
+            "R-H-03":{},
+            "R-H-04":{}
+        }
+    },
+    "provider": "ren"
+}

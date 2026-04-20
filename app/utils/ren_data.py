@@ -2,7 +2,7 @@ import threading
 import json
 import subprocess
 from app.connectors.http_connector import HTTPConnector, HTTPErrorWrapper
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime, timedelta
 from app.utils.logger import LoggingUtils
 from app.exceptions import general_exceptions
@@ -16,7 +16,7 @@ class ElectricityPriceFetcher:
     and stores them for hourly access.
     """
 
-    _scheduler: BackgroundScheduler  # Scheduler for periodically retrieving data.
+    _scheduler: BlockingScheduler  # Scheduler for periodically retrieving data.
     _http_connector: HTTPConnector  # HTTP connector instance for performing GET/POST requests
     _prices : list
     _logger: LoggingUtils           # Logger instance for logging session activity.
@@ -63,9 +63,11 @@ class ElectricityPriceFetcher:
             cls._http_connector = HTTPConnector(cls._server.get('url'))
             cls._logger.info(f"Electricity Price Fetcher: Connection successfully established.")
 
-            cls._update_energy_price()
+            cls._scheduler = BlockingScheduler(timezone=cls._tz_cet)
 
-            cls._scheduler = BackgroundScheduler(timezone=cls._tz_cet)
+            #cls._scheduler.add_job(cls._update_energy_price, next_run_time=datetime.now())
+
+            cls._update_energy_price()
 
             now_cet = datetime.now(cls._tz_cet)
             cutoff_today = now_cet.replace(hour=13, minute=5, second=0, microsecond=0)
@@ -238,7 +240,7 @@ class ElectricityPriceFetcher:
         """
         Stops the electricity price fetcher scheduler gracefully.
         """
-        if cls._scheduler and cls._scheduler.running:
+        if hasattr(cls, "_scheduler") and cls._scheduler.running:
             cls._logger.info("Stopping Electricity Price Fetcher...")
             cls._scheduler.shutdown()
         else:
