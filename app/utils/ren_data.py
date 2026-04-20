@@ -41,7 +41,7 @@ class ElectricityPriceFetcher:
 
         cls._send_event = threading.Event()
         cls._timer_ended = threading.Condition()
-
+        cls.test = 0
         cls._tz_cet = ZoneInfo("Europe/Madrid")
         cls._tz_utc = ZoneInfo("UTC")
 
@@ -76,18 +76,20 @@ class ElectricityPriceFetcher:
             cls._scheduler.add_job(
                 cls._run_job,
                 trigger='cron',
-                hour=13,
-                minute=5,
+                hour=16,
+                minute=40,
                 misfire_grace_time=300,
                 next_run_time=run_immediately,
                 coalesce=True,
                 id='daily_price_fetch'
             )
-
+            print(f"Scheduler start?")
             # Publicação em Portugal: Como Portugal está no fuso horário WET (uma hora a menos que Espanha/CET), o leilão termina às 11:00 (hora de Lisboa).
             # Disponibilidade dos Resultados: Os preços horários finais são normalmente publicados no site por volta das 12:45 CET, o que equivale às 11:45 em Portugal continental.
 
             cls._scheduler.start()
+            print(f"Scheduler start? Isto não é suposto aparecer")
+
 
         with_retries(func=_start_http_service_auxiliar, logger=cls._logger)
 
@@ -194,6 +196,8 @@ class ElectricityPriceFetcher:
         Raises:
             general_exceptions.SchedulerJobError: If the scheduled job fails.
         """
+        cls.test+=1
+        print(f"Fui chamado {cls.test}")
         try:
             tomorrow = datetime.now() + timedelta(days=1)
             cls._update_energy_price(tomorrow)

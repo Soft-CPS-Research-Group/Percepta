@@ -89,7 +89,7 @@ class ReceiverRabbitMQBase(ReceiverBase):
 
     def run(self):
         self._thread = threading.current_thread()
-        with_retries(func=self._start_messaging_service, logger=self._logger)
+        with_retries(func=self._start_messaging_service,retry_config={"max_retries": 100, "timeout": 60*5},  logger=self._logger)
 
 
 
