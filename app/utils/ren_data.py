@@ -76,8 +76,8 @@ class ElectricityPriceFetcher:
             cls._scheduler.add_job(
                 cls._run_job,
                 trigger='cron',
-                hour=16,
-                minute=40,
+                hour=13,
+                minute=5,
                 misfire_grace_time=300,
                 next_run_time=run_immediately,
                 coalesce=True,
