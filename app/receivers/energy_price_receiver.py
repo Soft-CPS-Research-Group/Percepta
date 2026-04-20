@@ -12,6 +12,8 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
     provider = Provider.REN.value     # Provider ID
 
     _translator: EnergyPriceTranslator   # Translator which translates EnergyPrice-specific format into Percepta-specific format
+    _ren_data_init : bool = False
+    _ren_data_lock = threading.Lock()
 
     def __init__(self, environment_name: str, environment_specs: dict, configurations: dict, logger: LoggingUtils):
         """
@@ -40,7 +42,10 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
         self._logger.info(f"Stopping thread {self._environment_name}...")
         super().stop()
 
-        ElectricityPriceFetcher.stop_electricity_price_fetcher_service()
+        with type(self)._ren_data_lock:
+            if type(self)._ren_data_init:
+                ElectricityPriceFetcher.stop_electricity_price_fetcher_service()
+                type(self)._ren_data_init = False
 
     def _job(self):
         """
@@ -66,14 +71,20 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
 
         logger_energy_price_fetcher = LoggingUtils(f"{cls.provider}_energy_price_fetcher", configurations)
 
-        energy_price_fetcher = threading.Thread(
-            target=ElectricityPriceFetcher.start_electricity_price_fetcher_service,
-            args=(logger_energy_price_fetcher, configurations),
-            daemon=True
-        )
-        energy_price_fetcher.start()
+        with cls._ren_data_lock:
+            if not cls._ren_data_init:
+                energy_price_fetcher = threading.Thread(
+                    target=ElectricityPriceFetcher.start_electricity_price_fetcher_service,
+                    args=(logger_energy_price_fetcher, configurations),
+                    daemon=True # TODO considerar se daemon fica a True ou False
+                )
 
-        threads.append(energy_price_fetcher)
+                try:
+                    energy_price_fetcher.start()
+                    cls._ren_data_init = True
+                    threads.append(energy_price_fetcher)
+                except Exception:
+                    raise Exception("Failed to start energy price fetcher") # TODO ver o que faço com isto
 
         for environment, environment_specs in environments.items():
             logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
