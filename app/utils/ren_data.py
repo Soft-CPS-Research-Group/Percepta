@@ -63,7 +63,7 @@ class ElectricityPriceFetcher:
             cls._http_connector = HTTPConnector(cls._server.get('url'))
             cls._logger.info(f"Electricity Price Fetcher: Connection successfully established.")
 
-            cls._scheduler = BlockingScheduler(timezone=cls._tz_cet)
+            cls._scheduler = BlockingScheduler()
 
             #cls._scheduler.add_job(cls._update_energy_price, next_run_time=datetime.now())
 
@@ -71,22 +71,24 @@ class ElectricityPriceFetcher:
 
             now_cet = datetime.now(cls._tz_cet)
             cutoff_today = now_cet.replace(hour=13, minute=5, second=0, microsecond=0)
-            run_immediately = now_cet if now_cet > cutoff_today else None
+            run_immediately = True if now_cet > cutoff_today else False
+
+            if run_immediately:
+                cls._run_job()
 
             cls._scheduler.add_job(
                 cls._run_job,
                 trigger='cron',
-                hour=13,
+                hour=12,
                 minute=5,
                 misfire_grace_time=300,
-                next_run_time=run_immediately,
                 coalesce=True,
                 id='daily_price_fetch'
             )
             print(f"Scheduler start?")
             # Publicação em Portugal: Como Portugal está no fuso horário WET (uma hora a menos que Espanha/CET), o leilão termina às 11:00 (hora de Lisboa).
             # Disponibilidade dos Resultados: Os preços horários finais são normalmente publicados no site por volta das 12:45 CET, o que equivale às 11:45 em Portugal continental.
-
+            cls._logger.info(f"Jobs scheduled: {cls._scheduler.print_jobs()}")
             cls._scheduler.start()
             print(f"Scheduler start? Isto não é suposto aparecer")
 

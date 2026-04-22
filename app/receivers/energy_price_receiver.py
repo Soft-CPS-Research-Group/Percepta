@@ -76,7 +76,7 @@ class EnergyPriceReceiver(ReceiverHTTPBase):
                 energy_price_fetcher = threading.Thread(
                     target=ElectricityPriceFetcher.start_electricity_price_fetcher_service,
                     args=(logger_energy_price_fetcher, configurations),
-                    daemon=True # TODO considerar se daemon fica a True ou False
+                    daemon=False # TODO considerar se daemon fica a True ou False
                 )
 
                 try:
