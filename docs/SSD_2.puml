@@ -1,0 +1,31 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+participant "Telemetry\nSystem" as TS
+participant "Connector\n(Inbound)" as Conn
+participant "Input\nHandler" as IH
+participant "Telemetry\nPipeline\nService" as TPS
+participant "Adapter" as Ad
+participant "Output\nHandler" as OH
+participant "Connector\n(Outbound)" as ConnOut
+participant "Data\nProcessing" as DP
+
+note over Conn, ConnOut
+    Shown for Telemetry System A. Any other Telemetry System configured
+    for the environment, such as Telemetry System B, runs the same
+    pipeline independently and concurrently, with its own dedicated
+    Connectors, Input Handler, Telemetry Pipeline Service, Adapter,
+    Output Handler.
+end note
+
+TS -> Conn : Data (Telemetry System-specific format)
+Conn -> IH : Data (Telemetry System-specific format)
+IH -> TPS : process_message(data)
+TPS -> Ad : adapt(data)
+Ad --> TPS : Data (Standard format)
+TPS -> OH : dispatch(data)
+OH -> ConnOut : Send
+ConnOut -> DP : Data (Standard format)
+
+@enduml

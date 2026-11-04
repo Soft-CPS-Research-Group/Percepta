@@ -1,0 +1,30 @@
+{
+    "provider": "softCPS",
+    "environments": {
+        "i-charging headquarters 3Phase" : {
+        "group": "i-charging headquarters 3Phase",
+        "entities": {
+            "GR01": {
+                "parameters": {
+                    "energy_in_total": {
+                        "measurementUnit": "kW"
+                    },
+                    "energy_out_total": {
+                        "measurementUnit": "kW"
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    }
+        },
+
+        "configurations" : {
+            "source_mapping": {
+                "strategy": "entity",
+                "rules": {
+                    "GR01" : "hq-grid-meter"
+                }
+            }
+        }
+}

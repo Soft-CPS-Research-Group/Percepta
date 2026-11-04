@@ -1,0 +1,46 @@
+2026-07-16 15:06:30,609 | ERROR | test | http_handler_test | HTTP Input Handler | Unsupported HTTP method 'POST' requested for path '/v1/control/actuate'. Allowed methods: {'GET'}
+2026-07-16 15:09:33,344 | ERROR | test | http_handler_test | HTTP Input Handler | Unsupported HTTP method 'POST' requested for path '/v1/control/actuate'. Allowed methods: {'GET'}
+2026-07-16 15:09:49,618 | DEBUG | test | http_handler_test | HTTP Input Handler | Preparing cooperative fetch window for targets: [{'path': '/v1/telemetry/meter_01', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}, {'path': '/v1/telemetry/meter_02', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}]
+2026-07-16 15:09:49,620 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:09:49,621 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/telemetry/meter_01] response: {'source': '/v1/telemetry/meter_01', 'status_code': 200, 'payload': {'active_power': 12.5}}
+2026-07-16 15:09:49,622 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_02]
+2026-07-16 15:09:49,624 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/telemetry/meter_02] response: {'source': '/v1/telemetry/meter_02', 'status_code': 200, 'payload': {'active_power': 15.0}}
+2026-07-16 15:09:49,631 | ERROR | test | http_handler_test | HTTP Input Handler | Unsupported HTTP method 'POST' requested for path '/v1/control/actuate'. Allowed methods: {'GET'}
+2026-07-16 15:09:49,639 | DEBUG | test | http_handler_test | HTTP Input Handler | Preparing cooperative fetch window for targets: [{'path': '/v1/telemetry/meter_01', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}, {'path': '/v1/telemetry/meter_02', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}]
+2026-07-16 15:09:49,641 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:09:49,642 | ERROR | test | http_handler_test | HTTP Input Handler | Egress fetch failed for path [/v1/telemetry/meter_01]: Connection timed out
+2026-07-16 15:09:49,643 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_02]
+2026-07-16 15:09:49,644 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/telemetry/meter_02] response: {'source': '/v1/telemetry/meter_02', 'status_code': 200, 'payload': {'active_power': 99.9}}
+2026-07-16 15:09:49,645 | WARNING | test | http_handler_test | HTTP Input Handler | Received unexpected payload type: <class 'NoneType'>
+2026-07-16 15:09:49,653 | INFO | test | http_handler_test | HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-07-16 15:09:49,655 | DEBUG | test | http_handler_test | HTTP Input Handler | Preparing cooperative fetch window for targets: [{'path': '/v1/telemetry/meter_01', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}, {'path': '/v1/telemetry/meter_02', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}]
+2026-07-16 15:09:49,656 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:09:49,657 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/telemetry/meter_01] response: {'source': '/v1/telemetry/meter_01', 'status_code': 200, 'payload': {'active_power': 10.0}}
+2026-07-16 15:09:49,659 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_02]
+2026-07-16 15:09:49,660 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/telemetry/meter_02] response: {'source': '/v1/telemetry/meter_02', 'status_code': 200, 'payload': {'active_power': 10.0}}
+2026-07-16 15:09:49,661 | WARNING | test | http_handler_test | HTTP Input Handler | Discarding fetched data payload: System shutdown sequence triggered mid-flight.
+2026-07-16 15:09:49,670 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/status]
+2026-07-16 15:09:49,672 | DEBUG | test | http_handler_test | HTTP Input Handler | Endpoint [GET /v1/status] response: {'source': '/v1/status', 'status_code': 200, 'payload': {'raw_payload': 'raw_unstructured_string_data'}}
+2026-07-16 15:09:49,679 | INFO | test | http_handler_test | HTTP Input Handler | Registering HTTP polling job with interval 10s...
+2026-07-16 15:09:49,687 | INFO | test | http_handler_test | HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-07-16 15:12:00,961 | ERROR | test | http_handler_test | HTTP Input Handler | Unsupported HTTP method 'POST' requested for path '/v1/control/actuate'. Allowed methods: {'GET'}
+2026-07-16 15:15:06,118 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:15:06,119 | ERROR | test | http_handler_test | HTTP Input Handler | Egress fetch failed for path [/v1/telemetry/meter_01]: Connection timed out
+2026-07-16 15:15:36,973 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:15:36,974 | ERROR | test | http_handler_test | HTTP Input Handler | Egress fetch failed for path [/v1/telemetry/meter_01]: Connection timed out
+2026-07-16 15:15:56,904 | INFO | test | http_handler_test | HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-16 15:15:56,905 | ERROR | test | http_handler_test | HTTP Input Handler | Egress fetch failed for path [/v1/telemetry/meter_01]: Connection timed out
+2026-07-29 14:28:57,102 | DEBUG | test | http_handler_test | Async HTTP Input Handler | Preparing cooperative fetch window for targets: [{'path': '/v1/telemetry/meter_01', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}, {'path': '/v1/telemetry/meter_02', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}]
+2026-07-29 14:28:57,104 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-29 14:28:57,107 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_02]
+2026-07-29 14:29:04,045 | ERROR | test | http_handler_test | Async HTTP Input Handler | Unsupported HTTP method 'POST' requested for path '/v1/control/actuate'. Allowed methods: {'GET'}
+2026-07-29 14:29:04,060 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-29 14:29:04,062 | ERROR | test | http_handler_test | Async HTTP Input Handler | Network exception detected for [/v1/telemetry/meter_01]: Connection timed out. Normalizing error state.
+2026-07-29 14:29:04,146 | DEBUG | test | http_handler_test | Async HTTP Input Handler | Preparing cooperative fetch window for targets: [{'path': '/v1/telemetry/meter_01', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}, {'path': '/v1/telemetry/meter_02', 'method': 'GET', 'timeout_ms': 2000, 'headers': {'Accept': 'application/json'}}]
+2026-07-29 14:29:04,148 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_01]
+2026-07-29 14:29:04,149 | ERROR | test | http_handler_test | Async HTTP Input Handler | Network exception detected for [/v1/telemetry/meter_01]: Connection timed out. Normalizing error state.
+2026-07-29 14:29:04,151 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/telemetry/meter_02]
+2026-07-29 14:29:04,239 | INFO | test | http_handler_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-07-29 14:29:04,242 | WARNING | test | http_handler_test | Async HTTP Input Handler | Poll Endpoints aborted: Handler is running under shutdown constraints.
+2026-07-29 14:29:04,256 | INFO | test | http_handler_test | Async HTTP Input Handler | Issuing request -> [GET /v1/status]
+2026-07-29 14:29:04,530 | INFO | test | http_handler_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.

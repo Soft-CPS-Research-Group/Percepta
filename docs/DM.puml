@@ -1,0 +1,121 @@
+@startuml
+skinparam linetype ortho
+top to bottom direction
+skinparam ArrowFontSize 16
+
+package EntityTypeAggregate {
+  class EntityType <<AggregateRoot>> {
+    +String id
+    +String label
+    +String id_usecase
+  }
+  class ParameterType <<Entity>> {
+    +String id
+    +String label
+    +String type
+    +String measurementUnit
+  }
+  class ActuatorType <<Entity>> {
+    +String id
+    +String label
+    +String type
+    +String measurementUnit
+  }
+}
+
+package UseCaseConfigAggregate {
+  class UseCaseConfig <<AggregateRoot>> {
+    +String id
+    +String theme
+    +List<String> activeDataIssueHandlingApproachIds
+    +Boolean hasParameterDerivationLogic
+    +Boolean hasDecisionValidationLogic
+    +Int deliveryFrequencyValue
+    +String deliveryFrequencyUnit
+    +List<String> alertDestinations
+  }
+  class StorageConfig <<ValueObject>> {
+    +String storageTypeId
+    +Map connectionInfo
+  }
+  class SchemaStorageConfig <<ValueObject>> {
+    +String storageTypeId
+    +Map connectionInfo
+  }
+}
+
+package EnvironmentAggregate {
+  class TemporalBehavior <<ValueObject>> {
+    +Boolean cumulative
+    +Int periodicityValue
+    +String periodicityUnit
+    +String aggregationOperation
+    +String fillOperation
+  }
+  class Environment <<AggregateRoot>> {
+    +String id
+    +String label
+    +String useCaseId
+  }
+  class Entity <<Entity>> {
+    +String id
+    +String label
+    +String entityTypeId
+  }
+  class Parameter <<ValueObject>> {
+    +String id
+    +String parameterTypeId
+  }
+  class Actuator <<ValueObject>> {
+    +String id
+    +String actuatorTypeId
+  }
+  class TelemetrySystem <<Entity>> {
+    +String id
+  }
+  class TargetSystem <<Entity>> {
+    +String id
+  }
+  class MLModel <<Entity>> {
+    +String id
+  }
+  class ConnectionConfig <<ValueObject>> {
+    +String protocolId
+    +Map connectionInfo
+  }
+  class SourceMapping <<ValueObject>> {
+    +String strategy
+    +Map rules
+  }
+  class ActuatorMapping <<ValueObject>> {
+    +Map rules
+  }
+}
+
+UseCaseConfig "1" *-- "1" SchemaStorageConfig
+UseCaseConfig "1" *-- "many" EntityType
+UseCaseConfig "1" *-- "1" StorageConfig
+EntityType "1" *-- "many" ParameterType
+EntityType "1" *-- "many" ActuatorType
+Parameter "1" *-- "1" TemporalBehavior
+
+Environment "1" *-- "many" Entity
+Entity "1" *-- "many" Parameter
+Entity "1" *-- "many" Actuator
+Environment "1" *-- "many" TelemetrySystem
+Environment "1" *-- "1" MLModel
+Environment "1" *-- "many" TargetSystem
+TelemetrySystem "1" *-- "1" ConnectionConfig
+TelemetrySystem "1" *-- "1" SourceMapping
+TargetSystem "1" *-- "1" ConnectionConfig
+TargetSystem "1" *-- "1" ActuatorMapping
+MLModel "1" *-- "1" ConnectionConfig
+
+Environment ..> UseCaseConfig : belongs to, by id
+Entity ..> EntityType : follows, by id
+Parameter ..> ParameterType : follows, by id
+Actuator ..> ActuatorType : follows, by id
+SourceMapping ..> Parameter : resolves to,\nif parameter\nlevel
+Actuator ..> ActuatorMapping : resolved via
+
+@enduml

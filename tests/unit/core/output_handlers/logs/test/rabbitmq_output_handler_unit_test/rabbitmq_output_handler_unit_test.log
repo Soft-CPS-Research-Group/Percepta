@@ -1,0 +1,250 @@
+2026-07-30 11:44:14,534 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'topology_setup' configuration is missing.
+2026-07-30 11:44:14,540 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 11:44:14,554 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 11:44:17,939 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 11:44:17,940 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 11:44:17,950 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 11:44:17,952 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 11:44:17,961 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Override mode requested but no dynamic exchanges were provided. Falling back to static.
+2026-07-30 11:44:17,962 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 11:44:17,963 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 11:44:18,013 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 11:44:18,014 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-30 11:44:18,016 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 11:44:18,017 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic] via route [dynamic.route]:
+{
+    "data": "test"
+}
+2026-07-30 11:44:18,053 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | RPC Response timeout expired for ID: corr_timeout_999
+2026-07-30 11:44:18,102 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 11:44:18,110 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Error decoding raw asynchronous RPC payload: Expecting value: line 1 column 1 (char 0)
+2026-07-30 11:52:24,026 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 13:40:14,961 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 13:40:14,963 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 14:13:04,001 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,117 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 14:13:07,132 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,254 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,372 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,489 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,609 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,734 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,856 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:07,976 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:08,103 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:13:08,231 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:16:01,249 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:06,801 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,019 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 14:17:10,029 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,145 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,260 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,381 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,496 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,605 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,716 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,827 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:10,954 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:17:11,065 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:18:11,164 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:19:55,253 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Topology validation error: 'queue_name' in RPC reply queue at index 0 must be a string.
+2026-07-30 14:21:10,593 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 14:22:29,642 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 14:24:44,837 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 14:25:37,344 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 14:25:37,346 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 14:26:52,579 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:26:52,581 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 14:28:16,245 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:28:16,246 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 14:40:58,184 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Override mode requested but no dynamic exchanges were provided. Falling back to static.
+2026-07-30 14:40:58,185 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:40:58,187 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:43:18,758 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Override mode requested but no dynamic exchanges were provided. Falling back to static.
+2026-07-30 14:43:18,760 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:43:18,761 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:44:55,074 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:44:55,086 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:45:25,445 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:45:25,446 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:46:52,606 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:46:52,607 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:47:19,467 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:47:19,468 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-30 14:47:19,470 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:47:19,470 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic] via route [dynamic.route]:
+{
+    "data": "test"
+}
+2026-07-30 14:50:16,511 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | RPC Response timeout expired for ID: corr_timeout_999
+2026-07-30 14:54:29,366 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 14:55:23,803 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Error decoding raw asynchronous RPC payload: 'NoneType' object has no attribute 'get'
+2026-07-30 14:55:57,871 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 14:55:57,899 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 14:55:57,932 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 14:55:57,933 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 14:55:57,947 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:55:57,949 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 14:55:57,965 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:55:57,967 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:55:57,985 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 14:55:57,986 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-30 14:55:57,987 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 14:55:57,988 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic] via route [dynamic.route]:
+{
+    "data": "test"
+}
+2026-07-30 14:55:58,057 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 14:57:18,465 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 14:58:44,105 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Received unmatched, corrupted or expired RPC response envelope context.
+2026-07-30 15:00:14,313 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Received unmatched, corrupted or expired RPC response envelope context.
+2026-07-30 15:01:54,974 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 15:01:54,990 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 15:01:55,011 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 15:01:55,012 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 15:01:55,020 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:01:55,021 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 15:01:55,031 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:01:55,032 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 15:01:55,040 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:01:55,041 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-30 15:01:55,043 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 15:01:55,044 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic] via route [dynamic.route]:
+{
+    "data": "test"
+}
+2026-07-30 15:01:55,085 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 15:01:55,104 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Missing 'exchange_name' key inside target configuration block.
+2026-07-30 15:01:55,105 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'valid_dynamic' verified/declared.
+2026-07-30 15:01:55,106 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [valid_dynamic] via route [valid.route]:
+{
+    "data": "test"
+}
+2026-07-30 15:01:55,119 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:01:55,121 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 15:23:40,407 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 15:23:40,420 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-30 15:23:40,441 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 15:23:40,442 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 15:23:40,450 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:23:40,451 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "telemetry": 12.34
+}
+2026-07-30 15:23:40,460 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:23:40,461 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 15:23:40,470 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:23:40,471 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-30 15:23:40,472 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-30 15:23:40,473 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic] via route [dynamic.route]:
+{
+    "data": "test"
+}
+2026-07-30 15:23:40,513 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-30 15:23:40,532 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Missing 'exchange_name' key inside target configuration block.
+2026-07-30 15:23:40,533 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'valid_dynamic' verified/declared.
+2026-07-30 15:23:40,534 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [valid_dynamic] via route [valid.route]:
+{
+    "data": "test"
+}
+2026-07-30 15:23:40,542 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-30 15:23:40,543 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry] via route [telemetry.v1.*]:
+{
+    "data": "test"
+}
+2026-07-31 18:27:51,786 | ERROR | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-31 18:27:51,815 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_new' verified/declared.
+2026-07-31 18:27:51,859 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-31 18:27:51,861 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-31 18:27:51,877 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-31 18:27:51,880 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry]:
+{
+    "telemetry": 12.34
+}
+2026-07-31 18:27:51,896 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-31 18:27:51,898 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry]:
+{
+    "data": "test"
+}
+2026-07-31 18:27:51,914 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-31 18:27:51,916 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'ex_dynamic' verified/declared.
+2026-07-31 18:27:51,919 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry]:
+{
+    "data": "test"
+}
+2026-07-31 18:27:51,921 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [ex_dynamic]:
+{
+    "data": "test"
+}
+2026-07-31 18:27:51,984 | DEBUG | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Inbound RPC response frame matched securely for ID: corr_match_555
+2026-07-31 18:27:52,028 | WARNING | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Missing 'exchange_name' key inside target configuration block.
+2026-07-31 18:27:52,030 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'valid_dynamic' verified/declared.
+2026-07-31 18:27:52,033 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [valid_dynamic]:
+{
+    "data": "test"
+}
+2026-07-31 18:27:52,050 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Egress Exchange 'exchange_telemetry' verified/declared.
+2026-07-31 18:27:52,053 | INFO | test | rabbitmq_output_handler_unit_test | RabbitMQ Output Handler | Message published to [exchange_telemetry]:
+{
+    "data": "test"
+}

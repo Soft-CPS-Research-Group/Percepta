@@ -1,0 +1,70 @@
+{
+    "provider": "i-charging",
+    "environments": {
+        "SaoMamede" : {
+        "group": "SaoMamede",
+        "entities": {
+            "BB000SMI_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "kW"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "BB000SMI",
+                "plug": 1
+            },
+            "M1123089-5_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "kW"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "M1123089-5",
+                "plug": 1
+            },
+            "M1123089-6_1": {
+                "parameters": {
+                    "power": {
+                        "measurementUnit": "kW"
+                    }
+                },
+                "label": "ev_charger",
+                "serialNumber": "M1123089-6",
+                "plug": 1
+            },
+            "PV01" :  {
+                "parameters" : {
+                    "energy" : {
+                        "measurementUnit": "kWh"
+                    }
+                },
+                "label": "pv_panel"
+            },
+            "PT" :  {
+                "parameters" : {
+                    "energy_in_total" : {
+                        "measurementUnit": "kWh"
+                    },
+                     "energy_in_l1" : {
+                        "measurementUnit": "kWh"
+                    },
+                     "energy_in_l2" : {
+                        "measurementUnit": "kWh"
+                    },
+                     "energy_in_l3" : {
+                        "measurementUnit": "kWh"
+                    }
+                },
+                "label": "grid_meter"
+            }
+        }
+    }
+    },
+    "configurations" : {
+        "sourceMapping": {
+            "strategy": "Environment"
+        }
+    }
+}

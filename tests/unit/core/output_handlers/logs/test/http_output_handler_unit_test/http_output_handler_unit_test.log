@@ -1,0 +1,260 @@
+2026-07-30 10:03:35,178 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 10:03:35,194 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 10:03:35,196 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 10:03:35,210 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:03:35,249 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:03:35,263 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/dynamic/override_target] with content-type []:
+{
+    "sensor": "meter_03"
+}
+2026-07-30 10:03:35,277 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Override mode requested but no dynamic endpoints were provided. Falling back to static.
+2026-07-30 10:03:35,279 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:03:35,281 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:03:35,295 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:03:35,297 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:03:35,299 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_03] with content-type []:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:03:35,329 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method 'GET' requested for path '/v1/telemetry'.
+2026-07-30 10:03:35,344 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 10:03:35,361 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/text] with content-type []:
+{
+    "voltage": 230
+}
+2026-07-30 10:03:35,376 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Request failure on path [/v1/telemetry/fail]: HTTP request timeout after 3000ms
+2026-07-30 10:03:35,390 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/async] with status [200].
+2026-07-30 10:03:35,414 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/bg] with status [200].
+2026-07-30 10:03:35,428 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Outbound task failed on path [/v1/telemetry/bg_err]: Socket connection dropped
+2026-07-30 10:03:35,454 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method 'DELETE' requested for path '/v1/telemetry/crash'.
+2026-07-30 10:03:35,456 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Unhandled task exception on path [/v1/telemetry/crash]: Async HTTP Output Handler | Unsupported HTTP method 'DELETE' requested for path '/v1/telemetry/crash'.
+2026-07-30 10:11:53,227 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'topology_setup' configuration is missing.
+2026-07-30 10:12:52,333 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 10:13:20,526 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 10:13:47,818 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 10:13:47,820 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 10:14:53,015 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:14:53,017 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:23:54,867 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:23:54,870 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:24:51,174 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:24:51,176 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 10:25:25,276 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/dynamic/override_target] with content-type []:
+{
+    "sensor": "meter_03"
+}
+2026-07-30 10:28:12,137 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Override mode requested but no dynamic endpoints were provided. Falling back to static.
+2026-07-30 10:28:12,139 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:28:12,141 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:28:35,038 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:28:35,040 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:28:35,042 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_03] with content-type []:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 10:46:23,991 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Topology validation error: Mandatory string 'path' is missing or empty at index 0.
+2026-07-30 10:46:58,278 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Topology validation error: Mandatory string 'path' is missing or empty at index 0.
+2026-07-30 10:47:04,330 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Topology validation error: Mandatory string 'path' is missing or empty at index 0.
+2026-07-30 10:50:59,591 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method 'GET' requested for path '/v1/telemetry'.
+2026-07-30 10:52:44,701 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method 'GET' requested for path '/v1/telemetry'.
+2026-07-30 10:55:11,810 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 10:55:11,813 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:03:08,309 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:03:08,312 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:03:08,315 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:07:37,608 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:09:49,708 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:09:49,711 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:10:23,722 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/text] with content-type []:
+{
+    "voltage": 230
+}
+2026-07-30 11:13:40,614 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Request failure on path [/v1/telemetry/fail]: HTTP request timeout after 3000ms
+2026-07-30 11:20:49,885 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/bg] with status [200].
+2026-07-30 11:21:02,148 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/async] with status [200].
+2026-07-30 11:21:25,080 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Outbound task failed on path [/v1/telemetry/bg_err]: Socket connection dropped
+2026-07-30 11:27:17,651 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'DELETE'. Defaulting to POST.
+2026-07-30 11:27:17,653 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/crash] with status [200].
+2026-07-30 11:27:35,601 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'topology_setup' configuration is missing.
+2026-07-30 11:27:35,606 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 11:27:35,613 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 11:27:35,621 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 11:27:35,622 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 11:27:35,630 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 11:27:35,632 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 11:27:35,640 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/dynamic/override_target] with content-type []:
+{
+    "sensor": "meter_03"
+}
+2026-07-30 11:27:35,649 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Override mode requested but no dynamic endpoints were provided. Falling back to static.
+2026-07-30 11:27:35,650 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:27:35,651 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:27:35,660 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:27:35,661 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:27:35,662 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_03] with content-type []:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:27:35,670 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Topology validation error: Mandatory string 'path' is missing or empty at index 0.
+2026-07-30 11:27:35,679 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:27:35,680 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:27:35,682 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:27:35,691 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:27:35,702 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:27:35,703 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:27:35,713 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/text] with content-type []:
+{
+    "voltage": 230
+}
+2026-07-30 11:27:35,732 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/async] with status [200].
+2026-07-30 11:27:35,744 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/bg] with status [200].
+2026-07-30 11:42:57,878 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'topology_setup' configuration is missing.
+2026-07-30 11:42:57,884 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Initialization error: 'connector' dependency is missing.
+2026-07-30 11:42:57,890 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 11:42:57,898 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-30 11:42:57,899 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Rejecting transmission: Handler is running under shutdown constraints.
+2026-07-30 11:42:57,909 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 11:42:57,910 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01",
+    "reading": 230.1
+}
+2026-07-30 11:42:57,919 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/dynamic/override_target] with content-type []:
+{
+    "sensor": "meter_03"
+}
+2026-07-30 11:42:57,930 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Override mode requested but no dynamic endpoints were provided. Falling back to static.
+2026-07-30 11:42:57,931 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:42:57,932 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:42:57,941 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_01] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:42:57,943 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [PUT /v1/telemetry/meter_02] with content-type [application/json]:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:42:57,943 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/meter_03] with content-type []:
+{
+    "sensor": "meter_01"
+}
+2026-07-30 11:42:57,953 | ERROR | test | http_output_handler_unit_test | Async HTTP Output Handler | Topology validation error: Mandatory string 'path' is missing or empty at index 0.
+2026-07-30 11:42:57,963 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:42:57,964 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:42:57,965 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry] with status [200].
+2026-07-30 11:42:57,975 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:42:57,984 | WARNING | test | http_output_handler_unit_test | Async HTTP Output Handler | Unsupported HTTP method requested: 'GET'. Defaulting to POST.
+2026-07-30 11:42:57,986 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/rpc] with content-type [application/json]:
+{
+    "voltage": 230
+}
+2026-07-30 11:42:57,995 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | Request sent to [POST /v1/telemetry/text] with content-type []:
+{
+    "voltage": 230
+}
+2026-07-30 11:42:58,010 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/async] with status [200].
+2026-07-30 11:42:58,019 | INFO | test | http_output_handler_unit_test | Async HTTP Output Handler | [Background Fire-and-Forget] Request successfully sent to [POST /v1/telemetry/bg] with status [200].

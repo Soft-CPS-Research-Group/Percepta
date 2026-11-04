@@ -1,0 +1,596 @@
+2026-08-19 15:32:45,128 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:32:45,130 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:32:45,136 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:32:45,137 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:32:45,139 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:32:45,140 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:38:59,257 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:38:59,259 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:38:59,265 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:38:59,266 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:38:59,267 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:38:59,268 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:39:51,778 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:39:51,779 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:39:51,785 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:39:51,786 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:39:51,788 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:39:51,789 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:39:51,791 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:42:41,963 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:42:41,965 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:42:41,971 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:42:41,972 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:42:41,974 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:42:41,975 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:42:41,977 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:44:00,425 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:44:00,426 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:44:00,432 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:44:00,433 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:44:00,435 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:44:00,436 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:44:00,437 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:44:00,454 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False.
+2026-08-19 15:44:10,472 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to connect asynchronously to RabbitMQ: 
+2026-08-19 15:44:10,474 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:44:10,475 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:45:06,084 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:45:06,085 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:45:06,091 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:45:06,092 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:45:06,094 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:45:06,095 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:45:06,096 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:45:06,115 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False.
+2026-08-19 15:45:06,351 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to connect asynchronously to RabbitMQ: Server connection unexpectedly closed. Read 0 bytes but 131595 bytes expected
+2026-08-19 15:45:06,352 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:45:06,354 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:45:39,595 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:45:39,596 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:45:39,602 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:45:39,603 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:45:39,605 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:45:39,606 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:45:39,607 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:45:39,626 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False.
+2026-08-19 15:45:40,384 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to connect asynchronously to RabbitMQ: Server connection unexpectedly closed. Read 0 bytes but 131595 bytes expected
+2026-08-19 15:45:40,386 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:45:40,387 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:49:04,690 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:49:04,691 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:49:04,698 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:49:04,700 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:49:04,703 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:49:04,705 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:49:04,706 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:49:04,725 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 15:49:08,262 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 15:49:08,263 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 15:49:08,265 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 15:49:08,266 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 15:49:08,296 | ERROR | general | cw2_integration_test | Async RabbitMQ | Error declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4': ACCESS_REFUSED - configure access to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' in vhost 'iEnergyInnov' refused for user 'isep_opeva'
+2026-08-19 15:49:08,298 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:49:08,299 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:51:01,183 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:51:01,185 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:51:01,192 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:51:01,194 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:51:01,196 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:51:01,197 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:51:01,198 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:51:01,217 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 15:51:04,690 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 15:51:04,692 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 15:51:04,693 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 15:51:04,694 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 15:51:04,725 | ERROR | general | cw2_integration_test | Async RabbitMQ | Error declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4': ACCESS_REFUSED - configure access to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' in vhost 'iEnergyInnov' refused for user 'isep_opeva'
+2026-08-19 15:51:04,726 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:51:04,727 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:54:24,886 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:54:24,888 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:54:24,894 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:54:24,895 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:54:24,897 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:54:24,898 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:54:24,899 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:54:24,918 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 15:54:28,496 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 15:54:28,497 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 15:54:28,498 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 15:54:28,499 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 15:54:28,500 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 15:54:28,501 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_146182'...
+2026-08-19 15:54:28,538 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_146182' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 15:54:28,582 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_146182' integration complete.
+2026-08-19 15:54:28,584 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_146182'...
+2026-08-19 15:54:28,615 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.97f373d9dda54d9f911f6d1073c37a85
+2026-08-19 15:54:31,537 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:31,538 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:31,539 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:31,579 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:31,580 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:31,581 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:33,448 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:33,449 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:33,451 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:34,602 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:34,603 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:34,604 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:35,689 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:35,691 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:35,692 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:38,709 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:38,710 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:38,711 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:48,233 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:48,234 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:48,235 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:49,266 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:49,267 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:49,268 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:50,347 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:50,348 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:50,349 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:51,376 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:51,377 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:54:51,379 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:54:57,210 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 15:54:57,211 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 15:54:57,332 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 15:54:57,333 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 15:54:57,334 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:54:57,336 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:54:57,337 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:58:58,947 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 15:58:58,949 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:58:58,955 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:58:58,956 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:58:58,958 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 15:58:58,959 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 15:58:58,960 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 15:58:58,978 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 15:59:00,773 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 15:59:00,774 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 15:59:00,775 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 15:59:00,776 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 15:59:00,777 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 15:59:00,778 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_747306'...
+2026-08-19 15:59:00,819 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_747306' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 15:59:00,862 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_747306' integration complete.
+2026-08-19 15:59:00,864 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_747306'...
+2026-08-19 15:59:00,895 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.0705da03f2dd40cfafa6c3b9dc564c05
+2026-08-19 15:59:01,173 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:01,174 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:01,175 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:59:02,370 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:02,371 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:02,372 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:59:16,994 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:16,995 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:16,996 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:59:26,504 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:26,505 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:26,506 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:59:27,560 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:27,561 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 15:59:27,563 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 15:59:29,466 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 15:59:29,467 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 15:59:29,501 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 15:59:29,503 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 15:59:29,504 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:59:29,505 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:59:29,506 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:03:44,755 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 16:03:44,757 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 16:03:44,763 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 16:03:44,764 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 16:03:44,766 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 16:03:44,767 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 16:03:44,768 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 16:03:44,787 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 16:03:48,327 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 16:03:48,329 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 16:03:48,330 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 16:03:48,331 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 16:03:48,332 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 16:03:48,333 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_925390'...
+2026-08-19 16:03:48,379 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_925390' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 16:03:48,422 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_925390' integration complete.
+2026-08-19 16:03:48,423 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_925390'...
+2026-08-19 16:03:48,454 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.c7cc730180e643e39e5796ccf76b5cff
+2026-08-19 16:03:48,945 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:03:48,946 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:03:48,947 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:03:58,443 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:03:58,444 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:03:58,445 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:00,563 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:00,564 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:00,565 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:04,786 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:04,787 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:04,788 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:04,109 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:04,110 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:04,111 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:11,505 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:11,506 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:11,507 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:12,565 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:12,566 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:12,568 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:15,733 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:15,734 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:04:15,735 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:04:17,154 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 16:04:17,156 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 16:04:17,204 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 16:04:17,206 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 16:04:17,207 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:04:17,208 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 16:04:17,209 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:09:52,955 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 16:09:52,956 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 16:09:52,961 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 16:09:52,962 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 16:09:52,965 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 16:09:52,965 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 16:09:52,966 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 16:09:52,985 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 16:09:56,678 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 16:09:56,680 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 16:09:56,681 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 16:09:56,682 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 16:09:56,684 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 16:09:56,685 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_112975'...
+2026-08-19 16:09:56,730 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_112975' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 16:09:56,782 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_112975' integration complete.
+2026-08-19 16:09:56,784 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_112975'...
+2026-08-19 16:09:56,814 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.3d838dc68c1d4ba1b79f0974e0beb3c8
+2026-08-19 16:10:01,277 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:01,278 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:01,279 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:02,339 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:02,340 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:02,341 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:09,757 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:09,758 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:09,759 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:11,018 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:11,019 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:11,020 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:12,074 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:12,075 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:12,076 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:13,135 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:13,136 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:13,137 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:14,226 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:14,227 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:14,228 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:15,251 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:15,252 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:15,253 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:16,303 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:16,305 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:10:16,305 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:10:25,142 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 16:10:25,144 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 16:10:25,176 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 16:10:25,178 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 16:10:25,179 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:10:25,180 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 16:10:25,181 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:15:18,563 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 16:15:18,564 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 16:15:18,571 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 16:15:18,572 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 16:15:18,575 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 16:15:18,576 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 16:15:18,577 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 16:15:18,596 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 16:15:22,227 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 16:15:22,228 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 16:15:22,230 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 16:15:22,231 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 16:15:22,231 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 16:15:22,233 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_629331'...
+2026-08-19 16:15:22,287 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_629331' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 16:15:22,331 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_629331' integration complete.
+2026-08-19 16:15:22,332 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_629331'...
+2026-08-19 16:15:22,363 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.d9a4b85945c642a083c781046f8212e7
+2026-08-19 16:15:31,105 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:31,106 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:31,107 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:15:32,378 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:32,379 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:32,380 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:15:32,426 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:32,427 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:32,428 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:15:46,959 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:46,961 | ERROR | general | cw2_integration_test | Async RabbitMQ Input Handler | Unhandled error inside ingestion callback task: Async RabbitMQ | Failed to acknowledge message: Can't ack message with "no_ack" flag
+2026-08-19 16:15:46,962 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to reject/nack message: Can't nack message with "no_ack" flag
+2026-08-19 16:15:50,908 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 16:15:50,910 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 16:15:50,941 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 16:15:50,943 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 16:15:50,944 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:15:50,945 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 16:15:50,946 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:15:34,539 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:15:34,541 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:15:34,548 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:15:34,549 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:15:34,552 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:15:34,553 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:15:34,554 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:15:34,571 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:15:38,345 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:15:38,346 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:15:38,348 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:15:38,349 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:15:38,350 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:15:38,351 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_210812'...
+2026-08-19 17:15:38,388 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_210812' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:15:38,431 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_210812' integration complete.
+2026-08-19 17:15:38,433 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_210812'...
+2026-08-19 17:15:38,465 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.b73d97094bd04a2cb4c6c88addfad0ad
+2026-08-19 17:15:47,075 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:15:59,959 | INFO | general | cw2_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 17:15:59,960 | INFO | general | cw2_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'GR02', 'value': {'energy_in_l1': [{'timestamp': '2026-08-19 16:16:47 +0000', 'value': -0.1}], 'energy_in_total': [{'timestamp': '2026-08-19 16:16:47 +0000', 'value': -261.9}], 'energy_in_l2': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}], 'energy_in_l3': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}], 'energy_out_l1': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}], 'energy_out_l2': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}], 'energy_out_l3': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}], 'energy_out_total': [{'timestamp': '2026-08-19 16:15:59 +0000', 'value': 0.0}]}, 'timestamp': '2026-08-19 16:15:59 +0000'}]
+2026-08-19 17:15:59,961 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:16:00,644 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:16:00,645 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:16:00,678 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:16:00,679 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:16:00,680 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:16:00,681 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:16:00,682 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:22:39,085 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:22:39,086 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:22:39,092 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:22:39,093 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:22:39,095 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:22:39,096 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:22:39,097 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:22:39,115 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:22:42,616 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:22:42,618 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:22:42,619 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:22:42,620 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:22:42,621 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:22:42,622 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_414837'...
+2026-08-19 17:22:42,668 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_414837' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:22:42,712 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_414837' integration complete.
+2026-08-19 17:22:42,714 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_414837'...
+2026-08-19 17:22:42,745 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.7864c52a503a4c118ad8ef5aa92f9b32
+2026-08-19 17:22:44,616 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:22:49,938 | INFO | general | cw2_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 17:22:49,940 | INFO | general | cw2_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'GR02', 'value': {'energy_in_l1': [{'timestamp': '2026-08-19 16:23:44 +0000', 'value': -0.2}], 'energy_in_total': [{'timestamp': '2026-08-19 16:23:44 +0000', 'value': -34.0}], 'energy_in_l2': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}], 'energy_in_l3': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}], 'energy_out_l1': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}], 'energy_out_l2': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}], 'energy_out_l3': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}], 'energy_out_total': [{'timestamp': '2026-08-19 16:22:49 +0000', 'value': 0.0}]}, 'timestamp': '2026-08-19 16:22:49 +0000'}]
+2026-08-19 17:22:49,941 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:22:50,807 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:22:50,808 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:22:50,841 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:22:50,843 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:22:50,844 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:22:50,845 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:22:50,846 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:24:43,662 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:24:43,663 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:24:43,670 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:24:43,671 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:24:43,673 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:24:43,674 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:24:43,675 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:24:43,694 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:24:47,213 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:24:47,214 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:24:47,216 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:24:47,217 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:24:47,218 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:24:47,219 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_893719'...
+2026-08-19 17:24:47,260 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_893719' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:24:47,305 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_893719' integration complete.
+2026-08-19 17:24:47,306 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_893719'...
+2026-08-19 17:24:47,337 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.a797b22a21354e659ae0d8ecb44ff57b
+2026-08-19 17:24:56,562 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:24:58,694 | INFO | general | cw2_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 17:24:58,696 | INFO | general | cw2_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'GR02', 'value': {'energy_in_l1': [{'timestamp': '2026-08-19 16:25:56 +0000', 'value': 0.1}], 'energy_in_total': [{'timestamp': '2026-08-19 16:25:56 +0000', 'value': -23.5}], 'energy_in_l2': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}], 'energy_in_l3': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}], 'energy_out_l1': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}], 'energy_out_l2': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}], 'energy_out_l3': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}], 'energy_out_total': [{'timestamp': '2026-08-19 16:24:58 +0000', 'value': 0.0}]}, 'timestamp': '2026-08-19 16:24:58 +0000'}]
+2026-08-19 17:24:58,697 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:24:59,475 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:24:59,476 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:24:59,507 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:24:59,508 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:24:59,510 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:24:59,511 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:24:59,511 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:38:29,048 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:38:29,050 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:38:29,057 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:38:29,058 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:38:29,061 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:38:29,061 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:38:29,063 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:38:29,081 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:38:32,636 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:38:32,638 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:38:32,639 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:38:32,640 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:38:32,641 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:38:32,642 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_982628'...
+2026-08-19 17:38:32,698 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_982628' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:38:32,737 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_982628' integration complete.
+2026-08-19 17:38:32,739 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_982628'...
+2026-08-19 17:38:32,777 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.750dd6203fe94e949ccbecd6ce79b6a1
+2026-08-19 17:38:33,214 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:38:33,232 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:38:44,928 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:38:59,875 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:39:01,284 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:39:01,285 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:39:01,318 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:39:01,319 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:39:01,321 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:39:01,322 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:39:01,323 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:40:20,473 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:40:20,474 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:40:20,480 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:40:20,482 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:40:20,484 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:40:20,485 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:40:20,486 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:40:20,503 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:40:24,024 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:40:24,026 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:40:24,027 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:40:24,028 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:40:24,029 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:40:24,030 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_179274'...
+2026-08-19 17:40:24,082 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_179274' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:40:24,129 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_179274' integration complete.
+2026-08-19 17:40:24,130 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_179274'...
+2026-08-19 17:40:24,177 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.8ceafa45e3b54a978f61e37ed00f801b
+2026-08-19 17:40:26,759 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:40:33,371 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:40:33,386 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:40:39,707 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:40:52,618 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:40:52,620 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:40:52,661 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:40:52,663 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:40:52,664 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:40:52,665 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:40:52,666 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:43:33,893 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:43:33,894 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:43:33,900 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:43:33,901 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:43:33,904 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:43:33,905 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:43:33,906 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:43:33,924 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:43:35,395 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:43:35,396 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:43:35,397 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:43:35,398 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:43:35,399 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:43:35,400 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_951460'...
+2026-08-19 17:43:35,459 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_951460' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:43:35,500 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_951460' integration complete.
+2026-08-19 17:43:35,502 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_951460'...
+2026-08-19 17:43:35,533 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.ba28c6dd00a94f51bccf4962f3364d33
+2026-08-19 17:43:43,031 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:43:57,990 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:10,929 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:25,839 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:32,446 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:32,462 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:35,436 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:48,439 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:44:56,999 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:45:02,403 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:45:02,405 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:45:02,447 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:45:02,449 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:45:02,450 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:45:02,451 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:45:02,452 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:46:16,460 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:46:16,461 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:46:16,468 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:46:16,469 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:46:16,472 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:46:16,473 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:46:16,474 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:46:16,495 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:46:25,064 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:46:53,582 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 17:46:53,583 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:46:53,590 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:46:53,591 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:46:53,594 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 17:46:53,595 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 17:46:53,596 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 17:46:53,615 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 17:46:53,929 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 17:46:53,930 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 17:46:53,931 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 17:46:53,933 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 17:46:53,934 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 17:46:53,935 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_227028'...
+2026-08-19 17:46:53,974 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_227028' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 17:46:54,017 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_227028' integration complete.
+2026-08-19 17:46:54,018 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_227028'...
+2026-08-19 17:46:54,050 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.ed559fd31d6d44abbbe495b48ad456cb
+2026-08-19 17:47:04,364 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:47:18,281 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:47:32,308 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:47:32,321 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:47:34,240 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:47:48,248 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:04,228 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:17,157 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:32,170 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:32,189 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:33,207 | INFO | general | cw2_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 17:48:33,209 | INFO | general | cw2_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'GR02', 'value': {'energy_in_total': [{'timestamp': '2026-08-19 16:48:32 +0000', 'value': 0.0081}], 'energy_out_total': [{'timestamp': '2026-08-19 16:48:32 +0000', 'value': 0.0}], 'energy_in_l1': [{'timestamp': '2026-08-19 16:48:32 +0000', 'value': 0.0081}], 'energy_out_l1': [{'timestamp': '2026-08-19 16:48:32 +0000', 'value': 0.0}], 'energy_in_l2': {'value': None, 'metadata': 'Parameter missing in receiver response'}, 'energy_in_l3': {'value': None, 'metadata': 'Parameter missing in receiver response'}, 'energy_out_l2': {'value': None, 'metadata': 'Parameter missing in receiver response'}, 'energy_out_l3': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-08-19 16:48:33 +0000'}]
+2026-08-19 17:48:33,210 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 17:48:33,551 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:48:33,552 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 17:48:33,584 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 17:48:33,586 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:48:33,587 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:48:33,589 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:48:33,590 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 23:09:05,040 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 23:09:05,041 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 23:09:05,047 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 23:09:05,049 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 23:09:05,051 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 23:09:05,052 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 23:09:05,053 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 23:09:05,070 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 23:09:08,584 | INFO | general | cw2_integration_test | Async RabbitMQ | QoS configured. Prefetch count set to 10.
+2026-08-19 23:09:08,586 | INFO | general | cw2_integration_test | Async RabbitMQ | Robust connection and channel secured successfully.
+2026-08-19 23:09:08,587 | INFO | general | cw2_integration_test | Launcher Core | RabbitMQ physical network connection established.
+2026-08-19 23:09:08,588 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring exchange 'Shelly-shellyproem50-08f9e0e6a5a4' of type 'fanout'...
+2026-08-19 23:09:08,589 | INFO | general | cw2_integration_test | Async RabbitMQ | Exchange 'Shelly-shellyproem50-08f9e0e6a5a4' already exists. Using existing exchange.
+2026-08-19 23:09:08,590 | INFO | general | cw2_integration_test | Async RabbitMQ | Declaring queue 'isep_consumer_032756'...
+2026-08-19 23:09:08,632 | INFO | general | cw2_integration_test | Async RabbitMQ | Binding queue 'isep_consumer_032756' to exchange 'Shelly-shellyproem50-08f9e0e6a5a4' with key ''...
+2026-08-19 23:09:08,668 | INFO | general | cw2_integration_test | Async RabbitMQ | Queue 'isep_consumer_032756' integration complete.
+2026-08-19 23:09:08,669 | INFO | general | cw2_integration_test | Async RabbitMQ | Registering consumer callback on queue 'isep_consumer_032756'...
+2026-08-19 23:09:08,700 | INFO | general | cw2_integration_test | Async RabbitMQ | Consumer successfully established with tag: ctag1.8b781be8d3fd48a984be1820a1ca825b
+2026-08-19 23:09:18,658 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:09:28,414 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:09:28,430 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:09:32,329 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:09:47,595 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:01,274 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:15,544 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:28,971 | INFO | general | cw2_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 23:10:28,973 | INFO | general | cw2_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'GR02', 'label': 'grid_meter', 'parameters': {'energy_in_total': {'label': 'energy_in_total', 'values': [{'timestamp': '2026-08-19 22:10:28 +0000', 'value': 0.0019}]}, 'energy_out_total': {'label': 'energy_out_total', 'values': [{'timestamp': '2026-08-19 22:10:28 +0000', 'value': 0.0}]}, 'energy_in_l1': {'label': 'energy_in_l1', 'values': [{'timestamp': '2026-08-19 22:10:28 +0000', 'value': 0.0019}]}, 'energy_out_l1': {'label': 'energy_out_l1', 'values': [{'timestamp': '2026-08-19 22:10:28 +0000', 'value': 0.0}]}}, 'timestamp': '2026-08-19 22:10:28 +0000'}]
+2026-08-19 23:10:28,974 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:28,994 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:29,820 | DEBUG | general | cw2_integration_test | Async RabbitMQ | Message frame successfully acknowledged (ACK).
+2026-08-19 23:10:29,949 | INFO | general | cw2_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 23:10:29,951 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating graceful connection teardown...
+2026-08-19 23:10:29,983 | INFO | general | cw2_integration_test | Async RabbitMQ | Infrastructure teardown completed.
+2026-08-19 23:10:29,984 | INFO | general | cw2_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 23:10:29,985 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 23:10:29,986 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 23:10:29,987 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 23:14:00,225 | INFO | general | cw2_integration_test | === Starting Cleanwatts v2 (Shelly) Integration Test for R-H-02 ===
+2026-08-19 23:14:00,226 | INFO | general | cw2_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 23:14:00,232 | INFO | general | cw2_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 23:14:00,233 | INFO | general | cw2_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 23:14:00,235 | INFO | general | cw2_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-19 23:14:00,236 | INFO | general | cw2_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'rabbit.cleanwatts.energy:5671'.
+2026-08-19 23:14:00,237 | INFO | general | cw2_integration_test | Async RabbitMQ | Initiating connection to AMQP broker...
+2026-08-19 23:14:00,255 | INFO | general | cw2_integration_test | Async RabbitMQ | SSL Context built with hostname_check=False and verify_mode=0.
+2026-08-19 23:15:05,642 | ERROR | general | cw2_integration_test | Async RabbitMQ | Failed to connect asynchronously to RabbitMQ: 
+2026-08-19 23:15:05,645 | INFO | general | cw2_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 23:15:05,646 | INFO | general | cw2_integration_test | Async Local Connector | Closing local in-memory connector transport.

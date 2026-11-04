@@ -1,0 +1,85 @@
+{
+  "R-H-01": {
+    "group": "living lab",
+    "ml_model_id": "energaize_r_h_01",
+    "entities": {
+      "PR01": {
+        "entity_type_id": "forecast_service",
+        "parameters": {
+          "pr01_consumption": {
+            "parameter_type_id": "energy_consumption_prediction",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": false,
+              "periodicity": {
+                "value": 15,
+                "unit": "min"
+              },
+              "aggregation_operation": null,
+              "fill_operation": "linear"
+            },
+            "necessary": true
+          },
+          "pr01_production": {
+            "parameter_type_id": "solar_energy_prediction",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": false,
+              "periodicity": {
+                "value": 15,
+                "unit": "min"
+              },
+              "aggregation_operation": null,
+              "fill_operation": "linear"
+            },
+            "necessary": true
+          }
+        }
+      },
+      "B01": {
+        "entity_type_id": "battery",
+        "actuators": {
+          "act_power_1": {
+            "actuator_type_id": "power",
+            "measurement_unit": "kW"
+          }
+        }
+      },
+      "EVC01": {
+        "entity_type_id": "ev_charger",
+        "actuators": {
+          "act_power_2": {
+            "actuator_type_id": "power",
+            "measurement_unit": "kW"
+          }
+        }
+      }
+    },
+    "telemetry_systems": {
+      "predictor": {
+        "source_mapping": {
+          "pr01_consumption": {
+            "match_key": "consumption"
+          },
+          "pr01_production": {
+            "match_key": "production"
+          }
+        }
+      }
+    },
+    "target_systems": {
+      "cleanwatts": {
+        "actuator_mapping": {
+          "act_power_1": {
+            "destination": "35447"
+          },
+          "act_power_2": {
+            "destination": "39052",
+            "measurement_unit": "A",
+            "voltage": 230
+          }
+        }
+      }
+    }
+  }
+}

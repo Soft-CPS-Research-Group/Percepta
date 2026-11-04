@@ -1,0 +1,515 @@
+2026-08-19 12:32:20,731 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 12:34:09,549 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 12:35:39,250 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 12:35:39,251 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 12:35:39,256 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 12:35:39,257 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 12:35:39,258 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 12:35:39,260 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 12:35:39,261 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 12:35:39,263 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 12:35:39,267 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [PUT] https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}
+2026-08-19 12:35:39,406 | ERROR | general | cw_integration_test | HTTP Connector | HTTP error during async PUT for https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}: status code 404, response: 
+2026-08-19 12:35:39,408 | ERROR | general | cw_integration_test | Async HTTP Output Handler | Request failure on path [/sessions/refresh?token={token}&refresh_token={refresh_token}]: HTTP error during async PUT for https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}: status code 404, response: 
+2026-08-19 12:35:39,409 | ERROR | general | cw_integration_test | HTTP Connector | HTTP error during async POST for https://innov.cleanwattsdigital.com/api/2.0/sessions: status code 400, response: {"code":"null_or_empty.user.login","description":null}
+2026-08-19 12:35:39,410 | ERROR | general | cw_integration_test | Async HTTP Output Handler | Request failure on path [/sessions]: HTTP error during async POST for https://innov.cleanwattsdigital.com/api/2.0/sessions: status code 400, response: {"code":"null_or_empty.user.login","description":null}
+2026-08-19 12:35:39,413 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 12:35:39,414 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 12:35:39,415 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 12:35:39,417 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 12:35:39,419 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 12:42:49,752 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 12:42:49,754 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 12:42:49,758 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 12:42:49,759 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 12:42:49,760 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 12:42:49,761 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 12:42:49,762 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 12:42:49,765 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 12:42:49,769 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [PUT] https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}
+2026-08-19 12:42:49,843 | ERROR | general | cw_integration_test | HTTP Connector | HTTP error during async PUT for https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}: status code 404, response: 
+2026-08-19 12:42:49,845 | ERROR | general | cw_integration_test | Async HTTP Output Handler | Request failure on path [/sessions/refresh?token={token}&refresh_token={refresh_token}]: HTTP error during async PUT for https://innov.cleanwattsdigital.com/api/2.0/sessions/refresh?token={token}&refresh_token={refresh_token}: status code 404, response: 
+2026-08-19 12:42:49,915 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 12:42:50,029 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 12:42:50,030 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 12:42:50,033 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 12:42:50,034 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 12:42:50,035 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 12:42:50,036 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 12:42:50,037 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 12:42:50,039 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 12:42:50,040 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 12:43:00,007 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 12:43:00,008 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 12:43:00,009 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 12:43:00,010 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T11:42:30&to=2026-08-19T11:42:45]
+2026-08-19 12:43:00,011 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T11:42:30&to=2026-08-19T11:42:45
+2026-08-19 12:43:00,013 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T11:42:30&to=2026-08-19T11:42:45]
+2026-08-19 12:43:00,014 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T11:42:30&to=2026-08-19T11:42:45
+2026-08-19 12:43:00,344 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 12:43:00,346 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 11:43:00 +0000'}]
+2026-08-19 12:43:00,999 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 12:43:01,000 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 12:43:01,001 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 12:43:01,003 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 12:43:01,004 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 12:43:01,005 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 12:43:01,006 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 12:43:01,007 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 12:43:01,009 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 12:43:01,010 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 12:43:01,012 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:14:39,884 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 14:14:39,886 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 14:14:39,890 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:14:39,892 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:14:39,893 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:14:39,894 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:14:39,896 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 14:14:39,899 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 14:14:40,113 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 14:14:40,219 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 14:14:40,220 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 14:14:40,223 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:14:40,224 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:14:40,225 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:14:40,227 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:14:40,227 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 14:14:40,229 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 14:14:40,230 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 14:14:45,021 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 14:14:45,022 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 14:14:45,023 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 14:14:45,024 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:14:30&to=2026-08-19T13:14:45]
+2026-08-19 14:14:45,026 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:14:30&to=2026-08-19T13:14:45
+2026-08-19 14:14:45,027 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:14:30&to=2026-08-19T13:14:45]
+2026-08-19 14:14:45,028 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:14:30&to=2026-08-19T13:14:45
+2026-08-19 14:14:45,283 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 14:14:45,286 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 13:14:45 +0000'}]
+2026-08-19 14:14:45,804 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 14:14:45,805 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 14:14:45,806 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:14:45,808 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:14:45,809 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 14:14:45,810 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:14:45,811 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 14:14:45,812 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:14:45,815 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 14:14:45,816 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:14:45,817 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:17:11,987 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 14:17:11,988 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 14:17:11,992 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:17:11,993 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:17:11,994 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:17:11,995 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:17:11,996 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 14:17:11,999 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 14:17:12,190 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 14:17:12,292 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 14:17:12,293 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 14:17:12,297 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:17:12,298 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:17:12,299 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:17:12,300 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:17:12,301 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 14:17:12,302 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 14:17:12,303 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 14:17:15,036 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 14:17:15,037 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 14:17:15,038 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 14:17:15,039 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:17:00&to=2026-08-19T13:17:15]
+2026-08-19 14:17:15,040 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:17:00&to=2026-08-19T13:17:15
+2026-08-19 14:17:15,042 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:17:00&to=2026-08-19T13:17:15]
+2026-08-19 14:17:15,043 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:17:00&to=2026-08-19T13:17:15
+2026-08-19 14:17:15,214 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 14:17:15,217 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': [{'timestamp': '2026-08-19 12:17:00 +0000', 'value': 89.0}]}, 'timestamp': '2026-08-19 13:17:15 +0000'}]
+2026-08-19 14:17:15,312 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 14:17:15,313 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 14:17:15,314 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:17:15,316 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:17:15,317 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 14:17:15,318 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:17:15,319 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 14:17:15,320 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:17:15,322 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 14:17:15,324 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:17:15,325 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:36:09,218 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 14:36:09,219 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 14:36:09,224 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:36:09,225 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:36:09,226 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:36:09,228 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:36:09,229 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 14:36:09,231 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 14:36:09,443 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 14:36:09,547 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 14:36:09,548 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 14:36:09,552 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:36:09,553 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:36:09,554 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:36:09,555 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:36:09,556 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 14:36:09,557 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 14:36:09,558 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 14:36:15,004 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 14:36:15,005 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 14:36:15,006 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 14:36:15,007 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:36:00&to=2026-08-19T13:36:15]
+2026-08-19 14:36:15,008 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:36:00&to=2026-08-19T13:36:15
+2026-08-19 14:36:15,010 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:36:00&to=2026-08-19T13:36:15]
+2026-08-19 14:36:15,011 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:36:00&to=2026-08-19T13:36:15
+2026-08-19 14:36:15,185 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 14:36:15,188 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': [{'timestamp': '2026-08-19 12:36:00 +0000', 'value': 89.0}]}, 'timestamp': '2026-08-19 13:36:15 +0000'}]
+2026-08-19 14:36:15,624 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 14:36:15,626 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 14:36:15,627 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:36:15,628 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:36:15,629 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 14:36:15,630 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:36:15,631 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 14:36:15,633 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:36:15,634 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 14:36:15,636 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:36:15,637 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:39:57,256 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 14:39:57,258 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 14:39:57,262 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:39:57,263 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:39:57,264 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:39:57,266 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:39:57,267 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 14:39:57,269 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 14:39:57,463 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 14:39:57,565 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 14:39:57,566 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 14:39:57,570 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 14:39:57,571 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 14:39:57,572 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 14:39:57,573 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 14:39:57,574 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 14:39:57,575 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 14:39:57,576 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 14:40:00,005 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 14:40:00,008 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 14:40:00,010 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 14:40:00,012 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:39:45&to=2026-08-19T13:40:00]
+2026-08-19 14:40:00,014 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T13:39:45&to=2026-08-19T13:40:00
+2026-08-19 14:40:00,016 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:39:45&to=2026-08-19T13:40:00]
+2026-08-19 14:40:00,018 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [GET] https://innov.cleanwattsdigital.com/api/2.0/data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T13:39:45&to=2026-08-19T13:40:00
+2026-08-19 14:40:00,212 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 14:40:00,217 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 13:40:00 +0000'}]
+2026-08-19 14:40:00,590 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 14:40:00,592 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 14:40:00,593 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:40:00,595 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 14:40:00,597 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 14:40:00,598 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:40:00,600 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 14:40:00,601 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 14:40:00,604 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 14:40:00,605 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 14:40:00,607 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 15:20:05,164 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 15:20:05,166 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:20:05,170 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 15:20:05,171 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 15:20:05,172 | INFO | general | cw_integration_test | HTTP Connector | Establishing persistent async ClientSession...
+2026-08-19 15:20:05,174 | INFO | general | cw_integration_test | HTTP Connector | HTTP persistent ClientSession pool established successfully.
+2026-08-19 15:20:05,175 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 15:20:05,178 | INFO | general | cw_integration_test | HTTP Connector | Issuing HTTP request -> [POST] https://innov.cleanwattsdigital.com/api/2.0/sessions
+2026-08-19 15:20:05,387 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 15:20:05,494 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:20:05,496 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:20:05,497 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:20:05,498 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:20:05,500 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 15:20:05,501 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 15:20:05,503 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 15:22:31,165 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 15:22:31,166 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:22:31,171 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 15:22:31,172 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 15:22:31,174 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 15:22:31,501 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 15:22:31,614 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:22:31,615 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:22:31,617 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 15:22:31,619 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 15:22:31,620 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 15:22:31,621 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 15:22:31,622 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 15:22:45,005 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 15:22:45,006 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 15:22:45,007 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 15:22:45,009 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T14:22:15&to=2026-08-19T14:22:30]
+2026-08-19 15:22:45,010 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T14:22:15&to=2026-08-19T14:22:30]
+2026-08-19 15:22:46,662 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 15:22:46,665 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 14:22:46 +0000'}]
+2026-08-19 15:22:46,817 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 15:22:46,818 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 15:22:46,819 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 15:22:46,821 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 15:22:46,822 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 15:22:46,823 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:22:46,824 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:22:46,825 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:22:46,827 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 15:22:46,829 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 15:22:46,830 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 15:25:42,016 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 15:25:42,017 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 15:25:42,021 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 15:25:42,022 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 15:25:42,024 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 15:25:42,210 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 15:25:42,322 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 15:25:42,324 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 15:25:42,326 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 15:25:42,327 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 15:25:42,328 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 15:25:42,329 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 15:25:42,331 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 15:25:45,031 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 15:25:45,033 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 15:25:45,034 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 15:25:45,035 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T14:25:30&to=2026-08-19T14:25:45]
+2026-08-19 15:25:45,037 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T14:25:30&to=2026-08-19T14:25:45]
+2026-08-19 15:25:45,428 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 15:25:45,430 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 14:25:45 +0000'}]
+2026-08-19 15:25:46,381 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 15:25:46,383 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 15:25:46,384 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 15:25:46,385 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 15:25:46,386 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 15:25:46,387 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:25:46,388 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 15:25:46,390 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 15:25:46,392 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 15:25:46,393 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 15:25:46,394 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 16:10:56,983 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 16:10:56,984 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 16:10:56,988 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 16:10:56,990 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 16:10:56,991 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 16:10:57,386 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 16:10:57,496 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 16:10:57,497 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 16:10:57,500 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 16:10:57,501 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 16:10:57,502 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 16:10:57,503 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 16:10:57,504 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 16:11:00,005 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 16:11:00,006 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 16:11:00,007 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 16:11:00,008 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T15:10:45&to=2026-08-19T15:11:00]
+2026-08-19 16:11:00,010 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T15:10:45&to=2026-08-19T15:11:00]
+2026-08-19 16:11:00,283 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 16:11:00,286 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 15:11:00 +0000'}]
+2026-08-19 16:11:00,545 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 16:11:00,547 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 16:11:00,548 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 16:11:00,550 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 16:11:00,552 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 16:11:00,553 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:11:00,555 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 16:11:00,556 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:11:00,559 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 16:11:00,560 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 16:11:00,563 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 16:14:50,656 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 16:14:50,657 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 16:14:50,662 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 16:14:50,663 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 16:14:50,664 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 16:14:50,932 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 16:14:51,053 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 16:14:51,054 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 16:14:51,056 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 16:14:51,057 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 16:14:51,058 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 16:14:51,059 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 16:14:51,060 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 16:15:00,011 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 16:15:00,012 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 16:15:00,013 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 16:15:00,014 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T15:14:30&to=2026-08-19T15:14:45]
+2026-08-19 16:15:00,016 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T15:14:30&to=2026-08-19T15:14:45]
+2026-08-19 16:15:02,247 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 16:15:02,249 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 15:15:02 +0000'}]
+2026-08-19 16:15:03,244 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 16:15:03,246 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 16:15:03,247 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 16:15:03,249 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 16:15:03,250 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 16:15:03,251 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:15:03,252 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 16:15:03,253 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 16:15:03,255 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 16:15:03,256 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 16:15:03,257 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 17:55:19,938 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 17:55:19,939 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:55:19,944 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 17:55:19,945 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 17:55:19,947 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 17:55:20,276 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 17:55:20,384 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:55:20,385 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:55:20,386 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:55:20,387 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:55:20,389 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 17:55:20,390 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 17:55:20,392 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 17:58:05,751 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 17:58:05,752 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 17:58:05,757 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 17:58:05,758 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 17:58:05,759 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 17:58:06,001 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 17:58:06,106 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 17:58:06,107 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 17:58:06,109 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 17:58:06,110 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 17:58:06,112 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 17:58:06,113 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 17:58:06,114 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 17:58:15,003 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 17:58:15,004 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 17:58:15,005 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 17:58:15,006 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T16:57:45&to=2026-08-19T16:58:00]
+2026-08-19 17:58:15,008 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T16:57:45&to=2026-08-19T16:58:00]
+2026-08-19 17:58:16,686 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 17:58:16,689 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'value': {'energy_in': {'value': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'value': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 16:58:16 +0000'}]
+2026-08-19 17:58:17,348 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 17:58:17,349 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 17:58:17,351 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 17:58:17,352 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 17:58:17,353 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 17:58:17,354 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:58:17,355 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 17:58:17,357 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 17:58:17,358 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 17:58:17,360 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 17:58:17,361 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 22:50:33,216 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 22:50:33,218 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 22:50:33,222 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 22:50:33,223 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 22:50:33,225 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 22:50:33,621 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 22:50:33,719 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 22:50:33,720 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 22:50:33,723 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 22:50:33,724 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 22:50:33,725 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 22:50:33,726 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 22:50:33,727 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 22:50:45,002 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 22:50:45,003 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 22:50:45,005 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 22:50:45,007 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T21:50:15&to=2026-08-19T21:50:30]
+2026-08-19 22:50:45,009 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T21:50:15&to=2026-08-19T21:50:30]
+2026-08-19 22:50:46,608 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 22:50:46,609 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'label': 'battery', 'parameters': {'energy_in': {'label': 'energy_in', 'values': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'label': 'state_of_charge', 'values': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 21:50:46 +0000'}]
+2026-08-19 22:50:46,746 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 22:50:46,748 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 22:50:46,749 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 22:50:46,751 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 22:50:46,752 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 22:50:46,753 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 22:50:46,754 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 22:50:46,756 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 22:50:46,758 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 22:50:46,759 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 22:50:46,760 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 22:51:53,866 | INFO | general | cw_integration_test | === Starting Cleanwatts Integration Test ===
+2026-08-19 22:51:53,867 | INFO | general | cw_integration_test | Async Local Input Handler | In-memory message consumer loop started.
+2026-08-19 22:51:53,871 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 22:51:53,872 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 22:51:53,873 | INFO | general | cw_integration_test | Output Launcher Core | HTTP physical persistent network connection session established.
+2026-08-19 22:51:54,167 | INFO | general | cw_integration_test | Async HTTP Output Handler | Request sent to [POST /sessions] with content-type [application/json]:
+{
+    "Login": "OPEVA-demo-09",
+    "Password": "bx7J658W"
+}
+2026-08-19 22:51:54,265 | INFO | general | cw_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-19 22:51:54,267 | INFO | general | cw_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-19 22:51:54,269 | INFO | general | cw_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-19 22:51:54,270 | INFO | general | cw_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-19 22:51:54,271 | INFO | general | cw_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-19 22:51:54,272 | INFO | general | cw_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-19 22:51:54,273 | INFO | general | cw_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-19 22:52:00,005 | INFO | general | cw_integration_test | HTTP Connector | ClientSession global headers updated dynamically.
+2026-08-19 22:52:00,007 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Spawning parallel fetch tasks for 1 groups: ['B01']
+2026-08-19 22:52:00,008 | DEBUG | general | cw_integration_test | Async HTTP Input Handler | Fetching group 'B01' with 2 endpoint(s).
+2026-08-19 22:52:00,010 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=35927&from=2026-08-19T21:51:45&to=2026-08-19T21:52:00]
+2026-08-19 22:52:00,012 | INFO | general | cw_integration_test | Async HTTP Input Handler | Issuing request -> [GET /data/request/Instant?instantType=avg&tags=33690&from=2026-08-19T21:51:45&to=2026-08-19T21:52:00]
+2026-08-19 22:52:00,232 | INFO | general | cw_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-19 22:52:00,234 | INFO | general | cw_integration_test | ===> [SINK RECEIVED] Canonical Telemetry: [{'id': 'B01', 'label': 'battery', 'parameters': {'energy_in': {'label': 'energy_in', 'values': None, 'metadata': 'Parameter sent empty by receiver'}, 'SoC': {'label': 'state_of_charge', 'values': None, 'metadata': 'Parameter sent empty by receiver'}}, 'timestamp': '2026-08-19 21:52:00 +0000'}]
+2026-08-19 22:52:00,291 | INFO | general | cw_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-19 22:52:00,292 | INFO | general | cw_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-19 22:52:00,293 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 22:52:00,295 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.
+2026-08-19 22:52:00,296 | INFO | general | cw_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-19 22:52:00,297 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 22:52:00,298 | INFO | general | cw_integration_test | Async Local Input Handler | Stopping in-memory consumer loop.
+2026-08-19 22:52:00,299 | INFO | general | cw_integration_test | Async Local Connector | Closing local in-memory connector transport.
+2026-08-19 22:52:00,300 | INFO | general | cw_integration_test | Async HTTP Output Handler | Stopping outbound message dispatcher and closing transport pipelines.
+2026-08-19 22:52:00,301 | INFO | general | cw_integration_test | HTTP Connector | Initiating clean shutdown of the ClientSession context pool...
+2026-08-19 22:52:00,302 | INFO | general | cw_integration_test | HTTP Connector | Persistent connections successfully discarded.

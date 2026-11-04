@@ -1,8 +1,8 @@
 import threading
 from typing import Any
 from others.rabbitmq_connector_2 import RabbitMQConnector
-from app.utils.logger import LoggingUtils
-from app.utils.retry import with_retries
+from app.core.utils.logger import LoggingUtils
+from app.core.utils import with_retries
 
 
 class RabbitMQForwardingProtocol:

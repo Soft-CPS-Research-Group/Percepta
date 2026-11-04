@@ -1,0 +1,166 @@
+2026-08-18 10:09:42,886 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,887 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:09:42,893 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,894 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:09:42,900 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,902 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:09:42,903 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:09:42,904 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:09:42,910 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,911 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:09:42,916 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,917 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:09:42,921 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:09:30 -> 2026-08-18T10:09:45]
+2026-08-18 10:09:42,927 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,928 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:09:42,932 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:09:30 -> 2026-08-18T10:09:45]
+2026-08-18 10:09:42,933 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:09:45 -> 2026-08-18T10:10:00]
+2026-08-18 10:09:42,940 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:09:30+01:00, end=2026-08-18 10:09:45+01:00
+2026-08-18 10:09:42,941 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:09:42,944 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:09:30 -> 2026-08-18T10:09:45]
+2026-08-18 10:10:39,044 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,045 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:10:39,051 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,052 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:10:39,058 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,059 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:10:39,060 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:10:39,061 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:10:39,067 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,068 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:10:39,073 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,074 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:10:39,078 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:30 -> 2026-08-18T10:10:45]
+2026-08-18 10:10:39,084 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,085 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:10:39,089 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:30 -> 2026-08-18T10:10:45]
+2026-08-18 10:10:39,090 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:45 -> 2026-08-18T10:11:00]
+2026-08-18 10:10:39,096 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:30+01:00, end=2026-08-18 10:10:45+01:00
+2026-08-18 10:10:39,097 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:10:39,100 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:30 -> 2026-08-18T10:10:45]
+2026-08-18 10:11:05,568 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:45+01:00, end=2026-08-18 10:11:00+01:00
+2026-08-18 10:11:05,570 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:11:05,575 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:45+01:00, end=2026-08-18 10:11:00+01:00
+2026-08-18 10:11:05,576 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:11:05,583 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:10:45+00:00, end=2026-08-18 09:11:00+00:00
+2026-08-18 10:11:05,584 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:11:05,585 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:11:05,586 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:11:05,591 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:10:45+00:00, end=2026-08-18 09:11:00+00:00
+2026-08-18 10:11:05,592 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:11:05,598 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:45+01:00, end=2026-08-18 10:11:00+01:00
+2026-08-18 10:11:05,599 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:11:05,602 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:45 -> 2026-08-18T10:11:00]
+2026-08-18 10:11:05,608 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:45+01:00, end=2026-08-18 10:11:00+01:00
+2026-08-18 10:11:05,609 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:11:05,613 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:45 -> 2026-08-18T10:11:00]
+2026-08-18 10:11:05,614 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:11:00 -> 2026-08-18T10:11:15]
+2026-08-18 10:11:05,620 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:10:45+01:00, end=2026-08-18 10:11:00+01:00
+2026-08-18 10:11:05,620 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:11:05,623 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:10:45 -> 2026-08-18T10:11:00]
+2026-08-18 10:27:09,710 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:09,712 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:27:13,641 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,642 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:27:13,648 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,649 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:27:13,650 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:27:13,651 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:27:13,656 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,657 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:27:13,662 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,664 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:27:13,667 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:27:00 -> 2026-08-18T10:27:15]
+2026-08-18 10:27:13,673 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,674 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:27:13,677 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:27:00 -> 2026-08-18T10:27:15]
+2026-08-18 10:27:13,678 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:27:15 -> 2026-08-18T10:27:30]
+2026-08-18 10:27:13,683 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:27:00+01:00, end=2026-08-18 10:27:15+01:00
+2026-08-18 10:27:13,684 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:27:13,687 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:27:00 -> 2026-08-18T10:27:15]
+2026-08-18 10:28:20,229 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:00+01:00, end=2026-08-18 10:28:15+01:00
+2026-08-18 10:28:20,230 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:28:24,128 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,129 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:28:24,137 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,138 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:28:24,139 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:28:24,140 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:28:24,145 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,146 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:28:24,152 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,153 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:28:24,157 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:28:15 -> 2026-08-18T10:28:30]
+2026-08-18 10:28:24,162 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,163 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:28:24,167 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:28:15 -> 2026-08-18T10:28:30]
+2026-08-18 10:28:24,168 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:28:30 -> 2026-08-18T10:28:45]
+2026-08-18 10:28:24,173 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:28:15+01:00, end=2026-08-18 10:28:30+01:00
+2026-08-18 10:28:24,175 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:28:24,178 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:28:15 -> 2026-08-18T10:28:30]
+2026-08-18 10:29:44,163 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:29:30+01:00, end=2026-08-18 10:29:45+01:00
+2026-08-18 10:29:44,164 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:29:44,171 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:29:30+01:00, end=2026-08-18 10:29:45+01:00
+2026-08-18 10:29:44,172 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:29:44,178 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:29:30+00:00, end=2026-08-18 09:29:45+00:00
+2026-08-18 10:29:44,179 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:29:44,180 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:29:44,181 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:29:44,188 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:29:30+00:00, end=2026-08-18 09:29:45+00:00
+2026-08-18 10:29:44,189 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:29:44,195 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:29:30+01:00, end=2026-08-18 10:29:45+01:00
+2026-08-18 10:29:44,197 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:29:44,201 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:29:30 -> 2026-08-18T10:29:45]
+2026-08-18 10:29:44,208 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:29:30+01:00, end=2026-08-18 10:29:45+01:00
+2026-08-18 10:29:44,209 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:29:44,213 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:29:30 -> 2026-08-18T10:29:45]
+2026-08-18 10:29:44,215 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:29:45 -> 2026-08-18T10:30:00]
+2026-08-18 10:29:44,220 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:29:30+01:00, end=2026-08-18 10:29:45+01:00
+2026-08-18 10:29:44,221 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:29:44,225 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:29:30 -> 2026-08-18T10:29:45]
+2026-08-18 10:31:15,506 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:31:00+01:00, end=2026-08-18 10:31:15+01:00
+2026-08-18 10:31:15,507 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:31:45,778 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:31:30+01:00, end=2026-08-18 10:31:45+01:00
+2026-08-18 10:31:45,780 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:32:27,072 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:32:15+00:00, end=2026-08-18 09:32:30+00:00
+2026-08-18 10:32:27,073 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 10:32:27,074 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 10:32:27,075 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 10:32:52,679 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 09:32:45+00:00, end=2026-08-18 09:33:00+00:00
+2026-08-18 10:32:52,680 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:35:30,279 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:35:15+01:00, end=2026-08-18 10:35:30+01:00
+2026-08-18 10:35:30,280 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 10:35:30,281 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:35:15 -> 2026-08-18T10:35:30]
+2026-08-18 10:36:13,334 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:36:00+01:00, end=2026-08-18 10:36:15+01:00
+2026-08-18 10:36:13,335 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:36:13,339 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:36:00 -> 2026-08-18T10:36:15]
+2026-08-18 10:41:56,177 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:41:45+01:00, end=2026-08-18 10:42:00+01:00
+2026-08-18 10:41:56,178 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:41:56,182 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:41:45 -> 2026-08-18T10:42:00]
+2026-08-18 10:41:56,183 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:42:00 -> 2026-08-18T10:42:15]
+2026-08-18 10:42:06,108 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 10:41:45+01:00, end=2026-08-18 10:42:00+01:00
+2026-08-18 10:42:06,109 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 10:42:06,113 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T10:41:45 -> 2026-08-18T10:42:00]
+2026-08-18 15:34:22,490 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 15:34:00+01:00, end=2026-08-18 15:34:15+01:00
+2026-08-18 15:34:22,492 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 15:34:22,499 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 15:34:00+01:00, end=2026-08-18 15:34:15+01:00
+2026-08-18 15:34:22,500 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 15:34:22,506 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 14:34:15+00:00, end=2026-08-18 14:34:30+00:00
+2026-08-18 15:34:22,507 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'energy_in' on entity 'B01'.
+2026-08-18 15:34:22,508 | WARNING | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Missing mapping rule for parameter 'SoC' on entity 'B01'.
+2026-08-18 15:34:22,509 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 1 static endpoints across 1 entities.
+2026-08-18 15:34:22,515 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 14:34:15+00:00, end=2026-08-18 14:34:30+00:00
+2026-08-18 15:34:22,517 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 15:34:22,525 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 14:34:15+00:00, end=2026-08-18 14:34:30+00:00
+2026-08-18 15:34:22,526 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 0 static endpoints across 0 entities.
+2026-08-18 15:34:22,527 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T14:34:15 -> 2026-08-18T14:34:30]
+2026-08-18 15:34:22,533 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 15:34:15+01:00, end=2026-08-18 15:34:30+01:00
+2026-08-18 15:34:22,534 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 15:34:22,538 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T15:34:15 -> 2026-08-18T15:34:30]
+2026-08-18 15:34:22,544 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 15:34:15+01:00, end=2026-08-18 15:34:30+01:00
+2026-08-18 15:34:22,546 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 15:34:22,549 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T15:34:15 -> 2026-08-18T15:34:30]
+2026-08-18 15:34:22,551 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T15:34:30 -> 2026-08-18T15:34:45]
+2026-08-18 15:34:22,557 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Initialized temporal boundary: start=2026-08-18 15:34:15+01:00, end=2026-08-18 15:34:30+01:00
+2026-08-18 15:34:22,558 | INFO | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Pre-calculated 3 static endpoints across 2 entities.
+2026-08-18 15:34:22,562 | DEBUG | test | cw_endpoint_builder_unit_test | CWEndpointBuilder | Building dynamic endpoints for interval [2026-08-18T15:34:15 -> 2026-08-18T15:34:30]

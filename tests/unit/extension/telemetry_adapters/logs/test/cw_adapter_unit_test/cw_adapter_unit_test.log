@@ -1,0 +1,240 @@
+2026-10-06 09:35:37,548 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 09:35:37,560 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 09:35:37,569 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 09:35:37,628 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?tags=00000
+2026-10-06 09:35:37,683 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 09:35:37,685 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 09:35:37,693 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?tags=00000
+2026-10-06 09:35:43,556 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 09:46:34,650 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 09:47:44,653 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 09:48:05,852 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 09:53:46,334 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:00:01,958 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:16:16,363 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:18:01,692 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:18:01,694 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:18:34,888 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:22:14,590 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:22:14,592 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:40:33,526 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 10:40:33,535 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 10:40:33,544 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 10:40:33,597 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:40:33,611 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:40:33,627 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:40:33,655 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 10:40:33,663 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 10:40:33,703 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:40:33,712 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:40:33,733 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' is missing or empty.
+2026-10-06 10:40:33,741 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' is missing or empty.
+2026-10-06 10:40:33,750 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:40:33,752 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:40:33,761 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:40:33,762 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:40:33,771 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:40:33,779 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:40:33,787 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:40:33,807 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' is missing or empty.
+2026-10-06 10:40:33,816 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:40:33,818 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:40:33,827 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:40:33,884 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 10:40:33,953 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 10:41:44,317 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 10:47:21,545 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 10:48:14,964 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:48:32,831 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 10:48:48,915 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:48:48,916 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:49:46,564 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:50:10,765 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:51:56,792 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:53:34,011 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 10:53:34,017 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 10:53:34,022 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 10:53:34,054 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:53:34,063 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:53:34,072 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:53:34,088 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 10:53:34,094 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 10:53:34,118 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:53:34,125 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:53:34,138 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 10:53:34,143 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 10:53:34,150 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 10:53:34,156 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:53:34,162 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 10:53:34,168 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:53:34,169 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:53:34,175 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:53:34,176 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 10:53:34,180 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 10:53:34,186 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:53:34,191 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 10:53:34,206 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 10:53:34,213 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:53:34,214 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 10:53:34,220 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 10:53:34,256 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 10:53:34,303 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 11:17:22,610 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 11:17:51,799 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 11:48:56,195 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '99999' in 'source_mapping_rules' does not belong to any entity.
+2026-10-06 11:48:56,201 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 11:48:56,205 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 11:48:56,211 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 11:48:56,243 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 11:48:56,251 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 11:48:56,260 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 11:48:56,278 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 11:48:56,283 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 11:48:56,303 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1.0}
+2026-10-06 11:48:56,308 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 11:48:56,312 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 11:48:56,323 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 11:48:56,327 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 11:48:56,332 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 11:48:56,337 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 11:48:56,341 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 11:48:56,347 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 11:48:56,347 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 11:48:56,352 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 11:48:56,353 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 11:48:56,357 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 11:48:56,361 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 11:48:56,366 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 11:48:56,371 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'X02' has no 'entity_type_id' configured.
+2026-10-06 11:48:56,382 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 11:48:56,387 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 11:48:56,392 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 11:48:56,393 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 11:48:56,398 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 11:48:56,410 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 11:48:56,415 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 11:48:56,441 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 11:48:56,485 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 11:48:56,491 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter 'connected_vehicle' of entity 'EVC03' has no 'vehicle_id' configured.
+2026-10-06 12:05:22,561 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '99999' in 'source_mapping_rules' does not belong to any entity.
+2026-10-06 12:05:22,566 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 12:05:22,570 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 12:05:22,575 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 12:05:22,603 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 12:05:22,612 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:05:22,621 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:05:22,656 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 12:05:22,661 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 12:05:22,684 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1.0}
+2026-10-06 12:05:22,689 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:05:22,694 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:05:22,707 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:05:22,712 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:05:22,717 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:05:22,722 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:05:22,727 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:05:22,731 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:05:22,732 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:05:22,737 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 12:05:22,738 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 12:05:22,743 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 12:05:22,749 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:05:22,754 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:05:22,759 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'X02' has no 'entity_type_id' configured.
+2026-10-06 12:05:22,772 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:05:22,777 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:05:22,783 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:05:22,784 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:05:22,789 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:05:22,803 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 12:05:22,808 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 12:05:22,837 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 12:05:22,900 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 12:05:22,905 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter 'connected_vehicle' of entity 'EVC03' has no 'vehicle_id' configured.
+2026-10-06 12:14:38,812 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 12:27:02,309 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '99999' in 'source_mapping_rules' does not belong to any entity.
+2026-10-06 12:27:02,313 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 12:27:02,318 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 12:27:02,322 | ERROR | test | cw_adapter_unit_test | CWAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 12:27:02,348 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 12:27:02,355 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:27:02,362 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:27:02,393 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 12:27:02,397 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 12:27:02,418 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1.0}
+2026-10-06 12:27:02,423 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:27:02,427 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:27:02,438 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:27:02,443 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:27:02,448 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:27:02,452 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:27:02,457 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:27:02,461 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:27:02,462 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:27:02,467 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 12:27:02,467 | DEBUG | test | cw_adapter_unit_test | CWAdapter | Skipping empty message payload.
+2026-10-06 12:27:02,472 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 12:27:02,476 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:27:02,481 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 12:27:02,485 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'X02' has no 'entity_type_id' configured.
+2026-10-06 12:27:02,496 | WARNING | test | cw_adapter_unit_test | CWAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 12:27:02,501 | WARNING | test | cw_adapter_unit_test | CWAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 12:27:02,506 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:27:02,507 | WARNING | test | cw_adapter_unit_test | CWAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 12:27:02,512 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 12:27:02,523 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 12:27:02,528 | INFO | test | cw_adapter_unit_test | CWAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 12:27:02,553 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 12:27:02,571 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1}
+2026-10-06 12:27:05,264 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1, 'DateUTC': 'not-a-date'}
+2026-10-06 12:27:05,309 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Value': 1}
+2026-10-06 12:27:05,355 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,398 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,442 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,486 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,532 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1}
+2026-10-06 12:27:05,533 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 0}
+2026-10-06 12:27:05,534 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,578 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,620 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {}
+2026-10-06 12:27:05,664 | WARNING | test | cw_adapter_unit_test | CWAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 12:27:05,669 | WARNING | test | cw_adapter_unit_test | CWAdapter | Skipping reading with no date: {'Read': 1}
+2026-10-06 14:43:30,794 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter '99999' in 'source_mapping_rules' does not belong to any entity.
+2026-10-06 14:43:30,799 | ERROR | test | cw_adapter_unit_test | CWTelemetryAdapter | Initialization error: 'environment_specs' must be a dictionary containing an 'entities' key for environment 'R-H-01'.
+2026-10-06 14:43:30,804 | ERROR | test | cw_adapter_unit_test | CWTelemetryAdapter | Initialization error: 'entities' specification cannot be empty for environment 'R-H-01'.
+2026-10-06 14:43:30,809 | ERROR | test | cw_adapter_unit_test | CWTelemetryAdapter | Initialization error: 'source_mapping_rules' must be a dictionary, got list.
+2026-10-06 14:43:30,837 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 14:43:30,845 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 14:43:30,853 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 14:43:30,883 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z'}
+2026-10-06 14:43:30,888 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with no value: {'Date': '2026-08-19T10:00:00Z', 'Read': None}
+2026-10-06 14:43:30,919 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with no date: {'Read': 1.0}
+2026-10-06 14:43:30,924 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date ''.
+2026-10-06 14:43:30,928 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 14:43:30,933 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 14:43:30,944 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 14:43:30,948 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 14:43:30,954 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 14:43:30,958 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 14:43:30,963 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 14:43:30,968 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 14:43:30,969 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 14:43:30,973 | DEBUG | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping empty message payload.
+2026-10-06 14:43:30,974 | DEBUG | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping empty message payload.
+2026-10-06 14:43:30,980 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with unresolvable tag in URL: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=00000
+2026-10-06 14:43:30,985 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with error status 503: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 14:43:30,991 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping envelope with a payload that is not valid JSON: https://api.cleanwattsdigital.com/data/request/Instant?instantType=avg&tags=35927
+2026-10-06 14:43:30,996 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Entity 'X02' has no 'entity_type_id' configured.
+2026-10-06 14:43:31,008 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter '35927' of entity 'B01' has no readings.
+2026-10-06 14:43:31,013 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Readings of parameter '35927' of entity 'B01' are not a list: dict.
+2026-10-06 14:43:31,018 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 14:43:31,019 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | All readings of parameter '35927' of entity 'B01' are malformed.
+2026-10-06 14:43:31,025 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Skipping reading with invalid date 'not-a-real-date'.
+2026-10-06 14:43:31,041 | INFO | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 14:43:31,046 | INFO | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter type 'unknown_type' of parameter '55555' is not registered in parameter_type_expected_types. Skipping type validation.
+2026-10-06 14:43:31,079 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 14:43:31,118 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Active heartbeat of entity 'EVC01' has no valid date: {'Read': 1}. Falling back to the grace period.
+2026-10-06 14:43:31,123 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Active heartbeat of entity 'EVC01' has no valid date: {'Read': 1}. Falling back to the grace period.
+2026-10-06 14:43:31,128 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Active heartbeat of entity 'EVC01' has no valid date: {'Read': 1, 'DateUTC': 'not-a-date'}. Falling back to the grace period.
+2026-10-06 14:43:31,145 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Entity 'EVC02' has no configured electric_vehicle parameter.
+2026-10-06 14:43:31,149 | WARNING | test | cw_adapter_unit_test | CWTelemetryAdapter | Parameter 'connected_vehicle' of entity 'EVC03' has no 'vehicle_id' configured.

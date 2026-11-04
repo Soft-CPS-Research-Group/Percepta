@@ -1,0 +1,453 @@
+{
+    "R-H-01": {
+        "group": "living lab",
+        "entities": {
+            "PV01": {
+                "entity_type_id": "pv_panel",
+                "parameters": {
+                    "tefhr": {
+                        "parameter_type_id": "energy",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                }
+            },
+            "B01": {
+                "entity_type_id": "battery",
+                "parameters": {
+                    "35927": {
+                        "parameter_type_id": "energy_in",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "35928": {
+                        "parameter_type_id": "energy_out",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "33690": {
+                        "parameter_type_id": "state_of_charge",
+                        "measurement_unit": "%",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "last_value",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                },
+                "actuators": {
+                    "power_actuation_bat": {
+                        "actuator_type_id": "power_actuation",
+                        "measurement_unit": "kW"
+                    }
+                }
+            },
+            "EVC01": {
+                "entity_type_id": "ev_charger",
+                "parameters": {
+                    "37507": {
+                        "parameter_type_id": "session_status",
+                        "measurement_unit": "Status",
+                        "necessary": false
+                    },
+                    "41836": {
+                        "parameter_type_id": "power",
+                        "measurement_unit": "kW",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 5,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "average",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "connected_vehicle": {
+                        "parameter_type_id": "electric_vehicle",
+                        "vehicle_id": "EV01",
+                        "necessary": true
+                    }
+                },
+                "actuators": {
+                    "power_actuation_ev": {
+                        "actuator_type_id": "power_actuation",
+                        "measurement_unit": "kW"
+                    }
+                }
+            },
+            "GR01": {
+                "entity_type_id": "grid_meter",
+                "parameters": {
+                    "energy_in_l1": {
+                        "parameter_type_id": "energy_in_l1",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_in_l2": {
+                        "parameter_type_id": "energy_in_l2",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_in_l3": {
+                        "parameter_type_id": "energy_in_l3",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_in_total": {
+                        "parameter_type_id": "energy_in_total",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_out_l1": {
+                        "parameter_type_id": "energy_out_l1",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_out_l2": {
+                        "parameter_type_id": "energy_out_l2",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_out_l3": {
+                        "parameter_type_id": "energy_out_l3",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "energy_out_total": {
+                        "parameter_type_id": "energy_out_total",
+                        "measurement_unit": "Wh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                }
+            },
+            "GR02": {
+                "entity_type_id": "grid_meter",
+                "parameters": {
+                    "gr02_energy_in_total": {
+                        "parameter_type_id": "energy_in_total",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "gr02_energy_out_total": {
+                        "parameter_type_id": "energy_out_total",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": true,
+                            "periodicity": {
+                                "value": 1,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": "sum",
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                }
+            },
+            "EV01": {
+                "entity_type_id": "electric_vehicle",
+                "parameters": {
+                    "soc": {
+                        "parameter_type_id": "state_of_charge",
+                        "measurement_unit": "%",
+                        "necessary": true
+                    },
+                    "flexibility": {
+                        "parameter_type_id": "flexibility",
+                        "measurement_unit": "",
+                        "necessary": true
+                    }
+                }
+            },
+            "EM01": {
+                "entity_type_id": "energy_market",
+                "parameters": {
+                    "em01_price": {
+                        "parameter_type_id": "energy_price",
+                        "measurement_unit": "€/kWh",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": null,
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                }
+            },
+            "PR01": {
+                "entity_type_id": "forecast_service",
+                "parameters": {
+                    "pr01_consumption": {
+                        "parameter_type_id": "energy_consumption_prediction",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": null,
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    },
+                    "pr01_production": {
+                        "parameter_type_id": "solar_energy_prediction",
+                        "measurement_unit": "kWh",
+                        "temporal_behavior": {
+                            "cumulative": false,
+                            "periodicity": {
+                                "value": 15,
+                                "unit": "min"
+                            },
+                            "aggregation_operation": null,
+                            "fill_operation": "linear"
+                        },
+                        "necessary": true
+                    }
+                }
+            }
+        },
+        "telemetry_systems": {
+            "cleanwatts": {
+                "source_mapping": {
+                    "tefhr": {
+                        "fetch_key": "33711",
+                        "match_key": "33711"
+                    },
+                    "35927": {
+                        "fetch_key": "35927",
+                        "match_key": "35927"
+                    },
+                    "35928": {
+                        "fetch_key": "35928",
+                        "match_key": "35928"
+                    },
+                    "41836": {
+                        "fetch_key": "41836",
+                        "match_key": "41836"
+                    },
+                    "33690": {
+                        "fetch_key": "33690",
+                        "match_key": "33690"
+                    },
+                    "37507": {
+                        "fetch_key": "37507",
+                        "match_key": "37507"
+                    },
+                    "connected_vehicle": null
+                }
+            },
+            "cleanwatts_2": {
+                "source_mapping": {
+                    "energy_in_l1": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "a_total_act_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_in_l2": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "b_total_act_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_in_l3": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "c_total_act_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_in_total": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "total_act",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_out_l1": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "a_total_act_ret_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_out_l2": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "b_total_act_ret_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_out_l3": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "c_total_act_ret_energy",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    },
+                    "energy_out_total": {
+                        "fetch_key": "Shelly-shellypro3em-0cb815fd4324",
+                        "match_key": "total_act_ret",
+                        "topic": "/status/emdata:0",
+                        "shelly_accumulation": "lifetime"
+                    }
+                }
+            },
+            "softcps": {
+                "source_mapping": {
+                    "gr02_energy_in_total": {
+                        "fetch_key": "hq-grid-meter",
+                        "match_key": "energy_in_total"
+                    },
+                    "gr02_energy_out_total": {
+                        "fetch_key": "hq-grid-meter",
+                        "match_key": "energy_out_total"
+                    }
+                }
+            },
+            "pulsecharge": {
+                "source_mapping": {
+                    "soc": {
+                        "match_key": "jbs@cleanwattsdigital.com"
+                    },
+                    "flexibility": {
+                        "match_key": "jbs@cleanwattsdigital.com"
+                    }
+                }
+            },
+            "omie": {
+                "source_mapping": {
+                    "em01_price": {
+                        "match_key": "pt_spot_price"
+                    }
+                }
+            },
+            "predictor": {
+                "source_mapping": {
+                    "pr01_consumption": {
+                        "match_key": "consumption"
+                    },
+                    "pr01_production": {
+                        "match_key": "production"
+                    }
+                }
+            }
+        }
+    }
+}

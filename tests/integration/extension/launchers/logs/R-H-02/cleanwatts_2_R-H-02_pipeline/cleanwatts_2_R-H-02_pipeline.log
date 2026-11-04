@@ -1,0 +1,67 @@
+2026-08-19 17:22:39,094 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:22:44,611 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | test {'protocol': 'AMQP', 'source': 'Shelly-shellyproem50-08f9e0e6a5a4/', 'status': None, 'content_type': 'application/octet-stream', 'payload': b'{"Topic":"shellyproem50-08f9e0e6a5a4/status/em1:0","Message":"{\\"id\\":0,\\"voltage\\":238.0,\\"current\\":1.488,\\"act_power\\":275.5,\\"aprt_power\\":355.9,\\"pf\\":0.81,\\"freq\\":49.9,\\"calibration\\":\\"factory\\"}"}', 'properties': {}}
+2026-08-19 17:22:44,613 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2Adapter | Stored initial reading baseline for entity 'GR02'.
+2026-08-19 17:22:44,615 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:22:49,934 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | test {'protocol': 'AMQP', 'source': 'Shelly-shellyproem50-08f9e0e6a5a4/', 'status': None, 'content_type': 'application/octet-stream', 'payload': b'{"Topic":"shellyproem50-08f9e0e6a5a4/status/em1:0","Message":"{\\"id\\":0,\\"voltage\\":237.8,\\"current\\":1.362,\\"act_power\\":241.5,\\"aprt_power\\":325.1,\\"pf\\":0.81,\\"freq\\":49.9,\\"calibration\\":\\"factory\\"}"}', 'properties': {}}
+2026-08-19 17:22:49,936 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2Adapter | Adapted 8 parameters for entity 'GR02'.
+2026-08-19 17:22:49,937 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | Dispatching 1 canonical messages to OutputHandler.
+2026-08-19 17:24:43,672 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:24:56,559 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2Adapter | Stored initial reading baseline for entity 'GR02'.
+2026-08-19 17:24:56,561 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:24:58,692 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2Adapter | Adapted 8 parameters for entity 'GR02'.
+2026-08-19 17:24:58,693 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | Dispatching 1 canonical messages to OutputHandler.
+2026-08-19 17:38:29,059 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:38:33,212 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | Last reading updated with the following data: {'total_act_energy': 4961482.26, 'total_act_ret_energy': 0.0}
+2026-08-19 17:38:33,213 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:38:33,230 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:38:44,926 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:38:59,873 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:40:20,483 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:40:26,757 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:40:33,368 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | Last reading updated with the following data: {'total_act_energy': 4961488.92, 'total_act_ret_energy': 0.0}
+2026-08-19 17:40:33,370 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:40:33,384 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:40:39,705 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:43:33,903 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:43:43,029 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:43:57,988 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:10,927 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:25,837 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:32,443 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | Last reading updated with the following data: {'total_act_energy': 4961503.29, 'total_act_ret_energy': 0.0}
+2026-08-19 17:44:32,444 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:32,460 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:35,434 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:48,437 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:44:56,997 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:46:16,471 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:46:53,593 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 17:47:04,362 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:47:18,278 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:47:32,304 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | olaaaa {'Topic': 'shellyproem50-08f9e0e6a5a4/status/em1data:0', 'Message': '{"id":0,"total_act_energy":4961521.99,"total_act_ret_energy":0.00}'}
+2026-08-19 17:47:32,306 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | Last reading updated with the following data: {'total_act_energy': 4961521.99, 'total_act_ret_energy': 0.0}
+2026-08-19 17:47:32,307 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:47:32,318 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | olaaaa {'Topic': 'shellyproem50-08f9e0e6a5a4/status/em1data:1', 'Message': '{"id":1,"total_act_energy":0.00,"total_act_ret_energy":0.00}'}
+2026-08-19 17:47:32,320 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:47:34,239 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:47:48,247 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:48:04,226 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:48:17,155 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:48:32,167 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | olaaaa {'Topic': 'shellyproem50-08f9e0e6a5a4/status/em1data:1', 'Message': '{"id":1,"total_act_energy":0.00,"total_act_ret_energy":0.00}'}
+2026-08-19 17:48:32,168 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:48:32,187 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 17:48:33,203 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | olaaaa {'Topic': 'shellyproem50-08f9e0e6a5a4/status/em1data:0', 'Message': '{"id":0,"total_act_energy":4961530.09,"total_act_ret_energy":0.00}'}
+2026-08-19 17:48:33,205 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2Adapter | Adapted 8 parameters for entity 'GR02'.
+2026-08-19 17:48:33,206 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | Dispatching 1 canonical messages to OutputHandler.
+2026-08-19 23:09:05,050 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).
+2026-08-19 23:09:18,657 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:09:28,411 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | Last reading updated with the following data: {'total_act_energy': 4962171.18, 'total_act_ret_energy': 0.0}
+2026-08-19 23:09:28,412 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:09:28,428 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:09:32,327 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:09:47,594 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:10:01,273 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:10:15,542 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:10:28,970 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | Dispatching 1 canonical messages to OutputHandler.
+2026-08-19 23:10:28,993 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:10:29,818 | DEBUG | R-H-02 | cleanwatts_2_R-H-02_pipeline | Telemetry Pipeline Service | No canonical messages produced by adapter for current payload.
+2026-08-19 23:14:00,234 | INFO | R-H-02 | cleanwatts_2_R-H-02_pipeline | CW2EndpointBuilder | Topology successfully constructed for environment 'R-H-02' with 1 AMQP exchange binding(s).

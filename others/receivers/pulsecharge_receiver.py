@@ -1,0 +1,66 @@
+from typing import Dict, Any
+from others.pc_translator import PCTranslator
+from others.receiver_rabbitmq_base import ReceiverRabbitMQBase
+from app.core.utils.logger import LoggingUtils
+from app.core.utils.providers import Provider
+
+class PCReceiver(ReceiverRabbitMQBase):
+    """
+    ICReceiver is responsible for retrieving raw data from the i-charging API
+    for specific environments.
+
+    Note:
+        Translation of provider-specific data into system-specific format
+        is handled by ICTranslator.
+    """
+
+    provider = Provider.PULSECHARGE.value
+    _translator: PCTranslator
+
+    def __init__(self, environment_name: str, environment_specs: Dict[str, Any], configurations: Dict[str, Any], logger: LoggingUtils) -> None:
+        """
+        Initialize the ICReceiver instance.
+
+        Args:
+            environment_name (str): Environment name.
+            environment_specs (dict): Environment-specific configurations.
+            configurations (dict): General configurations for the receiver.
+            logger (LoggingUtils): Logger instance for logging events.
+        """
+        self._exchange_name: str = f"building_{environment_name.replace(' ', '_')}"
+        #print(f"INICIEI {self._exchange_name}\n")
+        super().__init__(environment_name, environment_specs, configurations, logger)
+        self._translator = PCTranslator(environment_name, environment_specs, configurations, logger)
+
+    def stop(self) -> None:
+        """
+        Stop the receiver and translator threads gracefully.
+        Ensures proper cleanup and logs stop events.
+        """
+        self._logger.info(f"{self.provider} | Stopping thread {self._environment_name}...")
+        super().stop()
+        self._translator.stop()
+        self._logger.info(f"{self.provider} | Thread {self._environment_name} stopped.")
+
+    def _process_message(self, body: Any, source: str) -> None:
+        """
+        Process an incoming message by sending it to the translator.
+
+        Args:
+            body (Any): The message payload received from RabbitMQ.
+                        Can be a dict, str, or serialized data structure.
+        """
+        if not self._stop_event.is_set():
+            self._translator.translate(body)
+
+    @classmethod
+    def launch(cls, environments: dict, configurations: dict):
+        threads = []
+
+        for environment, environment_specs in environments.items():
+            logger_per_environment = LoggingUtils(f"{cls.provider}_receiver", configurations, environment)
+            receiver = cls(environment, environment_specs, configurations, logger_per_environment)
+            receiver.start()
+            threads.append(receiver)
+
+        return threads

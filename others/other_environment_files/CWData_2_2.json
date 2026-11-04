@@ -1,0 +1,129 @@
+{
+    "environments": {
+         "R-H-05": {
+            "group": "living lab",
+            "entities": {
+                "GR05": {
+                    "parameters": {
+                        "energy_in_l1": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l1"
+                        },
+                        "energy_in_l2": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l2"
+                        },
+                        "energy_in_l3": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_l3"
+                        },
+                        "energy_in_total": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_in_total"
+                        },
+                        "energy_out_l1": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l1"
+                        },
+                        "energy_out_l2": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l2"
+                        },
+                        "energy_out_l3": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_l3"
+                        },
+                        "energy_out_total": {
+                            "measurementUnit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": true,
+                                "periodicity": {
+                                    "value": 1,
+                                    "unit": "min"
+                                },
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "label": "energy_out_total"
+                        }
+                    },
+                    "label": "grid_meter"
+                }
+            }
+        }
+    },
+    "provider": "cleanwatts_2",
+    "configurations" : {
+        "source_mapping": {
+            "R-H-05": {
+                "strategy": "entity",
+                "rules" : {
+                    "GR05" : "Shelly-shellyem-B9F0A6"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,62 @@
+from abc import ABC, abstractmethod
+
+class EnvironmentRepository(ABC):
+    """
+       Abstract base class for environment repositories.
+
+       This class defines the interface for managing and retrieving environment
+       configurations and their associated entities. Implementations must provide
+       methods to retrieve all environments as well as environments filtered by
+       specific providers.
+    """
+
+    @abstractmethod
+    def get_environments(self) -> dict:
+        """
+        Returns all environments with their associated entities and characteristics.
+
+        The method combines entities from different providers if they belong to the same environment.
+
+        Returns:
+            dict -> A dictionary where each key is an environment name, and the value is a structure
+                    containing all related entities and their attributes, regardless of the provider.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_environments_by_provider(self, provider: str) -> dict:
+        """
+        Returns all environments related to a specific provider.
+
+        Each environment includes only the entities that belong to the specified provider.
+
+        args:
+            provider (str): Name or ID of the data provider to filter environments by
+
+        Returns:
+            dict -> A dictionary of environments with their respective entities and attributes,
+                    limited to those provided by the specified provider.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_configurations_by_provider(self, provider: str) -> dict:
+        """
+        Returns all configurations related to a specific provider.
+        args:
+          provider (str): Name or ID of the data provider to filter environments by
+
+        Returns:
+          dict -> A dictionary of configurations provided by the specified provider.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_all_configurations(self) -> dict:
+        """
+        Returns all configurations.
+        Returns:
+           dict -> A dictionary of all configurations provided all the providers.
+        """
+        raise NotImplementedError()
+

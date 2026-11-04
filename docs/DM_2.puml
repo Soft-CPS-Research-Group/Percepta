@@ -1,0 +1,112 @@
+@startuml
+skinparam linetype ortho
+skinparam ArrowFontSize 16
+top to bottom direction
+hide empty methods
+
+package PerceptaInstanceConfigurationAggregate {
+  class PerceptaInstanceConfiguration <<AggregateRoot>> {
+    +String id
+    +List<String> activeDataIssueHandlingApproachIds
+    +String combinationLogicId
+    +String parameterDerivationLogicId
+    +String targetSystemResolutionLogicId
+  }
+  class Frequency <<ValueObject>> {
+    +Int value
+    +String unit
+  }
+  class GracePeriod <<ValueObject>> {
+    +Int value
+    +String unit
+  }
+  class RuntimeDataStorageConfiguration <<ValueObject>> {
+    +String runtimeDataStorageTypeId
+    +Map connectionInfo
+  }
+  class SchemaStorageConfiguration <<ValueObject>> {
+    +String schemaStorageTypeId
+    +Map connectionInfo
+  }
+  class TelemetrySystemConfiguration <<Entity>> {
+  +String id
+  +String adapterId
+}
+  class TargetSystemConfiguration <<Entity>> {
+  +String id
+  +String adapterId
+  +String actuationErrorHandlingLogicId
+}
+  class MLModelConfiguration <<Entity>> {
+  +String id
+  +String adapterId
+  +String modelExecutionErrorHandlingLogicId
+  +String decisionValidationAndCorrectionLogicId
+}
+  class ConnectionConfiguration <<ValueObject>> {
+    +String protocolId
+    +Map connectionInfo
+  }
+}
+
+package EnvironmentAggregate {
+  class TemporalBehavior <<ValueObject>> {
+    +Boolean cumulative
+    +Int periodicityValue
+    +String periodicityUnit
+    +String aggregationOperation
+    +String fillOperation
+  }
+  class Environment <<AggregateRoot>> {
+    +String id
+    +String mlModelId
+  }
+  class Entity <<Entity>> {
+    +String id
+    +String entityTypeId
+  }
+  class Parameter <<ValueObject>> {
+    +String id
+    +String parameterTypeId
+  }
+  class Actuator <<ValueObject>> {
+    +String id
+    +String actuatorTypeId
+  }
+  class SourceMapping <<ValueObject>> {
+    +String telemetrySystemId
+    +String strategy
+    +Map rules
+  }
+  class ActuatorMapping <<ValueObject>> {
+    +String targetSystemId
+    +Map rules
+  }
+}
+
+PerceptaInstanceConfiguration "1" *-- "1" Frequency
+PerceptaInstanceConfiguration "1" *-- "1" GracePeriod
+PerceptaInstanceConfiguration "1" *-- "1" SchemaStorageConfiguration
+PerceptaInstanceConfiguration "1" *-- "1" RuntimeDataStorageConfiguration
+PerceptaInstanceConfiguration "1" *-- "*" TelemetrySystemConfiguration
+PerceptaInstanceConfiguration "1" *-- "*" TargetSystemConfiguration
+PerceptaInstanceConfiguration "1" *-- "*" MLModelConfiguration
+TelemetrySystemConfiguration "1" *-- "1" ConnectionConfiguration
+TargetSystemConfiguration "1" *-- "1" ConnectionConfiguration
+MLModelConfiguration "1" *-- "1" ConnectionConfiguration
+Parameter "1" *-- "1" TemporalBehavior
+
+Environment "1" *-- "*" Entity
+Entity "1" *-- "*" Parameter
+Entity "1" *-- "*" Actuator
+Environment "1" *-- "*" SourceMapping
+Environment "1" *-- "*" ActuatorMapping
+
+Environment ..> MLModelConfiguration : uses, by id
+SourceMapping ..> TelemetrySystemConfiguration : refers to, by id
+SourceMapping ..> Parameter : resolves to,\nif parameter\nlevel
+ActuatorMapping ..> TargetSystemConfiguration : refers to, by id
+Actuator ..> ActuatorMapping : resolved via
+
+
+@enduml

@@ -1,0 +1,224 @@
+# --- Standard Library Imports ---
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+# --- Internal Framework Imports ---
+from app.core.integrated_logic.parameter_derivation_logic_base import ParameterDerivationLogicBase
+from app.core.utils.logger import LoggingUtils
+from app.core.utils.time_utils import format_timestamp
+from app.extension.utils.labels import AggregationLabel, Label, ParamLabel
+
+
+class EnergAIzeParameterDerivationLogic(ParameterDerivationLogicBase):
+    """Parameter-Derivation Logic of the EnergAIze instance.
+
+    It takes the message built by the Combination Logic and adds the two parameters that the EnergAIze algorithm needs
+    and that no device measures directly:
+
+        - "solar_generation"  -> the sum of the energy produced by all the PV panels of the installation in the
+                                 period (with only one panel, it is the value of that panel).
+        - "non_shiftable_load" -> the energy consumed by the installation that cannot be shifted in time, i.e., what
+                                 is left of the consumption once the energy exchanged with the grid, the solar
+                                 generation and the energy exchanged with the batteries are accounted for:
+
+                                 grid_in + solar_generation - grid_out + battery_discharge - battery_charge
+
+                                 It is never negative (measurement noise can make the balance slightly negative).
+
+    The derived parameters go in the key "derived_parameters" of the message, with the same fields as the parameters
+    of the entities, so the algorithm reads them in the same way. The rest of the message is not changed.
+
+    Expected Input Structure:
+    -------------------------
+    {
+        "timestamp": "2026-10-13 16:35:45 +0000",                       # The end of the period
+        "entities": [
+            {
+                "id": "PV01",
+                "entity_type_id": "pv_panel",
+                "parameters": {
+                    "33711": {
+                        "parameter_type_id": "energy",
+                        "values": [0.12],
+                        "measurement_unit": "kWh",
+                        "aggregation_method": "sum",
+                        "start_date": "2026-10-13 16:35:30 +0000",
+                        "frequency_seconds": 15,
+                        "generated": False
+                    }
+                }
+            }
+        ]
+    }
+
+    Expected Output Structure:
+    --------------------------
+    {
+        "timestamp": "2026-10-13 16:35:45 +0000",
+        "entities": [...],                                              # As received
+        "derived_parameters": {
+            "solar_generation": {
+                "values": [0.12],
+                "measurement_unit": "kWh",
+                "aggregation_method": "sum",
+                "start_date": "2026-10-13 16:35:30 +0000",
+                "frequency_seconds": 15,
+                "generated": False                                      # True if any value used was synthesised
+            },
+            "non_shiftable_load": {...}                                 # Same fields
+        }
+    }
+    """
+
+    _MEASUREMENT_UNIT: str = "kWh"
+
+    def __init__(self, environment: Dict[str, Any], settings: Dict[str, Any], logger: LoggingUtils) -> None:
+        """Initializes the logic.
+
+        Expected Input Structure:
+        -------------------------
+        environment = {
+            "group": "group_1",
+            "entities": {
+                "PV01": {
+                    "entity_type_id": "pv_panel",
+                    "parameters": {
+                        "33711": {
+                            "parameter_type_id": "energy",
+                            "measurement_unit": "kWh",
+                            "temporal_behavior": {
+                                "cumulative": True,
+                                "periodicity": {"value": 5, "unit": "min"},
+                                "aggregation_operation": "sum",
+                                "fill_operation": "linear"
+                            },
+                            "necessary": True
+                        }
+                    }
+                }
+            },
+            ...                                 # The rest of the environment, as returned by the Schema Storage
+        }
+        settings = {
+            "timezone": "UTC",                  # The timezone of the periods
+            "frequency_seconds": 15,            # The length of a period, in seconds
+            "grace_period_seconds": 2           # Wait after the end of a period before processing it
+        }
+
+        Args:
+            environment (Dict[str, Any]): The environment this logic works for, as returned by the Schema Storage.
+            settings (Dict[str, Any]): The settings of the Data Processing container. This logic needs
+                'frequency_seconds', the length of the period.
+            logger (LoggingUtils): Logger of the environment.
+
+        Raises:
+            ValueError: If the environment has no 'entities', or if 'frequency_seconds' is missing or not positive.
+        """
+        super().__init__(environment, settings, logger)
+
+        # Guard Clause 1: Checks that the environment has the 'entities' dictionary.
+        if not isinstance(environment.get("entities"), dict):
+            raise ValueError("The environment must have an 'entities' dictionary.")
+
+        # Guard Clause 2: Checks that 'frequency_seconds' is a positive number.
+        frequency_seconds = settings.get("frequency_seconds")
+        if isinstance(frequency_seconds, bool) or not isinstance(frequency_seconds, (int, float)) \
+                or frequency_seconds <= 0:
+            raise ValueError(f"'frequency_seconds' must be a positive number, and it is {frequency_seconds!r}.")
+
+        self._frequency_seconds: float = frequency_seconds
+
+    def derive(self, message: Dict[str, Any], period_end: datetime) -> Dict[str, Any]:
+        """Adds the derived parameters to the message of the period.
+
+        Expected Input Structure:
+        -------------------------
+        message = {
+            "timestamp": "2026-10-13 16:35:45 +0000",
+            "entities": [
+                {"id": "GR01", "entity_type_id": "grid_meter", "parameters": {
+                    "energy_in_total": {"values": [0.30], "generated": False, ...},
+                    "energy_out_total": {"values": [0.05], "generated": False, ...}}},
+                {"id": "PV01", "entity_type_id": "pv_panel", "parameters": {
+                    "33711": {"parameter_type_id": "energy", "values": [0.12], "generated": False, ...}}}
+            ]
+        }
+
+        Expected Output Structure:
+        --------------------------
+        The same message, plus "derived_parameters" (see the class documentation). For the example above:
+        solar_generation = 0.12 and non_shiftable_load = 0.30 + 0.12 - 0.05 = 0.37.
+
+        Args:
+            message (Dict[str, Any]): The message built by the Combination Logic.
+            period_end (datetime): The end of the period, with a timezone.
+
+        Returns:
+            Dict[str, Any]: The message with the derived parameters.
+
+        Raises:
+            ValueError: If 'period_end' has no timezone.
+        """
+        # Guard Clause 1: Checks that 'period_end' has a timezone.
+        if period_end.tzinfo is None:
+            raise ValueError("'period_end' must have a timezone.")
+
+        entities: List[Dict[str, Any]] = message.get("entities", [])
+        period_start: datetime = period_end - timedelta(seconds=self._frequency_seconds)
+
+        solar_generation, solar_generated = self._sum_parameter(entities, Label.PV_PANEL, ParamLabel.ENERGY)
+        grid_in, grid_in_generated = self._sum_parameter(entities, Label.GRID_METER, ParamLabel.ENERGY_IN_TOTAL)
+        grid_out, grid_out_generated = self._sum_parameter(entities, Label.GRID_METER, ParamLabel.ENERGY_OUT_TOTAL)
+        battery_charge, charge_generated = self._sum_parameter(entities, Label.BATTERY, ParamLabel.ENERGY_IN)
+        battery_discharge, discharge_generated = self._sum_parameter(entities, Label.BATTERY, ParamLabel.ENERGY_OUT)
+
+        non_shiftable_load = grid_in + solar_generation - grid_out + battery_discharge - battery_charge
+
+        # The balance can be slightly negative because of measurement noise, but a load cannot be negative.
+        if non_shiftable_load < 0:
+            self._logger.debug(
+                f"{self._LOG_PREFIX} Negative balance ({non_shiftable_load}) set to 0."
+            )
+            non_shiftable_load = 0.0
+
+        derived_parameters = {
+            "solar_generation": self._build_parameter(solar_generation, period_start, solar_generated),
+            "non_shiftable_load": self._build_parameter(
+                non_shiftable_load, period_start,
+                solar_generated or grid_in_generated or grid_out_generated or charge_generated or discharge_generated
+            ),
+        }
+
+        return {**message, "derived_parameters": derived_parameters}
+
+    def _build_parameter(self, value: float, period_start: datetime, generated: bool) -> Dict[str, Any]:
+        """Builds a derived parameter with the fields of the parameters of the entities."""
+        return {
+            "values": [value],
+            "measurement_unit": self._MEASUREMENT_UNIT,
+            "aggregation_method": AggregationLabel.SUM.value,
+            "start_date": format_timestamp(period_start),
+            "frequency_seconds": self._frequency_seconds,
+            "generated": generated,
+        }
+
+    @staticmethod
+    def _sum_parameter(entities: List[Dict[str, Any]], entity_type: Label, parameter_type: ParamLabel) -> tuple:
+        """Sums the first value of every parameter of the given type, in every entity of the given type.
+
+        Returns:
+            tuple: (the sum, True if any of the entities used was synthesised).
+        """
+        total: float = 0.0
+        generated: bool = False
+        for entity in entities:
+            if entity.get("entity_type_id") != entity_type.value:
+                continue
+            for parameter in entity.get("parameters", {}).values():
+                if parameter.get("parameter_type_id") != parameter_type.value:
+                    continue
+                values = parameter.get("values") or []
+                if values and isinstance(values[0], (int, float)) and not isinstance(values[0], bool):
+                    total += values[0]
+                    generated = generated or bool(parameter.get("generated", False))
+        return total, generated

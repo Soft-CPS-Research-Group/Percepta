@@ -1,0 +1,302 @@
+2026-07-31 17:11:23,427 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:11:23,431 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:11:23,439 | INFO | test | ic_translator_integration_test | MESSAGES DICT {'charging.session': [{'serialnumber': 'AC000001', 'plug': 1, 'power': 11.5, 'user.id': 'user_opeva_01'}, {'serialnumber': 'AC000002', 'plug': 1, 'power': 7.4, 'user.id': 'user_opeva_02'}], 'pv.production': 45.8, 'meter.values': [{'id': 'grid_meter_01', 'l123': 240.0, 'l1': 80.0, 'l2': 80.0, 'l3': 80.0}]}
+2026-07-31 17:13:16,472 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:13:16,474 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:13:16,477 | INFO | test | ic_translator_integration_test | MESSAGES DICT {'charging.session': [{'serialnumber': 'AC000001', 'plug': 1, 'power': 11.5, 'user.id': 'user_opeva_01'}, {'serialnumber': 'AC000002', 'plug': 1, 'power': 7.4, 'user.id': 'user_opeva_02'}], 'pv.production': 45.8, 'meter.values': [{'id': 'grid_meter_01', 'l123': 240.0, 'l1': 80.0, 'l2': 80.0, 'l3': 80.0}]}
+2026-07-31 17:15:15,939 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:15:15,942 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:30:39,655 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:30:39,658 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:31:36,607 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:31:36,610 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:37:12,377 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:37:12,379 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:38:40,639 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:38:40,642 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:41:44,550 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:41:44,552 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:42:39,638 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:42:39,641 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:43:38,449 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:43:38,453 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:45:16,407 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:45:16,410 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:45:16,452 | INFO | test | ic_translator_integration_test | ATTRIBUTE b'{"observation": {"charging.session": [{"serialnumber": "AC000001", "plug": 1, "power": 11.5, "user.id": "user_opeva_01"}, {"serialnumber": "AC000002", "plug": 1, "power": 7.4, "user.id": "user_opeva_02"}], "pv.production": 45.8, "meter.values": [{"id": "grid_meter_01", "l123": 240.0, "l1": 80.0, "l2": 80.0, "l3": 80.0}]}}'
+2026-07-31 17:45:16,455 | INFO | test | ic_translator_integration_test | ATTRIBUTE {'charging.session': [{'serialnumber': 'AC000001', 'plug': 1, 'power': 11.5, 'user.id': 'user_opeva_01'}, {'serialnumber': 'AC000002', 'plug': 1, 'power': 7.4, 'user.id': 'user_opeva_02'}], 'pv.production': 45.8, 'meter.values': [{'id': 'grid_meter_01', 'l123': 240.0, 'l1': 80.0, 'l2': 80.0, 'l3': 80.0}]}
+2026-07-31 17:45:16,458 | INFO | test | ic_translator_integration_test | ATTRIBUTE charging.session: [{'serialnumber': 'AC000001', 'plug': 1, 'power': 11.5, 'user.id': 'user_opeva_01'}, {'serialnumber': 'AC000002', 'plug': 1, 'power': 7.4, 'user.id': 'user_opeva_02'}]
+2026-07-31 17:45:16,460 | INFO | test | ic_translator_integration_test | ATTRIBUTE pv.production: 45.8
+2026-07-31 17:45:16,462 | INFO | test | ic_translator_integration_test | ATTRIBUTE meter.values: [{'id': 'grid_meter_01', 'l123': 240.0, 'l1': 80.0, 'l2': 80.0, 'l3': 80.0}]
+2026-07-31 17:45:16,465 | INFO | test | ic_translator_integration_test | OLAAAAAAAAAAAAAA [{'id': 'AC000001_1', 'value': {'power': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 11.5}], 'electric_vehicle': 'user_opeva_01', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-07-31 16:45:16 +0000'}, {'id': 'AC000002_1', 'value': {'power': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 7.4}], 'electric_vehicle': 'user_opeva_02', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-07-31 16:45:16 +0000'}, {'id': 'PV01', 'value': {'energy': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 45.8}]}, 'timestamp': '2026-07-31 16:45:16 +0000'}, {'id': 'grid_meter_01', 'value': {'energy_in_total': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 1.0}], 'energy_in_l1': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 0.3333333333333333}], 'energy_in_l2': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 0.3333333333333333}], 'energy_in_l3': [{'timestamp': '2026-07-31 16:45:16 +0000', 'value': 0.3333333333333333}]}, 'timestamp': '2026-07-31 16:45:16 +0000'}]
+2026-07-31 17:48:16,319 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-07-31 17:48:16,321 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-07-31 17:48:16,325 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Egress Exchange 'env_1' verified/declared.
+2026-07-31 17:48:16,365 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Message published to [env_1] via route []:
+[
+    {
+        "id": "AC000001_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 11.5
+                }
+            ],
+            "electric_vehicle": "user_opeva_01",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-07-31 16:48:16 +0000"
+    },
+    {
+        "id": "AC000002_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 7.4
+                }
+            ],
+            "electric_vehicle": "user_opeva_02",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-07-31 16:48:16 +0000"
+    },
+    {
+        "id": "PV01",
+        "value": {
+            "energy": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 45.8
+                }
+            ]
+        },
+        "timestamp": "2026-07-31 16:48:16 +0000"
+    },
+    {
+        "id": "grid_meter_01",
+        "value": {
+            "energy_in_total": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 1.0
+                }
+            ],
+            "energy_in_l1": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l2": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l3": [
+                {
+                    "timestamp": "2026-07-31 16:48:16 +0000",
+                    "value": 0.3333333333333333
+                }
+            ]
+        },
+        "timestamp": "2026-07-31 16:48:16 +0000"
+    }
+]
+2026-07-31 17:48:17,370 | INFO | test | ic_translator_integration_test | Launcher Core | Initiating multi-protocol infrastructure teardown sequence...
+2026-07-31 17:48:17,373 | INFO | test | ic_translator_integration_test | Launcher Core | Executing specific teardown for RabbitMQ...
+2026-07-31 17:48:17,375 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-07-31 17:48:17,378 | INFO | test | ic_translator_integration_test | Launcher Core | Structural multi-protocol infrastructure teardown completed.
+2026-07-31 17:55:46,862 | INFO | test | ic_translator_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5673'.
+2026-07-31 17:55:46,864 | WARNING | test | ic_translator_integration_test | Translator | Entity UNKNOWN_SERIAL_9 not found in the configuration file. The program will ignore this entity.
+2026-07-31 17:55:46,867 | INFO | test | ic_translator_integration_test | ICTranslator Sending translated messages: []
+2026-07-31 17:55:46,870 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Egress Exchange 'env_1' verified/declared.
+2026-07-31 17:55:46,872 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Message published to [env_1] via route []:
+[]
+2026-08-17 09:31:58,216 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-17 09:31:58,217 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-08-17 09:31:58,219 | INFO | test | ic_translator_integration_test | ICTranslator Sending translated messages: [{'id': 'AC000001_1', 'value': {'power': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 11.5}], 'electric_vehicle': 'user_opeva_01', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-08-17 08:31:58 +0000'}, {'id': 'AC000002_1', 'value': {'power': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 7.4}], 'electric_vehicle': 'user_opeva_02', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-08-17 08:31:58 +0000'}, {'id': 'PV01', 'value': {'energy': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 45.8}]}, 'timestamp': '2026-08-17 08:31:58 +0000'}, {'id': 'grid_meter_01', 'value': {'energy_in_total': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 1.0}], 'energy_in_l1': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 0.3333333333333333}], 'energy_in_l2': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 0.3333333333333333}], 'energy_in_l3': [{'timestamp': '2026-08-17 08:31:58 +0000', 'value': 0.3333333333333333}]}, 'timestamp': '2026-08-17 08:31:58 +0000'}]
+2026-08-17 09:31:58,220 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Egress Exchange 'env_1' verified/declared.
+2026-08-17 09:31:58,222 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Message published to [env_1]:
+[
+    {
+        "id": "AC000001_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 11.5
+                }
+            ],
+            "electric_vehicle": "user_opeva_01",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-08-17 08:31:58 +0000"
+    },
+    {
+        "id": "AC000002_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 7.4
+                }
+            ],
+            "electric_vehicle": "user_opeva_02",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-08-17 08:31:58 +0000"
+    },
+    {
+        "id": "PV01",
+        "value": {
+            "energy": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 45.8
+                }
+            ]
+        },
+        "timestamp": "2026-08-17 08:31:58 +0000"
+    },
+    {
+        "id": "grid_meter_01",
+        "value": {
+            "energy_in_total": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 1.0
+                }
+            ],
+            "energy_in_l1": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l2": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l3": [
+                {
+                    "timestamp": "2026-08-17 08:31:58 +0000",
+                    "value": 0.3333333333333333
+                }
+            ]
+        },
+        "timestamp": "2026-08-17 08:31:58 +0000"
+    }
+]
+2026-08-17 09:31:59,224 | INFO | test | ic_translator_integration_test | Launcher Core | Initiating multi-protocol infrastructure teardown sequence...
+2026-08-17 09:31:59,225 | INFO | test | ic_translator_integration_test | Launcher Core | Executing specific teardown for RabbitMQ...
+2026-08-17 09:31:59,226 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-08-17 09:31:59,227 | INFO | test | ic_translator_integration_test | Launcher Core | Structural multi-protocol infrastructure teardown completed.
+2026-08-17 09:31:59,234 | INFO | test | ic_translator_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5673'.
+2026-08-17 09:31:59,235 | WARNING | test | ic_translator_integration_test | Translator | Entity UNKNOWN_SERIAL_9 not found in the configuration file. The program will ignore this entity.
+2026-08-17 09:31:59,236 | INFO | test | ic_translator_integration_test | ICTranslator Sending translated messages: []
+2026-08-17 09:31:59,238 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Egress Exchange 'env_1' verified/declared.
+2026-08-17 09:31:59,238 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Message published to [env_1]:
+[]
+2026-08-17 10:55:41,661 | INFO | test | ic_translator_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-17 10:55:41,662 | INFO | test | ic_translator_integration_test | Launcher Core | RabbitMQ physical publisher network connection established.
+2026-08-17 10:55:41,664 | INFO | test | ic_translator_integration_test | ICTranslator Sending translated messages: [{'id': 'AC000001_1', 'value': {'power': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 11.5}], 'electric_vehicle': 'user_opeva_01', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-08-17 09:55:41 +0000'}, {'id': 'AC000002_1', 'value': {'power': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 7.4}], 'electric_vehicle': 'user_opeva_02', 'electric_vehicle_id': {'value': None, 'metadata': 'Parameter missing in receiver response'}}, 'timestamp': '2026-08-17 09:55:41 +0000'}, {'id': 'PV01', 'value': {'energy': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 45.8}]}, 'timestamp': '2026-08-17 09:55:41 +0000'}, {'id': 'grid_meter_01', 'value': {'energy_in_total': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 1.0}], 'energy_in_l1': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 0.3333333333333333}], 'energy_in_l2': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 0.3333333333333333}], 'energy_in_l3': [{'timestamp': '2026-08-17 09:55:41 +0000', 'value': 0.3333333333333333}]}, 'timestamp': '2026-08-17 09:55:41 +0000'}]
+2026-08-17 10:55:41,665 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Egress Exchange 'env_1' verified/declared.
+2026-08-17 10:55:41,666 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Message published to [env_1]:
+[
+    {
+        "id": "AC000001_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 11.5
+                }
+            ],
+            "electric_vehicle": "user_opeva_01",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-08-17 09:55:41 +0000"
+    },
+    {
+        "id": "AC000002_1",
+        "value": {
+            "power": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 7.4
+                }
+            ],
+            "electric_vehicle": "user_opeva_02",
+            "electric_vehicle_id": {
+                "value": null,
+                "metadata": "Parameter missing in receiver response"
+            }
+        },
+        "timestamp": "2026-08-17 09:55:41 +0000"
+    },
+    {
+        "id": "PV01",
+        "value": {
+            "energy": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 45.8
+                }
+            ]
+        },
+        "timestamp": "2026-08-17 09:55:41 +0000"
+    },
+    {
+        "id": "grid_meter_01",
+        "value": {
+            "energy_in_total": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 1.0
+                }
+            ],
+            "energy_in_l1": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l2": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 0.3333333333333333
+                }
+            ],
+            "energy_in_l3": [
+                {
+                    "timestamp": "2026-08-17 09:55:41 +0000",
+                    "value": 0.3333333333333333
+                }
+            ]
+        },
+        "timestamp": "2026-08-17 09:55:41 +0000"
+    }
+]
+2026-08-17 10:55:42,669 | INFO | test | ic_translator_integration_test | Launcher Core | Initiating multi-protocol infrastructure teardown sequence...
+2026-08-17 10:55:42,670 | INFO | test | ic_translator_integration_test | Launcher Core | Executing specific teardown for RabbitMQ...
+2026-08-17 10:55:42,672 | INFO | test | ic_translator_integration_test | RabbitMQ Output Handler | Rejection constraints triggered. Flushing logical boundaries.
+2026-08-17 10:55:42,673 | INFO | test | ic_translator_integration_test | Launcher Core | Structural multi-protocol infrastructure teardown completed.

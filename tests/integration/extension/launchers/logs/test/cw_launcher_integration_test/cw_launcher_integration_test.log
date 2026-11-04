@@ -1,0 +1,82 @@
+2026-08-18 16:03:26,581 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:03:26,583 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:03:31,350 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:03:31,351 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:03:31,457 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-18 16:03:31,458 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:03:31,460 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical publisher network connection established.
+2026-08-18 16:03:31,461 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Valid RPC structures parsed. Assembling standalone AsyncRabbitMQInputHandler...
+2026-08-18 16:03:31,462 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:03:31,463 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical receiver RPC network connection established.
+2026-08-18 16:06:32,225 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:06:32,226 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:06:32,230 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:06:32,231 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:06:32,232 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:06:32,317 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:06:32,319 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:06:32,330 | INFO | test | cw_launcher_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:06:32,331 | INFO | test | cw_launcher_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-18 16:06:32,332 | INFO | test | cw_launcher_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-18 16:06:32,333 | INFO | test | cw_launcher_integration_test | Local Connector | Releasing local in-memory callable reference.
+2026-08-18 16:06:32,344 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:06:32,345 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:06:32,348 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:06:32,349 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:06:32,351 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:06:32,352 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:06:32,354 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:06:32,356 | INFO | test | cw_launcher_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-18 16:06:37,178 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-18 16:06:37,179 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:06:37,181 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical publisher network connection established.
+2026-08-18 16:06:37,182 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Valid RPC structures parsed. Assembling standalone AsyncRabbitMQInputHandler...
+2026-08-18 16:06:37,183 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:06:37,184 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical receiver RPC network connection established.
+2026-08-18 16:06:37,187 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:06:37,188 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:06:37,190 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:06:37,191 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:06:37,192 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:06:37,193 | INFO | test | cw_launcher_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:06:37,194 | INFO | test | cw_launcher_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-18 16:06:37,195 | INFO | test | cw_launcher_integration_test | RabbitMQ Output Handler | Stopping outbound message dispatcher and closing AMQP transport pipelines.
+2026-08-18 16:06:37,196 | INFO | test | cw_launcher_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:07:52,944 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:07:52,945 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:07:52,948 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:07:52,949 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:07:52,950 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:07:53,029 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:07:53,030 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:07:53,040 | INFO | test | cw_launcher_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:07:53,041 | INFO | test | cw_launcher_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-18 16:07:53,042 | INFO | test | cw_launcher_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-18 16:07:53,043 | INFO | test | cw_launcher_integration_test | Local Connector | Releasing local in-memory callable reference.
+2026-08-18 16:07:53,056 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncLocal'...
+2026-08-18 16:07:53,057 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Local memory connector bound successfully.
+2026-08-18 16:07:53,060 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:07:53,061 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:07:53,062 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:07:53,063 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:07:53,064 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:07:53,066 | INFO | test | cw_launcher_integration_test | Async Local Output Handler | Dispatching payload locally (Fire-and-Forget background task)
+2026-08-18 16:07:53,118 | INFO | test | cw_launcher_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:07:53,119 | INFO | test | cw_launcher_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-18 16:07:53,120 | INFO | test | cw_launcher_integration_test | Async Local Output Handler | Stopping local in-memory message dispatcher.
+2026-08-18 16:07:53,122 | INFO | test | cw_launcher_integration_test | Local Connector | Releasing local in-memory callable reference.
+2026-08-18 16:07:53,135 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Resolving global factory provider for identifier: 'AsyncRabbitMQ'...
+2026-08-18 16:07:53,136 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:07:53,137 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical publisher network connection established.
+2026-08-18 16:07:53,138 | INFO | test | cw_launcher_integration_test | Output Launcher Core | Valid RPC structures parsed. Assembling standalone AsyncRabbitMQInputHandler...
+2026-08-18 16:07:53,139 | INFO | test | cw_launcher_integration_test | Async RabbitMQ | Endpoint transport initialized for host 'localhost:5672'.
+2026-08-18 16:07:53,140 | INFO | test | cw_launcher_integration_test | Output Launcher Core | RabbitMQ physical receiver RPC network connection established.
+2026-08-18 16:07:53,144 | INFO | test | cw_launcher_integration_test | Launcher Core | Resolving global factory provider for identifier: 'AsyncHTTP'...
+2026-08-18 16:07:53,144 | INFO | test | cw_launcher_integration_test | HTTP Connector | Transport initialized with base URL: 'https://innov.cleanwattsdigital.com/api/2.0'
+2026-08-18 16:07:53,146 | INFO | test | cw_launcher_integration_test | Launcher Core | HTTP physical connector and async scheduler engine prepared.
+2026-08-18 16:07:53,147 | INFO | test | cw_launcher_integration_test | Scheduler | Async Job [http_polling_ingest] created successfully with an interval of 15s.
+2026-08-18 16:07:53,148 | INFO | test | cw_launcher_integration_test | Scheduler | Hooking tasks into the active asyncio Event Loop. Operation is non-blocking.
+2026-08-18 16:07:53,149 | INFO | test | cw_launcher_integration_test | Async HTTP Input Handler | Stopping logical consumer message ingestion processing pipelines.
+2026-08-18 16:07:53,150 | INFO | test | cw_launcher_integration_test | Scheduler | Async loop tasks detached. Shut down gracefully.
+2026-08-18 16:07:53,151 | INFO | test | cw_launcher_integration_test | RabbitMQ Output Handler | Stopping outbound message dispatcher and closing AMQP transport pipelines.
+2026-08-18 16:07:53,152 | INFO | test | cw_launcher_integration_test | Async RabbitMQ Input Handler | Stopping logical consumer message ingestion processing pipelines.
