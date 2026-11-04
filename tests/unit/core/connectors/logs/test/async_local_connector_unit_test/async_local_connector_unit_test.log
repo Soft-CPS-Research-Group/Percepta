@@ -1,3 +1,0 @@
-2026-08-17 09:38:15,916 | ERROR | test | async_local_connector_unit_test | Local Connector | Initialization error: 'target_callable' must be a valid executable function or coroutine.
-2026-08-17 09:38:15,921 | ERROR | test | async_local_connector_unit_test | Local Connector | Initialization error: 'target_callable' must be a valid executable function or coroutine.
-2026-08-17 09:38:15,927 | ERROR | test | async_local_connector_unit_test | Local Connector | Initialization error: 'target_callable' must be a valid executable function or coroutine.

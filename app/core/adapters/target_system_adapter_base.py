@@ -16,7 +16,7 @@ class MappedDecision:
         send_arguments (Dict[str, Any]): Extra keyword arguments for the 'send' method of the Output Handler, for what
             changes from one message to the next and cannot be in the configuration. It is empty if the Output Handler
             sends every message in the same way.
-            Example for an HTTP Output Handler, whose address depends on the actuator (SoftCPS):
+            Example for an HTTP Output Handler, whose address depends on the actuator:
             {"dynamic_endpoints": [{"path": "/assets/ASSET_1/actions", "method": "POST"}],
              "mode": HttpPublishMode.OVERRIDE}
     """

@@ -1,5 +1,0 @@
-2026-08-18 15:12:53,652 | WARNING | test | cw_receiver_unit_test | CWReceiver | Skipping envelope with unresolvable entity metadata: https://api.cleanwatts.com/unknown?tags=99999
-2026-08-18 15:16:50,166 | ERROR | test | cw_receiver_unit_test | CWReceiver | Initialization error: Mandatory key 'entities' is missing from environment specifications for 'R-H-01'.
-2026-08-18 15:32:58,581 | ERROR | test | cw_receiver_unit_test | CWReceiver | Initialization error: Mandatory key 'entities' is missing from environment specifications for 'R-H-01'.
-2026-08-18 15:32:58,587 | ERROR | test | cw_receiver_unit_test | CWReceiver | Initialization error: 'entities' must be a non-empty dictionary for environment 'R-H-01'.
-2026-08-18 15:32:58,649 | WARNING | test | cw_receiver_unit_test | CWReceiver | Skipping envelope with unresolvable entity metadata: https://api.cleanwatts.com/unknown?tags=99999

@@ -2,7 +2,8 @@
 import asyncio
 import signal
 import sys
-from typing import List
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 # --- Internal Framework Imports ---
 from app.core.data_issue_handling.data_issue_handling_approaches_launcher import DataIssueHandlingApproachesLauncher
@@ -14,46 +15,57 @@ from app.core.launchers.containers_launchers.inference_launcher import Inference
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.core.storages.runtime_data_storage.runtime_data_storage_launcher import RuntimeDataStorageLauncher
 from app.core.storages.schema_storage.schema_storage_launcher import SchemaStorageLauncher
+from app.core.utils.event_loop_thread import EventLoopThread
 from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.logger import LoggingUtils
+
+
+@dataclass
+class _Container:
+    """A container of one environment: its launcher and the thread where it runs."""
+    launcher: Any
+    thread: EventLoopThread
 
 
 class SingleProcessApplicationLauncher:
     """Launcher of the whole Percepta application.
 
-    This Application Launcher launches all the containers in the SAME process: they share the same Python
-    interpreter and the same event loop (see the notes at the end of this file).
+    This Application Launcher launches all the containers in the SAME process, but each container of each environment
+    runs in its OWN thread, with its own asyncio event loop (see `EventLoopThread`). For example, with the environments
+    R-H-01 and R-H-02, there are eight threads: Data Ingestion, Data Processing, Inference and Decision Dispatching of
+    R-H-01, and the same four of R-H-02. The main thread only launches and stops them, and waits for the signal to stop.
 
-    Because of that, the containers CAN call each other directly, as a normal function call, instead of sending data
-    through the network (e.g., RabbitMQ). Whether they do is decided by the 'inter_container_communication' of the
-    Percepta Instance Configuration: a link with the 'protocol_id' "AsyncLocal" is in memory, and any other protocol
-    (e.g., "AsyncRabbitMQ") goes through the network, even though the containers are in the same process.
-    For example, the Data Ingestion container has to deliver the data it collects to Data Processing. If the link is
-    "AsyncLocal", Data Processing has an Input Handler with a method that receives data. That method is returned by
-    its launcher, and is given to the Data Ingestion launcher, in the parameter 'next_container_receiver' of
-    'launch_environment', and the Data Ingestion calls it every time it has data. If the link is a network protocol,
-    Data Processing returns nothing, and the Data Ingestion launcher builds its Output Handler from the configuration.
+    Because an event loop and everything created in it belongs to its thread, nothing is shared between the threads:
+    each container of each environment has its own launcher, and so its own Input and Output Handlers, connections,
+    schedulers, Runtime Data Storage and (for Cleanwatts) its own login session. The containers talk to each other
+    only through the network, so every link of 'inter_container_communication' must use a network protocol (e.g.,
+    "AsyncRabbitMQ"). The "AsyncLocal" protocol, which calls the next container in memory, only works inside one event
+    loop, so it is refused.
 
     It launches the Data Ingestion, Data Processing, Inference and Decision Dispatching containers. It does the following:
     1. Reads the Percepta Instance Configuration.
     2. Mounts the Schema Storage configured in it and gets the environments from the storage.
-    3. Creates the Input and Output Handlers launchers and the launchers of the containers.
-    4. Launches the environments one at a time, each one with its schema and source mapping. Each environment is built
-       from the last container to the first: first Decision Dispatching, which returns the method that receives its
-       data, then Inference, which is given that method as its 'next_container_receiver' and returns its own, then Data
-       Processing, which is given the method of Inference, and finally Data Ingestion, which is given the method of
-       Data Processing.
+    3. Creates, for each environment, the launchers of the four containers and the thread of each one.
+    4. Launches the environments one at a time. In each, the containers are launched from the last to the first
+       (Decision Dispatching, Inference, Data Processing and Data Ingestion), so that the consumers of a link exist
+       before the container that sends to them starts. Each container is launched inside its own thread.
     5. Keeps the application running until it is stopped.
 
-    When another container is added, it is launched before the one that comes before it in the pipeline, and gives it
-    its receiver.
+    When another container is added, it is launched before the one that comes before it in the pipeline.
     """
 
     _LOG_PREFIX: str = "Application Launcher |"
     _DEFAULT_LOG_MAX_SIZE: int = 10 * 1024 * 1024     # Bytes. Used if 'logging.log_files.max_size' is not configured
 
+    # From the last container of the pipeline to the first. It is the launch order, and the stop order is the reverse.
+    _LAUNCH_ORDER: Tuple[str, ...] = ("decision_dispatching", "inference", "data_processing", "data_ingestion")
+
+    _LINKS: Tuple[str, ...] = (
+        "data_ingestion_to_data_processing", "data_processing_to_inference", "inference_to_decision_dispatching"
+    )
+
     def __init__(self, instance_configuration_path: str) -> None:
-        """Reads the configuration, mounts the Schema Storage and prepares the launchers.
+        """Reads the configuration, mounts the Schema Storage and prepares the launchers of every environment.
 
         The format of the configuration is validated by InstanceConfiguration (see its docstring for the whole
         structure). The parts used here are:
@@ -65,6 +77,11 @@ class SingleProcessApplicationLauncher:
                     "schema_storage_type_id": "json",           # Id of a Schema Storage type known to Percepta
                     "connection_info": {"file_path": "environment_files/environments.json"}
                 }
+            },
+            "inter_container_communication": {                  # Every link must use a network protocol
+                "data_ingestion_to_data_processing": {"connection_configuration": {"protocol_id": "AsyncRabbitMQ", ...}},
+                "data_processing_to_inference": {"connection_configuration": {"protocol_id": "AsyncRabbitMQ", ...}},
+                "inference_to_decision_dispatching": {"connection_configuration": {"protocol_id": "AsyncRabbitMQ", ...}}
             }
         }
 
@@ -74,7 +91,8 @@ class SingleProcessApplicationLauncher:
         Raises:
             FileNotFoundError: If the configuration file (or the file of a JSON Schema Storage) does not exist.
             ValueError: If the configuration is not valid JSON or is not well formed (see InstanceConfiguration),
-                or the Schema Storage cannot be built or has no environments.
+                a link between containers uses "AsyncLocal", or the Schema Storage cannot be built or has no
+                environments.
         """
         # Reads the configuration and validates its general format. The specific format of each 'connection_info'
         # is not validated here: it is validated by who uses it (Input Handlers, Output Handlers and Storages).
@@ -82,6 +100,17 @@ class SingleProcessApplicationLauncher:
 
         self._logging_configuration = self._resolve_logging_configuration()
         self._logger = LoggingUtils("application_launcher", self._logging_configuration)
+
+        # Guard Clause 1: Checks that no link between containers is in memory. The containers run in different threads
+        # (each with its own event loop), and a call from one loop to an object of another is not safe.
+        for link in self._LINKS:
+            link_configuration = getattr(self._instance_configuration, link)
+            if link_configuration is not None and link_configuration.get("protocol_id") == "AsyncLocal":
+                raise ValueError(
+                    f"{self._LOG_PREFIX} Initialization error: 'inter_container_communication.{link}' uses "
+                    f"'AsyncLocal', which only works inside one event loop. Each container runs in its own thread, "
+                    f"so use a network protocol (e.g., 'AsyncRabbitMQ')."
+                )
 
         # The storage is mounted here, and the environments are read from it
         schema_storage_configuration = self._instance_configuration.schema_storage
@@ -92,45 +121,67 @@ class SingleProcessApplicationLauncher:
         )
         self._environments = schema_storage.get_environments()
 
+        # Guard Clause 2: Checks that there is something to launch.
         if not self._environments:
             raise ValueError(f"{self._LOG_PREFIX} Initialization error: the Schema Storage has no environments.")
 
-        self._data_ingestion_launcher = DataIngestionLauncher(
-            instance_configuration=self._instance_configuration,
-            input_launcher=InputHandlersLauncher(self._logger),
-            output_launcher=OutputHandlersLauncher(self._logger),
-            logger=self._logger
-        )
-
-        self._data_processing_launcher = DataProcessingLauncher(
-            instance_configuration=self._instance_configuration,
-            input_launcher=InputHandlersLauncher(self._logger),
-            output_launcher=OutputHandlersLauncher(self._logger),
-            approaches_launcher=DataIssueHandlingApproachesLauncher(self._logger),
-            logger=self._logger
-        )
-
-        self._decision_dispatching_launcher = DecisionDispatchingLauncher(
-            instance_configuration=self._instance_configuration,
-            input_launcher=InputHandlersLauncher(self._logger),
-            output_launcher=OutputHandlersLauncher(self._logger),
-            logger=self._logger
-        )
-
-        self._inference_launcher = InferenceLauncher(
-            instance_configuration=self._instance_configuration,
-            input_launcher=InputHandlersLauncher(self._logger),
-            output_launcher=OutputHandlersLauncher(self._logger),
-            runtime_data_storage_launcher=RuntimeDataStorageLauncher(self._logger),
-            logger=self._logger
-        )
+        # Each container of each environment has its own launcher and its own thread (not started yet). The launchers
+        # are created here, and not at launch, so that a wrong configuration is found when the application starts.
+        self._containers: Dict[str, Dict[str, _Container]] = {
+            name: self._create_containers(name) for name in self._environments
+        }
 
         self._launched_environments: List[str] = []
+
+    def _create_containers(self, environment_name: str) -> Dict[str, _Container]:
+        """Creates the launchers of the four containers of an environment and the thread of each one.
+
+        Args:
+            environment_name (str): Name of the environment (used in the names of the threads).
+
+        Returns:
+            Dict[str, _Container]: The containers of the environment by name ("data_ingestion", "data_processing",
+                "inference" and "decision_dispatching").
+        """
+        launchers = {
+            "data_ingestion": DataIngestionLauncher(
+                instance_configuration=self._instance_configuration,
+                input_launcher=InputHandlersLauncher(self._logger),
+                output_launcher=OutputHandlersLauncher(self._logger),
+                logger=self._logger
+            ),
+            "data_processing": DataProcessingLauncher(
+                instance_configuration=self._instance_configuration,
+                input_launcher=InputHandlersLauncher(self._logger),
+                output_launcher=OutputHandlersLauncher(self._logger),
+                approaches_launcher=DataIssueHandlingApproachesLauncher(self._logger),
+                logger=self._logger
+            ),
+            "decision_dispatching": DecisionDispatchingLauncher(
+                instance_configuration=self._instance_configuration,
+                input_launcher=InputHandlersLauncher(self._logger),
+                output_launcher=OutputHandlersLauncher(self._logger),
+                logger=self._logger
+            ),
+            "inference": InferenceLauncher(
+                instance_configuration=self._instance_configuration,
+                input_launcher=InputHandlersLauncher(self._logger),
+                output_launcher=OutputHandlersLauncher(self._logger),
+                runtime_data_storage_launcher=RuntimeDataStorageLauncher(self._logger),
+                logger=self._logger
+            )
+        }
+        return {
+            container_name: _Container(launcher, EventLoopThread(f"{container_name}_{environment_name}"))
+            for container_name, launcher in launchers.items()
+        }
 
     async def launch(self) -> None:
         """Launches all the environments of the Schema Storage, one at a time.
 
-        If an environment fails, everything already started is stopped and the error is raised again.
+        Each container is launched inside its own thread, so that everything it creates (connections, tasks,
+        schedulers) belongs to the event loop of that thread. If an environment fails, everything already started is
+        stopped and the error is raised again.
 
         Raises:
             ValueError: If an environment has no Telemetry Systems.
@@ -143,69 +194,30 @@ class SingleProcessApplicationLauncher:
 
         try:
             for name in names:
-                # Each environment has its own logger, so every log line shows which environment it belongs to
-                environment_logger = LoggingUtils(
-                    component_name="data_ingestion",
-                    configurations=self._logging_configuration,
-                    environment=name
-                )
-                data_processing_logger = LoggingUtils(
-                    component_name="data_processing",
-                    configurations=self._logging_configuration,
-                    environment=name
-                )
+                # The containers are launched from the last to the first. The links are over the network, so no
+                # container needs a method of the next one: it is enough that the consumers of a link exist (and have
+                # their queue) before the container that sends to them starts.
+                for container_name in self._LAUNCH_ORDER:
+                    container = self._containers[name][container_name]
 
-                decision_dispatching_logger = LoggingUtils(
-                    component_name="decision_dispatching",
-                    configurations=self._logging_configuration,
-                    environment=name
-                )
-                inference_logger = LoggingUtils(
-                    component_name="inference",
-                    configurations=self._logging_configuration,
-                    environment=name
-                )
+                    # Each container has its own logger, so every log line shows which environment it belongs to
+                    container_logger = LoggingUtils(
+                        component_name=container_name,
+                        configurations=self._logging_configuration,
+                        environment=name
+                    )
 
-                # The containers are launched from the last to the first, because each one needs the method that
-                # receives the data of the next one. Decision Dispatching is launched first, and it returns the method
-                # that receives its data. Inference is then given that method, and returns its own, which is given to
-                # Data Processing, and so on up to Data Ingestion.
-                _, decision_dispatching_receiver = await self._decision_dispatching_launcher.launch_environment(
-                    environment_name=name,
-                    environment=self._environments[name],
-                    logger=decision_dispatching_logger
-                )
+                    container.thread.start()
 
-                _, inference_receiver = await self._inference_launcher.launch_environment(
-                    environment_name=name,
-                    environment=self._environments[name],
-                    next_container_receiver=decision_dispatching_receiver,
-                    logger=inference_logger
-                )
-
-                _, data_processing_receiver = await self._data_processing_launcher.launch_environment(
-                    environment_name=name,
-                    environment=self._environments[name],
-                    next_container_receiver=inference_receiver,
-                    logger=data_processing_logger
-                )
-
-                # The 'await' runs 'launch_environment' now and waits until it returns. The next line
-                # only run after that. It does NOT schedule the call to run later; that is what
-                # 'asyncio.create_task' would do.
-                # What keeps running after the call returns is not the 'await', but what 'launch_environment' started
-                # inside it: the Input Handlers register their own asyncio tasks or consumers (e.g., the consumer of a
-                # RabbitMQ queue, the periodic requests), and those stay alive in the event loop. So, when the call
-                # returns, the environment is launched (connections open, Input Handlers listening) and it keeps
-                # receiving data in the background while the loop moves on to the next environment.
-                # The environments are launched one after the other (not at the same time), so that, if one fails,
-                # it is clear which one it was and what had already been started.
-                await self._data_ingestion_launcher.launch_environment(
-                    environment_name=name,
-                    environment=self._environments[name],
-                    next_container_receiver=data_processing_receiver,
-                    logger=environment_logger
-                )
+                    # The 'await' runs 'launch_environment' in the thread of the container and waits until it returns.
+                    # What keeps running after it returns is what it started inside: the Input Handlers register their
+                    # own asyncio tasks or consumers (e.g., the consumer of a RabbitMQ queue, the periodic requests),
+                    # and those stay alive in the event loop of that thread.
+                    await container.thread.run(container.launcher.launch_environment(
+                        environment_name=name,
+                        environment=self._environments[name],
+                        logger=container_logger
+                    ))
 
                 # Remembers what was launched (it is cleared when the application stops)
                 self._launched_environments.append(name)
@@ -230,11 +242,28 @@ class SingleProcessApplicationLauncher:
     async def stop(self) -> None:
         """Stops everything that was started, from the first container to the last (so that nothing is sent to a
         container that has already stopped): Data Ingestion, Data Processing, Inference and then Decision
-        Dispatching."""
-        await self._data_ingestion_launcher.stop()
-        await self._data_processing_launcher.stop()
-        await self._inference_launcher.stop()
-        await self._decision_dispatching_launcher.stop()
+        Dispatching. Each container is stopped inside its own thread, and the thread is closed at the end."""
+        for container_name in reversed(self._LAUNCH_ORDER):
+            for name, containers in self._containers.items():
+                container = containers[container_name]
+
+                # Guard Clause: Only the containers that were started have something to stop.
+                if not container.thread.is_running:
+                    continue
+
+                try:
+                    await container.thread.run(container.launcher.stop())
+                except Exception as err:
+                    # A failure in one container must not keep the others from stopping
+                    self._logger.error(
+                        f"{self._LOG_PREFIX} Failed to stop '{container_name}' of environment '{name}': "
+                        f"{type(err).__name__}: {err}"
+                    )
+
+        for containers in self._containers.values():
+            for container in containers.values():
+                await container.thread.close()
+
         self._launched_environments.clear()
         self._logger.info(f"{self._LOG_PREFIX} Application stopped.")
 
