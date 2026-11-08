@@ -275,7 +275,7 @@ class AsyncRabbitMQInputHandler(InputHandlerBase):
         Graceful shutdown pipeline hook. Halts incoming consumer processing loops
         and safely closes underlying RabbitMQ channels and physical connections.
         """
-        self._logger.info(f"{self._LOG_PREFIX} Stopping logical consumer message ingestion processing pipelines.")
+        self._logger.debug(f"{self._LOG_PREFIX} Stopping logical consumer message ingestion processing pipelines.")
 
         # 1. Signal background consumption loops to reject/stop processing new frames
         self._stop_event.set()

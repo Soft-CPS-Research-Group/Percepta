@@ -20,6 +20,12 @@ from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.logger import LoggingUtils
 
 
+class ApplicationLaunchError(Exception):
+    """Raised when the environments could not be launched. The cause was already written in the log (with the
+    environments that were launched, the one that failed and the ones that were not tried) and everything that had
+    been started was stopped, so the program only needs to end with an error code, without showing a traceback."""
+
+
 @dataclass
 class _Container:
     """A container of one environment: its launcher and the thread where it runs."""
@@ -71,7 +77,7 @@ class SingleProcessApplicationLauncher:
         structure). The parts used here are:
         -----------------------------------------------------------------------------------------------------
         {
-            "logging": {"log_files": {"max_size": 1048576}},    # (dict, optional) Settings of the logger
+            "logging": {"console_level": "INFO", "log_files": {"max_size": 1048576}},    # (dict, optional) Settings of the logger
             "schema_storage": {
                 "connection_configuration": {
                     "schema_storage_type_id": "json",           # Id of a Schema Storage type known to Percepta
@@ -112,6 +118,15 @@ class SingleProcessApplicationLauncher:
                     f"so use a network protocol (e.g., 'AsyncRabbitMQ')."
                 )
 
+        # Each type of container has its own logger, with the environment "general" (it is not tied to any environment).
+        # It is used by the launcher of the container and by what the launcher builds outside of an environment (e.g.,
+        # the session of a Telemetry System, which is shared by all the environments). The logs of an environment use
+        # the logger of that environment and container, created when the environment is launched.
+        self._container_loggers: Dict[str, LoggingUtils] = {
+            container_name: LoggingUtils(container_name, self._logging_configuration)
+            for container_name in self._LAUNCH_ORDER
+        }
+
         # The storage is mounted here, and the environments are read from it
         schema_storage_configuration = self._instance_configuration.schema_storage
         schema_storage = SchemaStorageLauncher(self._logger).build_schema_storage(
@@ -146,29 +161,29 @@ class SingleProcessApplicationLauncher:
         launchers = {
             "data_ingestion": DataIngestionLauncher(
                 instance_configuration=self._instance_configuration,
-                input_launcher=InputHandlersLauncher(self._logger),
-                output_launcher=OutputHandlersLauncher(self._logger),
-                logger=self._logger
+                input_launcher=InputHandlersLauncher(self._container_loggers["data_ingestion"]),
+                output_launcher=OutputHandlersLauncher(self._container_loggers["data_ingestion"]),
+                logger=self._container_loggers["data_ingestion"]
             ),
             "data_processing": DataProcessingLauncher(
                 instance_configuration=self._instance_configuration,
-                input_launcher=InputHandlersLauncher(self._logger),
-                output_launcher=OutputHandlersLauncher(self._logger),
-                approaches_launcher=DataIssueHandlingApproachesLauncher(self._logger),
-                logger=self._logger
+                input_launcher=InputHandlersLauncher(self._container_loggers["data_processing"]),
+                output_launcher=OutputHandlersLauncher(self._container_loggers["data_processing"]),
+                approaches_launcher=DataIssueHandlingApproachesLauncher(self._container_loggers["data_processing"]),
+                logger=self._container_loggers["data_processing"]
             ),
             "decision_dispatching": DecisionDispatchingLauncher(
                 instance_configuration=self._instance_configuration,
-                input_launcher=InputHandlersLauncher(self._logger),
-                output_launcher=OutputHandlersLauncher(self._logger),
-                logger=self._logger
+                input_launcher=InputHandlersLauncher(self._container_loggers["decision_dispatching"]),
+                output_launcher=OutputHandlersLauncher(self._container_loggers["decision_dispatching"]),
+                logger=self._container_loggers["decision_dispatching"]
             ),
             "inference": InferenceLauncher(
                 instance_configuration=self._instance_configuration,
-                input_launcher=InputHandlersLauncher(self._logger),
-                output_launcher=OutputHandlersLauncher(self._logger),
-                runtime_data_storage_launcher=RuntimeDataStorageLauncher(self._logger),
-                logger=self._logger
+                input_launcher=InputHandlersLauncher(self._container_loggers["inference"]),
+                output_launcher=OutputHandlersLauncher(self._container_loggers["inference"]),
+                runtime_data_storage_launcher=RuntimeDataStorageLauncher(self._container_loggers["inference"]),
+                logger=self._container_loggers["inference"]
             )
         }
         return {
@@ -237,7 +252,7 @@ class SingleProcessApplicationLauncher:
                 f"Stopping everything that was started."
             )
             await self.stop()
-            raise
+            raise ApplicationLaunchError(str(err)) from err
 
     async def stop(self) -> None:
         """Stops everything that was started, from the first container to the last (so that nothing is sent to a
@@ -383,6 +398,11 @@ if __name__ == "__main__":
             instance_configuration_path="configs/percepta_instance_configuration.json"
         )
         asyncio.run(application_launcher.run())
+    except ApplicationLaunchError:
+        # The environments could not be launched. The error was already written in the log by 'launch()', and
+        # everything that had started was stopped. A traceback would only show where in the code the failure was
+        # detected, so the program just ends with exit code 1 (any code other than 0 means "failed").
+        sys.exit(1)
     except KeyboardInterrupt:
         # Nothing to do: everything was already stopped in 'ApplicationLauncher.run()'. Catching it only avoids
         # showing a traceback, as if the application had failed, when it was stopped on purpose.

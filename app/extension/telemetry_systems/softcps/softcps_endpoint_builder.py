@@ -161,7 +161,7 @@ class SoftCPSEndpointBuilder(EndpointBuilderBase):
             if entity_endpoints:
                 grouped_endpoints[entity_id] = entity_endpoints
 
-        self._logger.info(
+        self._logger.debug(
             f"{self._LOG_PREFIX} Pre-calculated {total_endpoints} static endpoints across {len(grouped_endpoints)} entities."
         )
 

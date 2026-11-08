@@ -6,13 +6,8 @@ from typing import Any, Dict, List, Optional, Union
 # --- Internal Framework Imports ---
 from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
+from app.core.utils.time_utils import duration_to_seconds
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
-
-# OMIE publishes the prices in EUR/MWh. They are stored in EUR/kWh, so they are divided by 1000.
-MWH_TO_KWH_DIVISOR = 1000
-
-# Decimal places kept after the conversion. 6 places keep every cent of EUR/MWh (0.001 EUR/MWh = 0.000001 EUR/kWh).
-PRICE_DECIMAL_PLACES = 6
 
 # Adaptation strategies registered by entity type id.
 _ENTITY_TYPES_STRATEGIES = {}
@@ -89,7 +84,7 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
         {
             # Parameter id -> series of the payload that holds its prices ('pt_spot_price' or 'es_spot_price').
             # There is no 'fetch_key': the prices are not requested, they are read from the shared service.
-            "em01_price": {"match_key": "pt_spot_price"}
+            "em01_price": {"match_key": "pt_spot_price", "source_measurement_unit": "€/MWh"}
         }
 
         Args:
@@ -135,6 +130,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # Series of the payload that holds the prices of each parameter
         # Expected `_series_keys` Data Structure:
@@ -162,8 +159,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                 match_key = str(rule.get("match_key", "")).strip() if isinstance(rule, dict) else ""
                 if not match_key:
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' "
-                        f"has no 'match_key' in 'source_mapping_rules'."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"it has no 'match_key' in 'source_mapping_rules'."
                     )
                     continue
 
@@ -203,8 +200,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                     "em01_price": {
                         "parameter_type_id": "energy_price",
                         "values": [
-                            {"timestamp": "2026-10-15 13:30:00 +0000", "value": 0.084},   # EUR/kWh
-                            {"timestamp": "2026-10-15 13:45:00 +0000", "value": 0.0832}
+                            {"timestamp": "2026-10-15 13:45:00 +0000", "value": 0.084},   # EUR/kWh
+                            {"timestamp": "2026-10-15 14:00:00 +0000", "value": 0.0832}
                         ]
                     }
                 },
@@ -264,6 +261,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
             # 5. Validate the parameters against the schema, and create the message
             # Example: a parameter whose values have the wrong type is dropped by 'parameters_validation'
             entity_parameters = entity_data.get("parameters", {})
+            # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+            parameters = self.convert_to_schema_units(parameters)
             parameters = self.parameters_validation(
                 parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
             )
@@ -338,9 +337,16 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
     def _read_series(self, entity_id: str, payload: dict) -> Dict[str, Dict[str, Any]]:
         """Reads, for each parameter of the entity, the series of prices under the key of its rule.
 
-        The prices are converted from EUR/MWh to EUR/kWh and sorted by time. A point whose time is not a
+        OMIE gives each price with the START of the block of time it is valid for, but Percepta gives each reading the
+        END of the interval it stands for. So the timestamp of each price is the start of its block plus the length of
+        the block, which is the 'periodicity' of the parameter in the environment. Example: with a periodicity of 15
+        minutes, the price of the block that starts at 13:30 (valid from 13:30 to 13:45) gets the timestamp 13:45.
+
+        The prices stay in EUR/MWh, as OMIE gives them (the conversion to the unit of the schema is done afterwards,
+        in `adapt`), and are sorted by time. A point whose time is not a
         valid date, or whose price is not a number, is skipped (and counted in a single warning for the
-        parameter). A parameter whose series is missing, empty or has no valid point is not returned.
+        parameter). A parameter whose series is missing, empty or has no valid point is not returned, and neither is
+        one with no valid 'periodicity' in the environment (the length of the block would be unknown).
         When the series named by the rule is missing or empty, a warning is logged once for that parameter
         (and again only if the series comes back and fails later), because the cause is usually a wrong 'match_key'.
 
@@ -348,14 +354,14 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
         ---------------------------
         {"pt_spot_price": {"2026-10-15T13:45:00+00:00": 83.2, "2026-10-15T13:30:00+00:00": 84.0}}
 
-        Expected Output:
-        ----------------
+        Expected Output (the parameter has a periodicity of 15 minutes):
+        ----------------------------------------------------------------
         {
             "em01_price": {
                 "parameter_type_id": "energy_price",
                 "values": [
-                    {"timestamp": "2026-10-15 13:30:00 +0000", "value": 0.084},
-                    {"timestamp": "2026-10-15 13:45:00 +0000", "value": 0.0832}
+                    {"timestamp": "2026-10-15 13:45:00 +0000", "value": 84.0},     # EUR/MWh
+                    {"timestamp": "2026-10-15 14:00:00 +0000", "value": 83.2}
                 ]
             }
         }
@@ -385,8 +391,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                 if param_id not in self._missing_series_warned:
                     self._missing_series_warned.add(param_id)
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} No prices found for parameter '{param_id}' of entity '{entity_id}': "
-                        f"the payload has no usable series '{series_key}'. Series received: {sorted(payload)}. "
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"no prices found, the payload has no usable series '{series_key}'. Series received: {sorted(payload)}. "
                         f"Check the 'match_key' of this parameter in the source mapping."
                     )
                 continue
@@ -401,13 +407,27 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
             parameter_type_id = param_spec.get("parameter_type_id")
             if not parameter_type_id:
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' has no "
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no "
                     f"'parameter_type_id' configured. Skipping its prices."
                 )
                 continue
 
-            # Valid prices as (block start, EUR/kWh) and how many invalid ones were skipped
-            # Example: points = [(datetime(2026, 10, 15, 13, 30, tzinfo=UTC), 0.084)], skipped = 0
+            # --- Guard Clause: the parameter must have a valid periodicity ---
+            # The length of the block is needed to turn its start into its end (see the docstring).
+            try:
+                block_seconds = duration_to_seconds(
+                    (param_spec.get("temporal_behavior") or {}).get("periodicity"), "periodicity"
+                )
+            except ValueError as err:
+                self._logger.warning(
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no valid periodicity in "
+                    f"the environment ({err}). Skipping its prices."
+                )
+                continue
+            block_length = datetime.timedelta(seconds=block_seconds)
+
+            # Valid prices as (block start, EUR/MWh) and how many invalid ones were skipped
+            # Example: points = [(datetime(2026, 10, 15, 13, 30, tzinfo=UTC), 84.0)], skipped = 0
             points = []
             skipped = 0
 
@@ -419,13 +439,14 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                     skipped += 1
                     continue
 
-                # Convert EUR/MWh to EUR/kWh. Example: 84.0 / 1000 = 0.084
-                points.append((block_start, round(raw_price / MWH_TO_KWH_DIVISOR, PRICE_DECIMAL_PLACES)))
+                # The price stays in the unit of OMIE (EUR/MWh). The conversion to the unit of the schema (EUR/kWh) is
+                # done afterwards for all the adapters, with the 'source_measurement_unit' of the source mapping.
+                points.append((block_start, raw_price))
 
             if skipped:
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Skipped {skipped} invalid price(s) of parameter '{param_id}' "
-                    f"of entity '{entity_id}'."
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                    f"skipped {skipped} invalid price(s)."
                 )
 
             if not points:
@@ -438,9 +459,13 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
             parameters[param_id] = {
                 "parameter_type_id": parameter_type_id,
                 "values": [
-                    # Timestamp in the adapter timezone. Example (timezone "Europe/Lisbon", summer time):
-                    # 2026-10-15T13:30:00+00:00 -> "2026-10-15 14:30:00 +0100"
-                    {"timestamp": block_start.astimezone(self._tz).strftime("%Y-%m-%d %H:%M:%S %z"), "value": price}
+                    # The END of the block, in the adapter timezone. Example (periodicity of 15 minutes, timezone
+                    # "Europe/Lisbon", summer time): the block that starts at 2026-10-15T13:30:00+00:00 ends at
+                    # 13:45 UTC, which is "2026-10-15 14:45:00 +0100"
+                    {
+                        "timestamp": (block_start + block_length).astimezone(self._tz).strftime("%Y-%m-%d %H:%M:%S %z"),
+                        "value": price
+                    }
                     for block_start, price in points
                 ]
             }
@@ -455,12 +480,12 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
         ---------------------------
         {"pt_spot_price": {"2026-10-15T13:30:00+00:00": 84.0}}
 
-        Expected Output:
-        ----------------
+        Expected Output (the parameter has a periodicity of 15 minutes, so the block that starts at 13:30 ends at 13:45):
+        -------------------------------------------------------------------------------------------------------------
         {
             "em01_price": {
                 "parameter_type_id": "energy_price",
-                "values": [{"timestamp": "2026-10-15 13:30:00 +0000", "value": 0.084}]
+                "values": [{"timestamp": "2026-10-15 13:45:00 +0000", "value": 84.0}]      # EUR/MWh
             }
         }
 

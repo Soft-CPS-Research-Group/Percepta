@@ -33,8 +33,9 @@ class TargetSystemAdapterBase(ABC):
 
     The decisions that the Adapter receives were already resolved: each one only has the actuators that belong to this
     Target System, and each actuator carries what the 'actuator_mapping' of the Target System says about it: its
-    'destination' (e.g., the id of a tag or of an asset) and, if the mapping has them, the 'measurement_unit' and the
-    'voltage' of the real device (e.g., an EV charger that is controlled in amperes). The decisions are always in kW.
+    'destination' (e.g., the id of a tag or of an asset), the 'destination_measurement_unit' (mandatory) and, if the
+    mapping has it, the 'voltage' of the real device (e.g., an EV charger that is controlled in amperes). The
+    decisions are always in kW, and the Adapter converts them to the unit of the device.
 
     One instance of the Adapter is created for each Target System of each environment, and the same instance is used in
     every period. Nothing is shared between environments.
@@ -44,6 +45,10 @@ class TargetSystemAdapterBase(ABC):
     """
 
     _LOG_PREFIX: str = "Target System Adapter |"
+
+    # The unit of the power of the decisions. Every Adapter converts it to the 'destination_measurement_unit' of the
+    # actuator (see `app.core.utils.unit_utils`).
+    DECISIONS_UNIT: str = "kW"
 
     def __init__(
         self,
@@ -118,7 +123,7 @@ class TargetSystemAdapterBase(ABC):
                         "actuator_type_id": "power",
                         "value": -2.5,                      # kW
                         "destination": "35447",             # What the 'actuator_mapping' says about the actuator
-                        "measurement_unit": "A",            # (only if the mapping has it) Unit of the real device
+                        "destination_measurement_unit": "A",   # Unit of the real device (mandatory)
                         "voltage": 230                      # (only if the mapping has it) Volts
                     }
                 },

@@ -62,6 +62,25 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
        for a cumulative parameter: its value is multiplied by (time of the slot inside the period) / (periodicity). A
        parameter that is not cumulative is not trimmed, because its values are measurements at one moment.
 
+    Keeping the readings after the period (optional, 'keep_future_readings'):
+    Some parameters are a series that goes forward in time (e.g., the prices of the day ahead, or a forecast), and the
+    whole series is needed, not only what touches the period. A parameter with "keep_future_readings": true in its
+    'temporal_behavior' is harmonised in a different way:
+    - The readings that belong to slots AFTER the period are kept (the slots that touch the period are kept as before).
+      They are kept as they arrived, with the same timestamp and value. No reading of the parameter is trimmed (step
+      3), not even a cumulative one and not even in the slots that touch the period.
+    - Before the readings are removed, the slots with no reading between the period and the last reading of the series
+      are filled, with the 'fill_operation' of the parameter, as in step 2. So the series has no holes.
+    - The readings that belong to slots BEFORE the period are still removed (they are only used as neighbours).
+    - The slots after the last reading of the series are not created: there is no reading after them to work out
+      their value.
+    The parameter is false by default, and then the approach works as described in the rest of this docstring.
+    Example: periodicity of 15 minutes, "linear", keep_future_readings true. The period is the time after 10:00:00 up
+    to 10:00:15. The readings are 10:00 (0.10), 10:15 (0.12), 10:45 (0.18) and 11:00 (0.20), and the one of 10:30 is
+    missing.
+    Output: 10:00 is in the slot that ends at 10:00, which is before the period, so it is removed. The others are kept,
+    and the missing one is created: 10:15 (0.12), 10:30 (0.15), 10:45 (0.18) and 11:00 (0.20).
+
     Example 1: the parameter reports more often than the frequency, and not at round times.
     Frequency 10 minutes, periodicity 3 minutes, cumulative, "forward_fill". The period is the time after 10:00 up to
     10:10. The parameter reported at 10:02, 10:05 and 10:08. The reading of 10:11 does not exist yet, because it will
@@ -85,16 +104,18 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
     Example 2: the parameter reports less often than the frequency.
     Frequency 15 seconds, periodicity 5 minutes, cumulative, "forward_fill". The period is the time after 10:05:30 up
-    to 10:05:45. No reading arrived in it. But the approach remembers the most recent reading of each parameter (see
-    'What the approach remembers' below): 400.0 at 10:05:00. This reading is added to the readings that arrived, and
-    it is the anchor.
+    to 10:05:45. The only reading is the one of 10:05:00, which is the last one the parameter reported, so it is the
+    anchor.
     - Step 1: the slots are 10:00-10:05 and 10:05-10:10. Only the second one touches the period, so only it will be
-      in the result. The remembered reading is in the first slot, so it is not in the result, but it is still used in
-      step 2 to work out the value of the second slot.
+      in the result. The reading is in the first slot, so it is not in the result, but it is still used in step 2 to
+      work out the value of the second slot.
     - Step 2: the slot 10:05-10:10 has no reading, so one is created at 10:10, with the value 400.0.
     - Step 3: the slot has 15 seconds inside the period, out of 300 seconds. So the value is 400 x 15 / 300 = 20.0.
-    Input:  "values": []
+    Input:  "values": [{"timestamp": "2026-01-01 10:05:00 +0000", "value": 400.0}]
     Output: "values": [{"timestamp": "2026-01-01 10:10:00 +0000", "value": 20.0}]
+    In a period in which the parameter sends nothing, the reading above is not in the input. It is the Missing Data
+    approach (which runs before this one) that gives the readings that it remembers to the entity. This approach
+    does not remember anything between periods.
 
     Which readings are kept:
     - A reading does not need to arrive exactly at the end of a slot. It belongs to the slot whose time contains its
@@ -108,15 +129,14 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
     - If two readings belong to the same slot, only the one with the later timestamp is kept.
     - A reading that belongs to a slot that does not touch the period is removed. It is only used to work out the
       value of a missing reading. Example: a reading at 09:55 that arrived late belongs to an earlier period, which
-      was already processed.
+      was already processed. (The exception is a parameter with "keep_future_readings": the readings of the slots after
+      the period are kept.)
     - A reading with no timestamp, a timestamp in the wrong format, or a value that is not a number is removed,
       because it cannot be placed in time or used in a calculation.
 
     What the approach remembers:
-    The most recent reading of each parameter (the one with the latest timestamp), as it arrived and before any
-    trim. It is used in the next periods to place the slots and to fill them, even when the parameter does not
-    report anything in the period (like in Example 2). It is kept in memory only, so after a restart the first period
-    has nothing remembered.
+    Nothing. It only works with the readings that it receives in the period. The memory of the readings of the past
+    is in the Missing Data approach, which runs before this one.
 
     Assumption and known limit:
     The approach assumes that the timestamps of the readings follow the periodicity of the parameter (e.g., a
@@ -136,8 +156,9 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
     What the approach does NOT do:
     - It does not create a parameter that is not in the entity. It only works on the parameters that arrived.
-    - If a parameter has no reading at all (none arrived, and none is remembered), the slots cannot be placed and
-      there is no value to fill with, so nothing is created. The only exception is "zero_fill": zero does not need a
+    - If a parameter has no reading at all ("values": None, or an empty list), the slots cannot be placed and there is
+      no value to fill with, so nothing is created (the rest of Percepta takes it as a null). A parameter with
+      "values": None is left as it is. The only exception is an EMPTY list with "zero_fill": zero does not need a
       reading, so the slots end at the end of the period and are filled with zero.
     - A parameter without a periodicity in the schema is not changed.
 
@@ -166,8 +187,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
         Raises:
             ValueError: If the environment has no entities, or the 'temporal_behavior' of a parameter is not valid
-                (a periodicity that cannot be read, a 'cumulative' that is not true or false, or a 'fill_operation'
-                that is not one of the known ones).
+                (a periodicity that cannot be read, a 'cumulative' or 'keep_future_readings' that is not true or
+                false, or a 'fill_operation' that is not one of the known ones).
         """
         super().__init__(environment, frequency_seconds, logger)
 
@@ -178,7 +199,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
         # The settings of each parameter that can be harmonised, by entity and by parameter.
         # Example: {"id_01": {"id_param_01": {
-        #     "periodicity_seconds": 300, "cumulative": False, "fill_operation": "linear"}}}
+        #     "periodicity_seconds": 300, "cumulative": False, "fill_operation": "linear",
+        #     "keep_future_readings": False}}}
         self._parameters: Dict[str, Dict[str, Dict[str, Any]]] = {}
         for entity_id, entity in entities.items():
             parameters = entity.get("parameters") if isinstance(entity, dict) else None
@@ -189,12 +211,6 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
                 settings = self._read_parameter(entity_id, parameter_id, parameter)
                 if settings is not None:
                     self._parameters.setdefault(entity_id, {})[parameter_id] = settings
-
-        # The most recent reading of each parameter, as (time in seconds since the epoch, {"timestamp", "value"}).
-        # It is the only thing that the approach keeps between periods (see the class docstring).
-        # Example: {("id_01", "id_param_01"):
-        #     (1767262500.0, {"timestamp": "2026-01-01 10:05:00 +0000", "value": 400.0})}
-        self._last_readings: Dict[Tuple[str, str], Tuple[float, Dict[str, Any]]] = {}
 
     def handle(self, data: List[Dict[str, Any]], period_end: datetime) -> List[Dict[str, Any]]:
         """Harmonises the readings of each parameter of each entity.
@@ -242,8 +258,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
                 # A parameter that cannot be harmonised (it has no periodicity in the schema), or that arrived with no
                 # list 'values' at all, is left as it is.
-                # Note that a parameter with an EMPTY list 'values' is not skipped: the readings are created if there
-                # is a remembered reading to use, or if the 'fill_operation' is "zero_fill".
+                # Note that a parameter with an EMPTY list 'values' is not skipped: it stays empty (no reading to work
+                # from), unless its 'fill_operation' is "zero_fill", which creates the readings with zero.
                 if settings is None or parameter.get("values") is None:
                     continue
 
@@ -262,13 +278,14 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
                 "cumulative": True,
                 "periodicity": {"value": 5, "unit": "min"},
                 "aggregation_operation": "sum",
-                "fill_operation": "linear"
+                "fill_operation": "linear",
+                "keep_future_readings": False         # Optional (default False). True keeps the readings after the period
             }
         }
 
         Expected Output Structure:
         --------------------------
-        {"periodicity_seconds": 300, "cumulative": True, "fill_operation": "linear"}
+        {"periodicity_seconds": 300, "cumulative": True, "fill_operation": "linear", "keep_future_readings": False}
 
         Args:
             entity_id (str): Id of the entity. It is only used in the error messages.
@@ -280,8 +297,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
                 cannot be harmonised).
 
         Raises:
-            ValueError: If the periodicity cannot be read, 'cumulative' is not true or false, or 'fill_operation' is
-                not a known one.
+            ValueError: If the periodicity cannot be read, 'cumulative' or 'keep_future_readings' is not true or
+                false, or 'fill_operation' is not a known one.
         """
         temporal_behavior = parameter.get("temporal_behavior") if isinstance(parameter, dict) else None
         periodicity = temporal_behavior.get("periodicity") if isinstance(temporal_behavior, dict) else None
@@ -290,7 +307,10 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         if periodicity is None:
             return None
 
-        where = f"parameter '{parameter_id}' of entity '{entity_id}'"
+        where = (
+            f"parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+            f"{parameter.get('parameter_type_id') if isinstance(parameter, dict) else None})"
+        )
         try:
             periodicity_seconds = duration_to_seconds(periodicity, "periodicity")
         except ValueError as err:
@@ -310,10 +330,18 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
                 f"is not a known one. Known: {list(self._FILL_OPERATIONS)}."
             )
 
+        # --- Guard Clause 5: 'keep_future_readings' is optional (the default is False), but it must be true or false ---
+        keep_future_readings = temporal_behavior.get("keep_future_readings", False)
+        if not isinstance(keep_future_readings, bool):
+            raise ValueError(
+                f"{self._LOG_PREFIX} Initialization error: {where}: 'keep_future_readings' must be true or false."
+            )
+
         return {
             "periodicity_seconds": periodicity_seconds,
             "cumulative": cumulative,
-            "fill_operation": fill_operation
+            "fill_operation": fill_operation,
+            "keep_future_readings": keep_future_readings
         }
 
     def _harmonise(
@@ -324,9 +352,10 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
 
         It changes 'parameter["values"]'. The class docstring explains the words used here (period, periodicity, slot,
         anchor, ...) and shows examples. The method works in six steps, each one explained in the code:
-        1. Collects the readings that can be used: the ones that arrived, plus the remembered one;
-        2. Finds the anchor (the most recent reading) and remembers it;
-        3. Works out which slots touch the period;
+        1. Collects the readings that can be used (the ones that arrived and can be placed in time and used in a calculation);
+        2. Finds the anchor (the most recent reading);
+        3. Works out which slots touch the period (and, if the parameter keeps the readings after the period, the slots
+           after it, up to the last reading);
         4. Puts each reading in the slot where its timestamp falls;
         5. Goes through the slots: keeps the reading, or creates one, and trims it if the parameter is cumulative;
         6. Replaces the list 'values' by the new list.
@@ -339,6 +368,7 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
             period_end (datetime): The end of the period, with a timezone.
         """
         periodicity = settings["periodicity_seconds"]
+        keep_future = settings["keep_future_readings"]
         values = parameter["values"]
 
         # All the times below are numbers of seconds since a fixed date (the "epoch"), so they are easy to compare and
@@ -348,8 +378,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         period_start_epoch = period_end_epoch - self._frequency_seconds
 
         # STEP 1: collects the readings that can be used. Each item of 'usable' is:
-        # (time of the reading, its value, the reading itself, True if it arrived now or False if it was remembered).
-        usable: List[Tuple[float, Any, Dict[str, Any], bool]] = []
+        # (time of the reading, its value, the reading itself).
+        usable: List[Tuple[float, Any, Dict[str, Any]]] = []
         for reading in values:
             # A reading with no timestamp, a timestamp in the wrong format, or a value that is not a number cannot be
             # placed in time or used in a calculation. It is skipped, so it will not be in the new list.
@@ -361,14 +391,7 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
                 continue
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
-            usable.append((moment, value, reading, True))
-
-        # The remembered reading comes from an earlier period. It is added to the readings that arrived, unless one of
-        # them already has the same time. It helps to place the slots and to fill the slots with no reading.
-        key = (entity_id, parameter_id)
-        remembered = self._last_readings.get(key)
-        if remembered is not None and all(item[0] != remembered[0] for item in usable):
-            usable.append((remembered[0], remembered[1]["value"], remembered[1], False))
+            usable.append((moment, value, reading))
 
         # The readings are sorted by time. This lets '_fill_value' find the readings around a time quickly.
         usable.sort(key=lambda item: item[0])
@@ -376,9 +399,6 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         # STEP 2: the anchor is the most recent reading. One slot ends exactly at it, and the others follow from it.
         if usable:
             anchor = usable[-1][0]
-            # What is remembered is a copy with only the timestamp and the value. So, if the reading is changed later
-            # (e.g., by the trim), what is remembered does not change.
-            self._last_readings[key] = (anchor, {"timestamp": usable[-1][2]["timestamp"], "value": usable[-1][1]})
         elif settings["fill_operation"] == self._ZERO_FILL:
             # There is no reading at all, but zero does not need one. The slots are placed to end at the end of the
             # period.
@@ -387,8 +407,8 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
             # There is no reading to place the slots, and no value to fill with. So nothing can be created. The
             # readings that arrived (they were all unusable) are removed.
             self._logger.debug(
-                f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}': no reading to use, nothing "
-                f"created."
+                f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                f"{parameter.get('parameter_type_id')}): no reading to use, nothing created."
             )
             parameter["values"] = []
             return
@@ -409,6 +429,10 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         first_slot = math.floor(round((period_start_epoch - anchor) / periodicity, 9)) + 1
         last_slot = math.ceil(round((period_end_epoch - anchor) / periodicity, 9))
 
+        # A parameter that keeps the readings after the period goes on until the slot of its last reading, which is the
+        # anchor (slot 0). If the anchor is not after the period, the last slot is the same as before.
+        final_slot = max(last_slot, 0) if keep_future else last_slot
+
         # STEP 4: puts each reading in a slot. A reading at the end of a slot belongs to that slot, so the distance
         # from the anchor is divided by the periodicity and rounded UP ('math.ceil').
         # Example: anchor 10:08, periodicity 3 minutes.
@@ -416,10 +440,10 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         #   reading at 10:07 -> -1 minute -> -1 / 3 = -0.33 -> rounded up is 0 -> slot 0 (10:05-10:08)
         #   reading at 10:05 -> -3 minutes -> -3 / 3 = -1.0 -> slot -1 (10:02-10:05)
         # Only the slots that touch the period are kept. If two readings belong to the same slot, the later one wins.
-        in_slot: Dict[int, Tuple[float, Any, Dict[str, Any], bool]] = {}
+        in_slot: Dict[int, Tuple[float, Any, Dict[str, Any]]] = {}
         for item in usable:
             slot = math.ceil(round((item[0] - anchor) / periodicity, 9))
-            if first_slot <= slot <= last_slot and (slot not in in_slot or item[0] > in_slot[slot][0]):
+            if first_slot <= slot <= final_slot and (slot not in in_slot or item[0] > in_slot[slot][0]):
                 in_slot[slot] = item
 
         # All the usable readings, as (time, value), in order of time. Also the ones that are not in a slot that
@@ -430,13 +454,13 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         # STEP 5: goes through the slots that touch the period, from the first to the last.
         harmonised: List[Dict[str, Any]] = []
         created = 0
-        for slot in range(first_slot, last_slot + 1):
+        for slot in range(first_slot, final_slot + 1):
             slot_end = anchor + slot * periodicity
             slot_start = slot_end - periodicity
 
             if slot in in_slot:
                 # The slot has a reading: it is kept as it arrived (same timestamp and same value).
-                _, value, reading, _ = in_slot[slot]
+                _, value, reading = in_slot[slot]
             else:
                 # The slot has no reading: one is created at the end of the slot, with the value given by the
                 # 'fill_operation'. If no value can be worked out, the slot stays without a reading.
@@ -459,7 +483,10 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
             # when possible (6 x 120 / 180 = 4.0).
             # This is done after the filling, so that the values used to fill were not trimmed.
             # The reading is copied before the change, so that the reading that arrived is not changed.
-            if settings["cumulative"]:
+            # A parameter that keeps the readings after the period is never trimmed, not even in the slots that touch
+            # the period: the series is kept as it arrived. (A slot after the period has no part inside it, so trimming
+            # it would multiply the value by a negative number.)
+            if settings["cumulative"] and not keep_future:
                 inside = min(slot_end, period_end_epoch) - max(slot_start, period_start_epoch)
                 if inside < periodicity - 1e-9:
                     reading = dict(reading)
@@ -470,11 +497,11 @@ class FrequencyHarmonisationApproach(DataIssueHandlingApproachBase):
         # STEP 6: the list 'values' is replaced by the new one. The readings that arrived and are not in the new list
         # are the ones in slots that do not touch the period, the ones that cannot be read, and the ones that lost
         # their slot to a later reading.
-        removed = len(values) - sum(1 for item in in_slot.values() if item[3])
+        removed = len(values) - len(in_slot)
         if created or removed:
             self._logger.debug(
-                f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}': created {created} "
-                f"reading(s) and removed {removed}."
+                f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                f"{parameter.get('parameter_type_id')}): created {created} reading(s) and removed {removed}."
             )
         parameter["values"] = harmonised
 

@@ -234,7 +234,7 @@ class OMIETelemetryLauncher(TelemetrySystemLauncherBase):
 
         self._service = service
         self._scheduler = scheduler
-        self._logger.info(f"{self._LOG_PREFIX} OMIE service and scheduler started.")
+        self._logger.debug(f"{self._LOG_PREFIX} OMIE service and scheduler started.")
 
     async def stop(self) -> None:
         """Stops the scheduler first (so nothing reads from the service any more), then the service."""

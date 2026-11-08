@@ -78,8 +78,9 @@ class SchemaStorageBase(ABC):
                 "target_systems": {
                     "softcps": {
                         "actuator_mapping": {
-                            "b01_setpoint": "battery_power_setpoint",       # The destination alone, or:
-                            "ev1_setpoint": {"destination": "ev_1", "measurement_unit": "A", "voltage": 230}
+                            "b01_setpoint": {"destination": "battery_power_setpoint",
+                                             "destination_measurement_unit": "kW"},
+                            "ev1_setpoint": {"destination": "ev_1", "destination_measurement_unit": "A", "voltage": 230}
                         }
                     }
                 },

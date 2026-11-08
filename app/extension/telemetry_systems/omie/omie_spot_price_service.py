@@ -183,9 +183,9 @@ class OmieSpotPriceService:
         self._scheduler.start()
 
         self._logger.info(
-            f"{self._LOG_PREFIX} Started. Checking for new prices every {self._refresh_interval_seconds}s; "
-            f"next-day prices are fetched from {self._publication_time.strftime('%H:%M')} "
-            f"({self._market_timezone.key})."
+            f"{self._LOG_PREFIX} Started. Checking for new prices every {self._refresh_interval_seconds}s. "
+            f"The prices of the next day are only requested after {self._publication_time.strftime('%H:%M')} "
+            f"({self._market_timezone.key}), the time they are published."
         )
 
     async def stop(self) -> None:
@@ -193,7 +193,7 @@ class OmieSpotPriceService:
         if self._scheduler:
             self._scheduler.stop()
             self._scheduler = None
-            self._logger.info(f"{self._LOG_PREFIX} Stopped.")
+            self._logger.debug(f"{self._LOG_PREFIX} Stopped.")
 
     # ------------------------------------------------------------------
     # Fetching

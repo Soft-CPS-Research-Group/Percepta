@@ -213,6 +213,12 @@ class DecisionDispatchingLauncher:
                 output_handlers.append(components[target_system_id].output_handler)
                 self._output_handlers.append(components[target_system_id].output_handler)
 
+                # Reaching this point means the components of this Target System were built for the environment
+                logger.debug(
+                    f"{self._LOG_PREFIX} Target system '{target_system_id}' launched for environment "
+                    f"'{environment_name}'."
+                )
+
             # Step 2 and 3
             service = DecisionDispatchingService(
                 resolver=TargetSystemResolver(environment_name, environment, logger),

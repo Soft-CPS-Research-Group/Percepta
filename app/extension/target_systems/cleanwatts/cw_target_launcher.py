@@ -71,7 +71,7 @@ class CWTargetLauncher(TargetSystemLauncherBase):
                                 {"path": "/sessions", "method": "POST", "timeout_ms": 5000,
                                  "headers": {"Content-Type": "application/json"},
                                  "rpc_properties": {"enabled": True}},
-                                {"path": "/sessions/refresh?token={token}&refresh_token={refresh_token}",
+                                {"path": "/session/refresh?token={token}&refresh_token={refresh_token}",
                                  "method": "PUT", "timeout_ms": 5000,
                                  "headers": {"Content-Type": "application/json"},
                                  "rpc_properties": {"enabled": True}}
@@ -165,7 +165,7 @@ class CWTargetLauncher(TargetSystemLauncherBase):
         for actuator_id, device in mapping.items():
             if isinstance(device, dict):
                 try:
-                    CWTargetAdapter.check_device(device.get("measurement_unit"), device.get("voltage"))
+                    CWTargetAdapter.check_device(device.get("destination_measurement_unit"), device.get("voltage"))
                 except ValueError as err:
                     raise ValueError(
                         f"{self._LOG_PREFIX} Launch error: actuator '{actuator_id}' of environment "

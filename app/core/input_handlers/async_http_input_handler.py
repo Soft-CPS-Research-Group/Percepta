@@ -314,7 +314,7 @@ class HTTPInputHandler(InputHandlerBase):
 
         timeout_ms = endpoint_block.get("timeout_ms", 5000)
 
-        self._logger.info(f"{self._LOG_PREFIX} Issuing request -> [{method} {path_name}]")
+        self._logger.debug(f"{self._LOG_PREFIX} Issuing request -> [{method} {path_name}]")
 
         try:
             response = await self._http_connector.request(
@@ -346,7 +346,7 @@ class HTTPInputHandler(InputHandlerBase):
         Graceful shutdown pipeline hook. Stops the scheduler engine, signals termination,
         and safely closes the underlying HTTP connector session.
         """
-        self._logger.info(f"{self._LOG_PREFIX} Stopping logical consumer message ingestion processing pipelines.")
+        self._logger.debug(f"{self._LOG_PREFIX} Stopping logical consumer message ingestion processing pipelines.")
 
         # 1. Signal background routines to halt
         self._stop_event.set()

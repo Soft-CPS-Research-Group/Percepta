@@ -42,10 +42,13 @@ class JSONSchemaStorage(SchemaStorageBase):
             "target_systems": {
                 "target_system_1_id": {
                     "actuator_mapping": {
-                        "actuator_1_id": "external_destination_1",
-                        "actuator_2_id": {                      # The same, with what the real device needs
+                        "actuator_1_id": {
+                            "destination": "external_destination_1",
+                            "destination_measurement_unit": "kW"    # Mandatory: unit of the real device
+                        },
+                        "actuator_2_id": {
                             "destination": "external_destination_2",
-                            "measurement_unit": "A",            # (optional) Unit of the device, if not kW
+                            "destination_measurement_unit": "A",
                             "voltage": 230                      # (optional) Volts, to convert kW into amperes
                         }
                     }
@@ -193,15 +196,15 @@ class JSONSchemaStorage(SchemaStorageBase):
     def _validate_actuator_mapping(self, mapping: Any, location: str) -> None:
         """Checks what the 'actuator_mapping' of a Target System says about one actuator.
 
-        It is either the destination alone, or a dictionary with the destination and what the real device needs.
+        It is a dictionary with the destination and the unit of the real device.
 
         Expected Input Structure:
         -------------------------
-        "35447"                                         # The destination alone (text or integer)
         {
             "destination": "39052",                     # Mandatory: where the decisions of the actuator go
-            "measurement_unit": "A",                    # (optional) Unit of the device, if it is not the kW of the
-                                                        # decisions. Which units are accepted depends on the Target System
+            "destination_measurement_unit": "A",        # Mandatory: unit of the device. The decisions are in kW, and the
+                                                        # Target System converts them. Which units are accepted depends
+                                                        # on the Target System
             "voltage": 230                              # (optional) Volts, positive. To convert kW into amperes
         }
 
@@ -210,33 +213,34 @@ class JSONSchemaStorage(SchemaStorageBase):
             location (str): Where the value is, for the error message.
 
         Raises:
-            ValueError: If the value is not in one of the formats above, or has a key that is not known.
+            ValueError: If the value is not a dictionary as above, has a key that is not known, or lacks the destination or
+                the unit.
         """
         def is_destination(value: Any) -> bool:
             return (isinstance(value, str) and bool(value.strip())) or (
                 isinstance(value, int) and not isinstance(value, bool))
 
-        # The destination alone
+        # The destination alone is no longer accepted: the unit of the device is mandatory
         if not isinstance(mapping, dict):
-            if not is_destination(mapping):
-                raise ValueError(
-                    f"{self._LOG_PREFIX} The mapping of {location} must be a destination (text or integer) or a "
-                    f"dictionary with 'destination', got {mapping!r}."
-                )
-            return
+            raise ValueError(
+                f"{self._LOG_PREFIX} The mapping of {location} must be a dictionary with 'destination' and "
+                f"'destination_measurement_unit', got {mapping!r}."
+            )
 
-        unknown = sorted(set(mapping) - {"destination", "measurement_unit", "voltage"})
+        unknown = sorted(set(mapping) - {"destination", "destination_measurement_unit", "voltage"})
         if unknown:
             raise ValueError(
                 f"{self._LOG_PREFIX} The mapping of {location} has unknown keys {unknown}. Known keys: "
-                f"['destination', 'measurement_unit', 'voltage']."
+                f"['destination', 'destination_measurement_unit', 'voltage']."
             )
         if not is_destination(mapping.get("destination")):
             raise ValueError(f"{self._LOG_PREFIX} The mapping of {location} needs a 'destination' (text or integer).")
 
-        unit = mapping.get("measurement_unit")
-        if "measurement_unit" in mapping and (not isinstance(unit, str) or not unit.strip()):
-            raise ValueError(f"{self._LOG_PREFIX} The 'measurement_unit' of {location} must be a non-empty string.")
+        unit = mapping.get("destination_measurement_unit")
+        if not isinstance(unit, str) or not unit.strip():
+            raise ValueError(
+                f"{self._LOG_PREFIX} The mapping of {location} needs a 'destination_measurement_unit' (non-empty text)."
+            )
 
         voltage = mapping.get("voltage")
         if "voltage" in mapping and (

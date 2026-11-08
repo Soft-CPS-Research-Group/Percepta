@@ -5,90 +5,88 @@ from typing import Any, Dict, List, Optional
 # --- Internal Framework Imports ---
 from app.core.data_issue_handling.data_issue_handling_approach_base import DataIssueHandlingApproachBase
 from app.core.utils.logger import LoggingUtils
-from app.core.utils.time_utils import duration_to_seconds, format_timestamp, parse_timestamp
+from app.core.utils.time_utils import format_timestamp, parse_timestamp
 
 
 class MissingDataApproach(DataIssueHandlingApproachBase):
-    """Rebuilds the entities that sent no data at all in the period, in any of their parameters.
+    """Completes the entities with the parameters that did not arrive, using what was received before.
 
-    What this approach does with each entity of the environment that has parameters:
-    - If NONE of its parameters has a reading in the period, the entity is "missing". The approach rebuilds it, with
-      all of its parameters.
-    - If AT LEAST ONE of its parameters has a reading, the entity is NOT missing, and the approach does nothing to it.
-      This is true even if other parameters of the same entity have no readings.
+    The approach looks at every entity of the environment that has parameters, and at the parameters that are
+    'necessary' (the schema says "necessary": true). There are two situations:
 
-    Why the approach rebuilds the whole entity, and never only one parameter:
-    The approach ASSUMES that the parameters of an entity are always sent together, by the same Telemetry System.
-    If this is true, when the Telemetry System stops sending data, all the parameters of the entity stop arriving at the
-    same time. Then all of them are rebuilt together, from values that were received together.
-    Rebuilding the parameters one by one could create values that do not make sense together.
-    Example: a washing machine has two parameters, "is_on" and "power", and both come from the same Telemetry System.
-    - If the Telemetry System stops sending, neither of them arrives. The approach rebuilds both from the last values
-      received (e.g., is_on = on and power = 1200). The two values make sense together, because they were received
-      together.
-    - If, instead, the approach rebuilt only "power" when it was missing, and it had no previous value, "power" would
-      become zero while "is_on" arrived saying that the machine is on. The data would say that the machine is on and
-      is using no power.
+    1. The entity is MISSING: none of its parameters has a reading in the period (it did not arrive, or it arrived with
+       every list 'values' empty). The approach rebuilds it. Each parameter receives ALL the readings that the approach
+       still remembers for it, with their original timestamps and values. The approach does not place them in time or
+       fill anything: that is left to the Frequency Harmonisation approach, which runs after this one.
+    2. The entity ARRIVED, with at least one reading in one of its parameters. Its readings are not changed. But each
+       necessary parameter that has no readings gets "values": None. None means "this parameter has no value in this
+       period". It is what the rest of Percepta turns into a null.
+       This approach does not rebuild a parameter that is not necessary, and it does not use remembered readings in
+       this situation.
 
-    When the assumption is NOT true:
-    The parameters of an entity can come from different Telemetry Systems.
-    Example: "is_on" comes from Telemetry System 1 and "power" comes from Telemetry System 2, and System 2 stops
-    sending. In the period, "is_on" arrives but "power" does not. The entity has one reading, so it is NOT missing, and
-    this approach does nothing: "power" stays without readings.
-    For this reason, this approach may not be right for every use case. If it is not right for yours, do not configure
-    it, and integrate an approach made for your use case instead (see the README of this folder).
+    In both situations, a necessary parameter for which nothing is remembered (for example, right after the
+    application starts) has "values": None.
 
-    How a missing entity is rebuilt, for each of its parameters:
-    - The value is the most recent value that the parameter had when it was received. If the parameter never had one
-      (for example, right after the application starts), the value is zero.
-    - There is only ONE reading, with that value. The approach does not repeat the value to fill all the readings that
-      the parameter should have in the period. Completing them is left to whoever needs it, normally the Frequency
-      Harmonisation approach, which fills the missing readings of each parameter using its 'fill_operation'.
-    - The timestamp of that reading is the timestamp of the FIRST reading that the parameter should have in the
-      period. This is the reading closest in time to the most recent value, because that value was received before the
-      period started. This way, whoever completes the other readings can carry the value forward from the start of the
-      period.
-      The first reading is worked out from the periodicity of the parameter (its 'temporal_behavior' in the schema).
-      Example: for a period that ends at 10:15 and a periodicity of 5 minutes, the readings of the period are at 10:05,
-      10:10 and 10:15, so the first one is at 10:05.
-      If the parameter has no periodicity, or reports less often than the frequency, it has only one reading in the
-      period, so the timestamp is the end of the period.
-    - The timestamp of the entity is the end of the period.
+    What the approach remembers:
+    The real readings (never the ones that the approach created) of each parameter of each entity that sent data,
+    with their timestamps. Not many are kept, so that the memory does not grow without end. It depends on the optional
+    'max_reading_age_seconds' of the parameter, in its 'temporal_behavior':
+    - If it is set, the readings of every period are added to the ones that are remembered (a reading with the same
+      timestamp replaces the old one), and the readings with a timestamp older than 'max_reading_age_seconds' before
+      the end of the period are forgotten. A reading in the future is never old.
+    - If it is not set, only the readings of the last period in which the parameter had some are remembered: they
+      replace the old ones.
+    It is kept in memory only, so after a restart nothing is remembered.
 
-    The rebuilt entity has the same structure as an entity that was received, with no extra field. Nothing in the
-    message shows that it was rebuilt. The only trace is a warning in the log.
-
-    Only data that was really received is remembered as "the most recent value". The values that this approach creates
-    are never remembered. So, if an entity is missing for a long time, the invented values never replace the last real
-    value.
-
-    Example (the period ends at 10:15, and 'id_02' has one parameter with a periodicity of 5 minutes and was never
-    received):
-    -----------------------------------------------------------------------------------------------------------
+    Example (the period ends at 10:15, 'id_02' has the necessary parameter "id_param_03" with 'max_reading_age_seconds'
+    600, and it had the readings 10:00 (4.0), 10:08 (4.2) and 10:12 (4.4) when it last sent data):
+    ----------------------------------------------------------------------------------------------------------------
     Input:  [{"id": "id_01", ...}]
     Output: [{"id": "id_01", ...},
              {"id": "id_02", "entity_type_id": "entity_type_2",
               "parameters": {"id_param_03": {"parameter_type_id": "parameter_type_3", "values": [
-                  {"timestamp": "2026-01-01 10:05:00 +0000", "value": 0.0}]}},
+                  {"timestamp": "2026-01-01 10:08:00 +0000", "value": 4.2},
+                  {"timestamp": "2026-01-01 10:12:00 +0000", "value": 4.4}]}},
               "timestamp": "2026-01-01 10:15:00 +0000"}]
+    The reading of 10:00 is more than 600 seconds before 10:15, so it was forgotten.
+
+    The rebuilt entity has the same structure as an entity that was received, with no extra field. Nothing in the
+    message shows that it was rebuilt. The only trace is a warning in the log.
     """
 
     _LOG_PREFIX: str = "Missing Data Approach |"
 
     def __init__(self, environment: Dict[str, Any], frequency_seconds: float, logger: LoggingUtils) -> None:
-        """Reads the entities with parameters from the schema, and works out where the first reading of each parameter
-        falls in a period.
+        """Reads the entities with parameters from the schema.
 
         Only the entities that have parameters are kept, because they are the only ones that can receive data and so
         the only ones that can be missing.
 
+        Expected `environment` Data Structure (the parts that are used):
+        ---------------------------------------------------------------
+        {
+            "entities": {
+                "id_02": {
+                    "entity_type_id": "entity_type_2",
+                    "parameters": {
+                        "id_param_03": {
+                            "parameter_type_id": "parameter_type_3",
+                            "necessary": True,                                  # Optional (default False)
+                            "temporal_behavior": {"max_reading_age_seconds": 600, ...}    # Optional
+                        }
+                    }
+                }
+            }
+        }
+
         Args:
             environment (Dict[str, Any]): The environment, as returned by the Schema Storage. Only 'entities' is used.
-            frequency_seconds (float): How often the data is processed, in seconds. It is the length of a period.
+            frequency_seconds (float): How often the data is processed, in seconds. It is not used by this approach.
             logger (LoggingUtils): Logger of the environment.
 
         Raises:
-            ValueError: If the environment has no entities, or the periodicity of a parameter is not valid.
+            ValueError: If the environment has no entities, or the 'max_reading_age_seconds' of a parameter is not a
+                number greater than zero.
         """
         super().__init__(environment, frequency_seconds, logger)
 
@@ -97,12 +95,12 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
         if not isinstance(entities, dict) or not entities:
             raise ValueError(f"{self._LOG_PREFIX} Initialization error: the environment has no 'entities'.")
 
-        # What is needed to rebuild each entity, taken from the schema. It is saved once here, and not read again in
+        # What is needed to complete each entity, taken from the schema. It is saved once here, and not read again in
         # every period.
         # Entities without parameters are left out. They never receive data, so they can never be missing (e.g., an
         # entity that only has actuators).
         # Example: {"id_02": {"entity_type_id": "entity_type_2", "parameters": {"id_param_03": {
-        #               "parameter_type_id": "parameter_type_3", "first_reading_offset_seconds": 600}}}}
+        #               "parameter_type_id": "parameter_type_3", "necessary": True, "max_age_seconds": 600}}}}
         self._entities: Dict[str, Dict[str, Any]] = {}
         for entity_id, entity in entities.items():
             parameters = entity.get("parameters") if isinstance(entity, dict) else None
@@ -116,13 +114,14 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
                 }
             }
 
-        # The most recent value received for each parameter of each entity. It starts empty and it is updated in every
-        # period, with the values of the entities that sent data.
-        # Example: {"id_02": {"id_param_03": 4.2}}
-        self._most_recent_values: Dict[str, Dict[str, Any]] = {}
+        # The readings remembered for each parameter of each entity, by moment, so that a reading with the same
+        # timestamp replaces the old one. The reading is a copy with only the timestamp and the value.
+        # Example: {"id_02": {"id_param_03": {datetime(2026, 1, 1, 10, 8, tzinfo=utc):
+        #               {"timestamp": "2026-01-01 10:08:00 +0000", "value": 4.2}}}}
+        self._remembered: Dict[str, Dict[str, Dict[datetime, Dict[str, Any]]]] = {}
 
     def handle(self, data: List[Dict[str, Any]], period_end: datetime) -> List[Dict[str, Any]]:
-        """Rebuilds the entities that sent no data in the period, and remembers the values of the other entities.
+        """Remembers the readings of the entities that sent data, completes them, and rebuilds the missing entities.
 
         Expected Input Structure:
         -------------------------
@@ -143,35 +142,40 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
 
         Expected Output Structure:
         --------------------------
-        The same list, plus one dictionary for each missing entity, in the same structure
-        (see the class docstring for an example).
+        The same list, with "values": None in the necessary parameters of the entities that arrived without them, and
+        one more dictionary for each missing entity, in the same structure (see the class docstring for an example).
 
         Args:
             data (List[Dict[str, Any]]): The data received in the period, one dictionary for each entity that sent data.
             period_end (datetime): The end of the period, with a timezone.
 
         Returns:
-            List[Dict[str, Any]]: The data with the missing entities rebuilt. It is the same list that was received,
-                changed.
+            List[Dict[str, Any]]: The completed data. It is the same list that was received, changed.
         """
         # The received entities by id, to find each one quickly.
         # Example: {"id_01": {"id": "id_01", ...}}
         received = {entity["id"]: entity for entity in data}
 
         # Goes through the entities of the schema and separates them in two groups:
-        # - the ones that sent data: their values are remembered, to be used in the periods in which they are missing;
+        # - the ones that sent data: their readings are remembered and their necessary parameters are completed;
         # - the ones that did not: they are collected in 'missing_ids', to be rebuilt below.
-        # The values are remembered BEFORE rebuilding, so that only data that was really received is remembered, and
-        # never the values created by this approach.
+        # The readings are remembered BEFORE rebuilding, so that only data that was really received is remembered, and
+        # never the readings created by this approach.
         missing_ids = []
         for entity_id in self._entities:
             if self._has_readings(received.get(entity_id)):
-                self._remember_values(received[entity_id])
+                self._remember_readings(received[entity_id], period_end)
+                self._complete_entity(received[entity_id])
             else:
                 missing_ids.append(entity_id)
 
         for entity_id in missing_ids:
             rebuilt_entity = self._rebuild_entity(entity_id, period_end)
+
+            # --- Guard Clause: nothing to rebuild ---
+            # No parameter is necessary and none has remembered readings, so the entity would have no parameters.
+            if rebuilt_entity is None:
+                continue
 
             # An entity is missing in one of two situations, and each one is handled in a different way:
             # 1. The entity did not arrive at all, so it is not in 'received'. There is nothing to replace, so the
@@ -190,27 +194,19 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
         return data
 
     def _read_parameter(self, entity_id: str, parameter_id: str, parameter: Any) -> Dict[str, Any]:
-        """Works out, from the schema, how many seconds before the end of a period the first reading of a parameter is.
+        """Reads, from the schema, what this approach needs to know about a parameter.
 
         Expected Input Structure:
         -------------------------
         parameter = {
             "parameter_type_id": "parameter_type_3",
-            "temporal_behavior": {"periodicity": {"value": 5, "unit": "min"}, ...}      # (optional)
+            "necessary": True,                                      # (optional, default False)
+            "temporal_behavior": {"max_reading_age_seconds": 600}   # (optional)
         }
 
         Expected Output Structure:
         --------------------------
-        {"parameter_type_id": "parameter_type_3", "first_reading_offset_seconds": 600}
-
-        How the offset is worked out:
-        The number of readings that the parameter should have in a period is the number of times that its periodicity
-        fits in the frequency. The last reading is at the end of the period, and the others are one periodicity apart.
-        Example: a frequency of 15 minutes (900 seconds) and a periodicity of 5 minutes (300 seconds) give 3 readings,
-        at 10:05, 10:10 and 10:15 for a period that ends at 10:15. The first reading is 10 minutes (600 seconds) before
-        the end of the period. This is (3 - 1) x 300.
-        A parameter with no periodicity, or that reports less often than the frequency, has 1 reading, so the offset
-        is 0.
+        {"parameter_type_id": "parameter_type_3", "necessary": True, "max_age_seconds": 600}
 
         Args:
             entity_id (str): Id of the entity. It is only used in the error messages.
@@ -218,34 +214,28 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
             parameter (Any): The parameter, as it is in the schema.
 
         Returns:
-            Dict[str, Any]: The type of the parameter, and the seconds between its first reading and the end of the
-                period.
+            Dict[str, Any]: The type of the parameter, if it is necessary (only True counts as necessary) and how old
+                a remembered reading can be, in seconds (None if the parameter has no limit set).
 
         Raises:
-            ValueError: If the periodicity exists but is not valid (e.g., it has an unknown unit).
+            ValueError: If 'max_reading_age_seconds' exists but is not a number greater than zero.
         """
-        parameter_type_id = parameter.get("parameter_type_id") if isinstance(parameter, dict) else None
-        temporal_behavior = parameter.get("temporal_behavior") if isinstance(parameter, dict) else None
-        periodicity = temporal_behavior.get("periodicity") if isinstance(temporal_behavior, dict) else None
+        parameter = parameter if isinstance(parameter, dict) else {}
+        temporal_behavior = parameter.get("temporal_behavior")
+        max_age = temporal_behavior.get("max_reading_age_seconds") if isinstance(temporal_behavior, dict) else None
 
-        # --- Guard Clause 2: a parameter without periodicity has one reading per period ---
-        if periodicity is None:
-            return {"parameter_type_id": parameter_type_id, "first_reading_offset_seconds": 0}
-
-        try:
-            periodicity_seconds = duration_to_seconds(periodicity, "periodicity")
-        except ValueError as err:
+        # --- Guard Clause 2: a limit that is set must be a number greater than zero ---
+        # 'bool' is a number for Python (True is 1), so it is refused on its own.
+        if max_age is not None and (isinstance(max_age, bool) or not isinstance(max_age, (int, float)) or max_age <= 0):
             raise ValueError(
-                f"{self._LOG_PREFIX} Initialization error: parameter '{parameter_id}' of entity '{entity_id}': {err}"
-            ) from err
+                f"{self._LOG_PREFIX} Initialization error: parameter '{parameter_id}' of entity '{entity_id}': "
+                f"'max_reading_age_seconds' must be a number greater than zero, but it is {max_age!r}."
+            )
 
-        # Counts how many times the periodicity fits in the frequency (e.g., 900 // 300 = 3). The '//' is a division
-        # without decimals. 'max(1, ...)' is used because a parameter that reports less often than the frequency (e.g.,
-        # every hour with a frequency of 15 minutes) would give 0, and it still has one reading in the period.
-        readings = max(1, int(self._frequency_seconds // periodicity_seconds))
         return {
-            "parameter_type_id": parameter_type_id,
-            "first_reading_offset_seconds": (readings - 1) * periodicity_seconds
+            "parameter_type_id": parameter.get("parameter_type_id"),
+            "necessary": parameter.get("necessary") is True,
+            "max_age_seconds": max_age
         }
 
     @staticmethod
@@ -266,125 +256,158 @@ class MissingDataApproach(DataIssueHandlingApproachBase):
         # counts as True. An empty list, or a parameter with no 'values', counts as False.
         # 'any' goes through all of them and returns True as soon as it finds one that is True. If none is True, it
         # returns False.
-        # Example: {"p1": {"values": []}, "p2": {"values": [{"timestamp": "...", "value": 3.4}]}}  ->  True
-        #          {"p1": {"values": []}, "p2": {"values": []}}                                    ->  False
+        # Example: {"p1": {"values": None}, "p2": {"values": [{"timestamp": "...", "value": 3.4}]}}  ->  True
+        #          {"p1": {"values": None}, "p2": {"values": []}}                                  ->  False
         return any(parameter.get("values") for parameter in entity.get("parameters", {}).values())
 
-    def _remember_values(self, entity: Dict[str, Any]) -> None:
-        """Keeps, for each parameter of an entity that sent data, the value of its most recent reading.
+    def _remember_readings(self, entity: Dict[str, Any], period_end: datetime) -> None:
+        """Keeps the readings of the parameters of an entity that sent data, and forgets the ones that are too old.
 
-        The most recent reading is the one with the latest timestamp. It is NOT the last one in the list, because this
-        approach runs before the readings are sorted, so the list may be out of order. Only one value is kept for each
-        parameter: the new value replaces the old one.
+        A reading that cannot be placed in time (no timestamp, or a timestamp in the wrong format) or that has no value
+        (None) is not remembered.
 
         Args:
             entity (Dict[str, Any]): The entity as it arrived.
+            period_end (datetime): The end of the period, with a timezone.
         """
-        # The remembered values of this entity, by parameter.
+        # The readings remembered for this entity, by parameter.
         # 'setdefault' returns the dictionary of the entity if it already exists. If it does not exist (the first time
         # the entity sends data), it creates an empty one, stores it, and returns it.
-        # In both cases, 'remembered' is the same dictionary that is kept in 'self._most_recent_values', so changing it
-        # changes what is remembered.
-        # Example: self._most_recent_values = {"id_02": {"id_param_03": 4.2}}  ->  remembered = {"id_param_03": 4.2}
-        remembered = self._most_recent_values.setdefault(entity["id"], {})
+        remembered_entity = self._remembered.setdefault(entity["id"], {})
+        schema_parameters = self._entities.get(entity["id"], {}).get("parameters", {})
 
         for parameter_id, parameter in entity.get("parameters", {}).items():
             values = parameter.get("values")
 
-            # A parameter with no readings in this period keeps the value that was remembered before, if there is one.
-            # Only the parameters that have readings are updated.
+            # A parameter with no readings in this period keeps what was remembered before. Only the parameters that
+            # have readings are updated.
             if not values:
                 continue
 
-            # The old value is replaced by the most recent value of this period. Only one value is kept for each
-            # parameter, so nothing accumulates.
-            remembered[parameter_id] = self._most_recent_value(values)
+            arrived: Dict[datetime, Dict[str, Any]] = {}
+            for reading in values:
+                # If the reading has no 'timestamp' (KeyError, or TypeError when the reading is not a dictionary), or
+                # the timestamp is not in the expected format (ValueError), it cannot be placed in time, so it is
+                # skipped. This way, one bad reading does not stop the others from being remembered.
+                try:
+                    moment = parse_timestamp(reading["timestamp"])
+                    value = reading["value"]
+                except (KeyError, TypeError, ValueError):
+                    continue
+                if value is None:
+                    continue
+                arrived[moment] = {"timestamp": reading["timestamp"], "value": value}
 
-    @staticmethod
-    def _most_recent_value(values: List[Dict[str, Any]]) -> Any:
-        """Returns the value of the reading with the latest timestamp.
-
-        Args:
-            values (List[Dict[str, Any]]): The readings of a parameter, e.g., [{"timestamp": "...", "value": 1.0}].
-
-        Returns:
-            Any: The value of the reading with the latest timestamp. If no timestamp can be read, the value of the last
-                reading in the list.
-        """
-        # 'latest' is the best reading found so far. 'latest_moment' is its timestamp turned into a date and time, so
-        # that it can be compared with the timestamps of the other readings.
-        # At the start no timestamp was read yet, so 'latest_moment' is None and 'latest' is the last reading of the
-        # list. That reading is the one used if no timestamp can be read.
-        latest, latest_moment = values[-1], None
-
-        for reading in values:
-            # Turns the text of the timestamp (e.g., "2026-01-01 10:15:00 +0000") into a date and time. This is needed
-            # because texts cannot be compared as times (e.g., "+0100" and "+0000" would be compared as plain text).
-            # If the reading has no 'timestamp' (KeyError), or the timestamp is not in the expected format
-            # (ValueError), this reading is skipped. This way, one bad timestamp does not stop the other readings from
-            # being compared.
-            try:
-                moment = parse_timestamp(reading["timestamp"])
-            except (KeyError, ValueError):
+            # --- Guard Clause: nothing in this list can be remembered ---
+            if not arrived:
                 continue
 
-            # This reading becomes the best one so far in one of two cases: it is the first one that could be read
-            # ('latest_moment' is None), or it is not earlier than the best one so far. Because of the '>=', if two
-            # readings have the same timestamp, the one that comes later in the list is kept.
-            if latest_moment is None or moment >= latest_moment:
-                latest, latest_moment = reading, moment
+            max_age = schema_parameters.get(parameter_id, {}).get("max_age_seconds")
+            if max_age is None:
+                # No limit set: only the readings of the last period with readings are remembered. They replace the old.
+                remembered_entity[parameter_id] = arrived
+            else:
+                # A limit is set: the new readings are added to the old ones (the same timestamp is replaced).
+                remembered_entity.setdefault(parameter_id, {}).update(arrived)
 
-        return latest["value"]
+        self._forget_old_readings(entity["id"], period_end)
 
-    def _rebuild_entity(self, entity_id: str, period_end: datetime) -> Dict[str, Any]:
-        """Builds the entity that was not received, with its most recent values or with zeros.
+    def _forget_old_readings(self, entity_id: str, period_end: datetime) -> None:
+        """Removes the remembered readings that are older than the limit of their parameter.
+
+        A parameter with no 'max_reading_age_seconds' has no limit, so none of its readings is removed here (what it
+        remembers is already limited to the readings of one period).
+
+        Args:
+            entity_id (str): Id of the entity.
+            period_end (datetime): The end of the period, with a timezone.
+        """
+        schema_parameters = self._entities.get(entity_id, {}).get("parameters", {})
+
+        for parameter_id, readings in self._remembered.get(entity_id, {}).items():
+            max_age = schema_parameters.get(parameter_id, {}).get("max_age_seconds")
+            if max_age is None:
+                continue
+
+            # A reading is too old if it happened before this moment. A reading in the future is never too old.
+            # Example: the period ends at 10:15 and the limit is 600 seconds -> cutoff 10:05. A reading of 10:00 is
+            # removed, one of 10:08 stays.
+            cutoff = period_end - timedelta(seconds=max_age)
+            for moment in [moment for moment in readings if moment < cutoff]:
+                del readings[moment]
+
+    def _complete_entity(self, entity: Dict[str, Any]) -> None:
+        """Gives "values": None to each necessary parameter that an arrived entity did not send.
+
+        The parameters that arrived are not changed. The parameters that are not necessary are not added.
+
+        Args:
+            entity (Dict[str, Any]): The entity as it arrived. It is changed in place.
+        """
+        parameters = entity.setdefault("parameters", {})
+
+        for parameter_id, parameter_schema in self._entities[entity["id"]]["parameters"].items():
+            if not parameter_schema["necessary"]:
+                continue
+
+            # A necessary parameter that did not arrive (not in the entity) or arrived with no readings gets None.
+            # None is the way to say "no value in this period".
+            if parameter_id not in parameters:
+                parameters[parameter_id] = {"parameter_type_id": parameter_schema["parameter_type_id"], "values": None}
+            elif not parameters[parameter_id].get("values"):
+                parameters[parameter_id]["values"] = None
+
+    def _rebuild_entity(self, entity_id: str, period_end: datetime) -> Optional[Dict[str, Any]]:
+        """Builds the entity that was not received, with all the readings that are remembered.
 
         Args:
             entity_id (str): Id of the missing entity.
             period_end (datetime): The end of the period, with a timezone.
 
         Returns:
-            Dict[str, Any]: The entity in the structure of the message, with one reading for each parameter.
+            Optional[Dict[str, Any]]: The entity in the structure of the message, or None if it would have no
+                parameters (none is necessary and none has remembered readings).
         """
-        # What the schema says about this entity: its type, and its parameters with the offset of their first reading
+        # What the schema says about this entity: its type, and its parameters
         schema = self._entities[entity_id]
 
-        # The most recent value of each parameter of this entity, remembered from the last time it sent data.
-        # Example: {"id_param_03": 4.2}
-        # It is empty if the entity never sent data (e.g., right after the application starts).
-        remembered = self._most_recent_values.get(entity_id, {})
+        # Readings that are too old must not be used, even if this entity was already missing in the periods before.
+        self._forget_old_readings(entity_id, period_end)
+        remembered = self._remembered.get(entity_id, {})
 
-        # Builds the parameters of the rebuilt entity, with one reading each, in the structure of the message:
-        # - "parameter_type_id": taken from the schema.
-        # - "timestamp": the time of the first reading that the parameter should have in the period. It is the end of
-        #   the period minus the offset worked out from the periodicity of the parameter.
-        #   Example: the period ends at 10:15 and the first reading is 600 seconds before the end -> 10:05.
-        # - "value": the remembered value of the parameter, or 0.0 if there is none. The 0.0 is the second argument of
-        #   'get', which is what 'get' returns when the key does not exist.
-        parameters = {
-            parameter_id: {
-                "parameter_type_id": parameter["parameter_type_id"],
-                "values": [{
-                    "timestamp": format_timestamp(
-                        period_end - timedelta(seconds=parameter["first_reading_offset_seconds"])
-                    ),
-                    "value": remembered.get(parameter_id, 0.0)
-                }]
-            }
-            for parameter_id, parameter in schema["parameters"].items()
-        }
+        # Builds the parameters of the rebuilt entity, in the structure of the message:
+        # - the remembered readings of the parameter, in chronological order, as copies (so that nothing that is done
+        #   to the message changes what is remembered);
+        # - if the parameter has none and is necessary, None ("no value in this period");
+        # - if the parameter has none and is not necessary, it is left out.
+        parameters = {}
+        without_readings = []
+        for parameter_id, parameter_schema in schema["parameters"].items():
+            readings = [dict(reading) for _, reading in sorted(remembered.get(parameter_id, {}).items())]
 
-        # The only trace that the entity was rebuilt is this warning in the log. For Python, an empty dictionary counts
-        # as False. So, when there are no remembered values, the message says that zeros were used.
-        used_values = "its most recent values" if remembered else "zeros"
+            if readings:
+                parameters[parameter_id] = {"parameter_type_id": parameter_schema["parameter_type_id"],
+                                            "values": readings}
+            elif parameter_schema["necessary"]:
+                parameters[parameter_id] = {"parameter_type_id": parameter_schema["parameter_type_id"], "values": None}
+                without_readings.append(parameter_id)
+
+        # --- Guard Clause: an entity with no parameters is not worth sending ---
+        if not parameters:
+            return None
+
+        # The only trace that the entity was rebuilt is this warning in the log. It says what it was rebuilt with and
+        # what it could not be rebuilt with, so it does not claim to have rebuilt readings that were not remembered.
+        rebuilt_with = [parameter_id for parameter_id in parameters if parameter_id not in without_readings]
+        rebuilt_text = f" Rebuilt with the remembered readings of: {', '.join(rebuilt_with)}." if rebuilt_with else ""
+        without_text = f" No readings remembered for: {', '.join(without_readings)}." if without_readings else ""
         self._logger.warning(
             f"{self._LOG_PREFIX} Entity '{entity_id}' sent no data in the period that ended at "
-            f"{format_timestamp(period_end)}. Rebuilt with {used_values}."
+            f"{format_timestamp(period_end)}.{rebuilt_text}{without_text}"
         )
 
         # The rebuilt entity, in the same structure as an entity that was received. The timestamp of the entity is the
-        # end of the period. The readings are not at the end of the period: each one is at the time of the first
-        # reading of its parameter.
+        # end of the period. The readings keep their own timestamps.
         return {
             "id": entity_id,
             "entity_type_id": schema["entity_type_id"],

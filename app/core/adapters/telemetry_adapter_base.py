@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 from app.core.utils.type_compatibility import is_type_compatible
 from app.core.utils.logger import LoggingUtils
+from app.core.utils.unit_utils import build_converter
 from zoneinfo import ZoneInfo
 
 
@@ -40,6 +41,12 @@ class TelemetryAdapterBase(ABC):
         self._environment = environment
         self._tz = ZoneInfo(timezone)
 
+        # For each parameter, the function that converts its readings from the unit of the source to the unit of the
+        # schema. They are filled by `_prepare_unit_conversion`, which each adapter calls when it starts.
+        self._unit_converters: Dict[str, Callable[[Any], Any]] = {}
+        self._parameter_units: Dict[str, tuple] = {}
+        self._unit_errors_logged: set = set()
+
     @abstractmethod
     def adapt(self, data: Any) -> None:
         """
@@ -52,6 +59,132 @@ class TelemetryAdapterBase(ABC):
                    - dict with "messages", "label", "entity_id"
            """
         raise NotImplementedError()
+
+    def _prepare_unit_conversion(self, entities: dict, source_mapping_rules: dict) -> None:
+        """Reads the units of the parameters, to convert their readings to the unit of the schema.
+
+        Every parameter that has a rule in the source mapping and a 'measurement_unit' in the schema must say, in its
+        rule, the unit in which the source gives its readings: 'source_measurement_unit'. The adapter converts the
+        readings from that unit to the 'measurement_unit' of the schema (see `convert_to_schema_units`).
+
+        This method only checks that the 'source_measurement_unit' is there. It does NOT check that the two units can be
+        converted into each other: that is only checked when a reading is converted. This way, a parameter with units of
+        another kind (e.g., "A" and "kW"), which an adapter translates in its own way, does not stop the adapter from
+        starting.
+
+        Expected Input Structure (`entities`):
+        --------------------------------------
+        {
+            "GR01": {
+                "parameters": {
+                    "energy_in_l1": {"parameter_type_id": "energy_in_l1", "measurement_unit": "kWh"}
+                }
+            }
+        }
+
+        Expected Input Structure (`source_mapping_rules`):
+        --------------------------------------------------
+        {
+            "energy_in_l1": {"match_key": "a_total_act_energy", "source_measurement_unit": "Wh"},
+            "connected_vehicle": None
+        }
+
+        A rule that is None, a parameter with no rule, and a parameter with no 'measurement_unit' in the schema (e.g., a
+        flag) are not converted and need no 'source_measurement_unit'.
+
+        Args:
+            entities (dict): The entities of the environment, with their parameters (the schema).
+            source_mapping_rules (dict): The rules of the parameters of this Telemetry System, by parameter id.
+
+        Raises:
+            ValueError: If a parameter has a unit in the schema but no 'source_measurement_unit' in its rule.
+        """
+        # For each parameter that is converted: (unit of the source, unit of the schema).
+        # Example: {"energy_in_l1": ("Wh", "kWh")}
+        self._parameter_units: Dict[str, tuple] = {}
+        self._unit_converters = {}
+        self._unit_errors_logged: set = set()
+
+        for entity_id, entity in entities.items():
+            for parameter_id, parameter in (entity.get("parameters") or {}).items():
+                schema_unit = parameter.get("measurement_unit")
+                rule = source_mapping_rules.get(parameter_id)
+
+                # A parameter with no rule, or with no unit in the schema, is not converted
+                if not isinstance(rule, dict) or not schema_unit:
+                    continue
+
+                # --- Guard Clause: the unit of the source is mandatory ---
+                source_unit = rule.get("source_measurement_unit")
+                if not isinstance(source_unit, str) or not source_unit.strip():
+                    error_msg = (
+                        f"{self._LOG_PREFIX} Initialization error: parameter '{parameter_id}' of entity "
+                        f"'{entity_id}' has no 'source_measurement_unit' in its source mapping."
+                    )
+                    self._logger.error(error_msg)
+                    raise ValueError(error_msg)
+
+                self._parameter_units[parameter_id] = (source_unit, schema_unit)
+
+    def convert_to_schema_units(self, parameters: dict, skip: Iterable[str] = ()) -> dict:
+        """Converts the readings of the parameters from the unit of the source to the unit of the schema.
+
+        It must be called with the readings as the source gave them, before `parameters_validation`. The readings are
+        changed in place. A reading whose value is not a number is left as it is, and so is a parameter with no
+        conversion to do (the same unit, or no unit in the schema).
+
+        If the two units of a parameter cannot be converted into each other (e.g., "A" and "kW"), the conversion of
+        that parameter fails: the error is logged (once for the parameter) and its readings are removed from the message,
+        because they would reach the next container in the wrong unit. The other parameters are not affected.
+        A parameter that the adapter translated in its own way must be given in `skip`, so that it is left as it is.
+
+        Expected Input Structure:
+        -------------------------
+        {"energy_in_l1": {"parameter_type_id": "energy_in_l1",
+                          "values": [{"timestamp": "2026-08-19 16:15:31 +0000", "value": 45200.0}]}}
+
+        Expected Output Structure (with 'source_measurement_unit' "Wh" and 'measurement_unit' "kWh"):
+        ---------------------------------------------------------------------------------------------
+        {"energy_in_l1": {"parameter_type_id": "energy_in_l1",
+                          "values": [{"timestamp": "2026-08-19 16:15:31 +0000", "value": 45.2}]}}
+
+        Args:
+            parameters (dict): The parameters to send, by parameter id, with their lists of readings.
+            skip (Iterable[str]): Ids of the parameters that the adapter already translated and that must not be
+                converted.
+
+        Returns:
+            dict: The same dictionary, with the values converted.
+        """
+        skip = set(skip)
+
+        for parameter_id in list(parameters):
+            parameter = parameters[parameter_id]
+            units = self._parameter_units.get(parameter_id)
+            if units is None or parameter_id in skip or not isinstance(parameter, dict):
+                continue
+
+            # The function is built the first time the parameter is converted, and used again after that.
+            converter = self._unit_converters.get(parameter_id)
+            if converter is None:
+                try:
+                    converter = self._unit_converters[parameter_id] = build_converter(*units)
+                except ValueError as err:
+                    # The error is logged only once per parameter, so that a wrong configuration does not fill the log
+                    if parameter_id not in self._unit_errors_logged:
+                        self._unit_errors_logged.add(parameter_id)
+                        self._logger.error(
+                            f"{self._LOG_PREFIX} Parameter '{parameter_id}': {err} Its readings are not sent. "
+                            f"Translate it in the adapter and pass it in 'skip'."
+                        )
+                    del parameters[parameter_id]
+                    continue
+
+            for reading in parameter.get("values") or []:
+                if isinstance(reading, dict) and "value" in reading:
+                    reading["value"] = converter(reading["value"])
+
+        return parameters
 
     def parameters_validation(
             self,
@@ -170,7 +303,7 @@ class TelemetryAdapterBase(ABC):
                 expected_type = parameter_type_expected_types.get(parameter_type_id)
 
                 if expected_type is None:
-                    self._logger.info(
+                    self._logger.debug(
                         f"{self._LOG_PREFIX} Parameter type '{parameter_type_id}' of parameter '{param_id}' "
                         f"is not registered in parameter_type_expected_types. Skipping type validation."
                     )
@@ -187,6 +320,20 @@ class TelemetryAdapterBase(ABC):
                     }
 
         return parameters_to_send
+
+    def _parameter_type(self, entity_id: str, param_id: str) -> str:
+        """Returns the parameter type of a parameter, as the environment says, to be shown in the logs.
+
+        Args:
+            entity_id (str): Id of the entity.
+            param_id (str): Id of the parameter.
+
+        Returns:
+            str: The 'parameter_type_id' of the parameter, or "unknown" if the environment does not have it.
+        """
+        entities = getattr(self, "_entities", None) or {}
+        parameter = (entities.get(entity_id) or {}).get("parameters", {}).get(param_id) or {}
+        return str(parameter.get("parameter_type_id", "unknown"))
 
     @staticmethod
     def _message_creator(

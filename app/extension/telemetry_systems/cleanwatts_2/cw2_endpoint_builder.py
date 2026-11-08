@@ -134,7 +134,7 @@ class CW2EndpointBuilder(EndpointBuilderBase):
         # Pre-compute static multi-exchange topology for all entities in this environment
         self._static_topology = self._precalculate_topology()
 
-        self._logger.info(
+        self._logger.debug(
             f"{self._LOG_PREFIX} Topology successfully constructed for environment '{self._environment_name}' "
             f"with {len(self._static_topology.get('exchanges', []))} AMQP exchange binding(s)."
         )

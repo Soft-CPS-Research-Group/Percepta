@@ -87,8 +87,8 @@ class DuplicatedDataApproach(DataIssueHandlingApproachBase):
                 removed = len(values) - len(unique_values)
                 if removed:
                     self._logger.debug(
-                        f"{self._LOG_PREFIX} Removed {removed} duplicated reading(s) of parameter '{parameter_id}' "
-                        f"of entity '{entity.get('id')}'."
+                        f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity.get('id')}' "
+                        f"(parameter type: {parameter.get('parameter_type_id')}): removed {removed} duplicated reading(s)."
                     )
 
                 parameter["values"] = unique_values

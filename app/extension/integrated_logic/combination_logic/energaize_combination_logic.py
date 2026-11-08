@@ -181,8 +181,8 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                 parameter_schema = entity_schema.get("parameters", {}).get(parameter_id)
                 if parameter_schema is None:
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' ignored: "
-                        f"it is not in the environment."
+                        f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                        f"{parameter.get('parameter_type_id')}): ignored, it is not in the environment."
                     )
                     continue
 
@@ -239,13 +239,13 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         # The readings in time order, because the approaches do not promise it. A reading without a valid timestamp
         # cannot be placed in time, so it is ignored (and logged) instead of losing the whole period.
         timed_readings: List[tuple] = []
-        for reading in parameter.get("values", []):
+        for reading in parameter.get("values") or []:
             try:
                 timed_readings.append((parse_timestamp(reading["timestamp"]), reading))
             except (ValueError, KeyError, TypeError):
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Reading of parameter '{parameter_id}' of entity '{entity_id}' ignored: "
-                    f"it has no valid timestamp."
+                    f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                    f"{parameter_schema.get('parameter_type_id')}): reading ignored, it has no valid timestamp."
                 )
         readings: List[Dict[str, Any]] = [
             reading for _, reading in sorted(timed_readings, key=lambda timed_reading: timed_reading[0])
@@ -326,8 +326,8 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                 continue
             if not is_type_compatible(value, expected_type):
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Value {value!r} of parameter '{parameter_id}' of entity '{entity_id}' "
-                    f"dropped: parameter type '{parameter_type_id}' expects {expected_type.__name__}."
+                    f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' "
+                    f"(parameter type: {parameter_type_id}): value {value!r} dropped, it expects {expected_type.__name__}."
                 )
                 continue
             valid_values.append(float(value) if expected_type in (float, int) else value)

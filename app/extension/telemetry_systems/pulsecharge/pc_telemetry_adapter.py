@@ -77,7 +77,9 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
         {
             # Parameter id -> keys. The 'match_key' is the PulseCharge user id of the entity
             # the parameter belongs to, so all the parameters of an entity share it.
-            "ev01_soc": {"match_key": "user-123"},
+            # The 'source_measurement_unit' (mandatory when the parameter has a 'measurement_unit' in the schema) is the
+            # unit in which the source gives the readings. They are converted to the unit of the schema.
+            "ev01_soc": {"match_key": "user-123", "source_measurement_unit": "%"},
             "ev01_flexibility": {"match_key": "user-123"}
         }
 
@@ -94,15 +96,16 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
         """
         super().__init__(environment, timezone, logger)
 
-        # --- Guard Clause 1: environment_specs must have an 'entities' key ---
-        if not isinstance(environment_specs, dict) or "entities" not in environment_specs:
+        # --- Guard Clause 1: environment_specs must be a dictionary ---
+        if not isinstance(environment_specs, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'environment_specs' must be a dictionary "
-                f"containing an 'entities' key for environment '{environment}'."
+                f"for environment '{environment}'."
             )
             self._logger.error(error_msg)
             raise ValueError(error_msg)
 
+        # --- Guard Clause 2: environment_specs must have a non-empty 'entities' dictionary ---
         entities_dict = environment_specs.get("entities")
         if not isinstance(entities_dict, dict) or not entities_dict:
             error_msg = (
@@ -112,17 +115,19 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
             self._logger.error(error_msg)
             raise ValueError(error_msg)
 
-        # --- Guard Clause 2: source_mapping_rules must be a dict ---
+        # --- Guard Clause 3: source_mapping_rules must be a dict ---
         if not isinstance(source_mapping_rules, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'source_mapping_rules' must be a dictionary, "
-                f"got {type(source_mapping_rules).__name__}."
+                f"got {type(source_mapping_rules).__name__} for environment '{environment}'."
             )
             self._logger.error(error_msg)
             raise TypeError(error_msg)
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # Last state of charge received for each entity, and when it was received.
         # Expected `_soc_cache` Data Structure:
@@ -149,8 +154,8 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
                 user_id = str(rule.get("match_key", "")).strip() if isinstance(rule, dict) else ""
                 if not user_id:
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' "
-                        f"has no 'match_key' (user id) in 'source_mapping_rules'."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"it has no 'match_key' (user id) in 'source_mapping_rules'."
                     )
                     continue
 
@@ -263,6 +268,8 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
         if not parameters:
             return []
 
+        # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+        parameters = self.convert_to_schema_units(parameters)
         parameters = self.parameters_validation(
             parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
         )

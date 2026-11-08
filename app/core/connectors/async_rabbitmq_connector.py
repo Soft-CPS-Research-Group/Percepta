@@ -74,7 +74,7 @@ class AsyncRabbitMQConnector:
         self._ssl_conf = server_configurations.get("ssl_conf")
 
         if self._logger:
-            self._logger.info(
+            self._logger.debug(
                 f"{self._LOG_PREFIX} Endpoint transport initialized for host '{self._host}:{self._port}'.")
 
     def _setup_ssl_context(self) -> Optional[ssl.SSLContext]:
@@ -105,7 +105,7 @@ class AsyncRabbitMQConnector:
                 context.verify_mode = ssl.CERT_NONE
 
             if self._logger:
-                self._logger.info(
+                self._logger.debug(
                     f"{self._LOG_PREFIX} SSL Context built with hostname_check={context.check_hostname} "
                     f"and verify_mode={context.verify_mode}."
                 )
@@ -125,7 +125,7 @@ class AsyncRabbitMQConnector:
             RabbitMQAsyncError: If the downstream broker link cannot be secured.
         """
         if self._logger:
-            self._logger.info(f"{self._LOG_PREFIX} Initiating connection to AMQP broker...")
+            self._logger.debug(f"{self._LOG_PREFIX} Initiating connection to AMQP broker...")
 
         ssl_context = self._setup_ssl_context()
         use_ssl = ssl_context is not None or self._port == 5671
@@ -148,8 +148,8 @@ class AsyncRabbitMQConnector:
             # --- Quality of Service (QoS) flow control ---
             await self._channel.set_qos(prefetch_count=self._prefetch_count)
             if self._logger:
-                self._logger.info(f"{self._LOG_PREFIX} QoS configured. Prefetch count set to {self._prefetch_count}.")
-                self._logger.info(f"{self._LOG_PREFIX} Robust connection and channel secured successfully.")
+                self._logger.debug(f"{self._LOG_PREFIX} QoS configured. Prefetch count set to {self._prefetch_count}.")
+                self._logger.debug(f"{self._LOG_PREFIX} Robust connection and channel secured successfully.")
 
 
         except asyncio.TimeoutError as e:
@@ -203,7 +203,7 @@ class AsyncRabbitMQConnector:
         exchange_type = exchange_conf.pop("exchange_type", "direct")
 
         if self._logger:
-            self._logger.info(f"{self._LOG_PREFIX} Declaring exchange '{exchange_name}' of type '{exchange_type}'...")
+            self._logger.debug(f"{self._LOG_PREFIX} Declaring exchange '{exchange_name}' of type '{exchange_type}'...")
 
         try:
             exchange = await self._channel.declare_exchange(
@@ -213,7 +213,7 @@ class AsyncRabbitMQConnector:
             )
 
             if self._logger:
-                self._logger.info(f"{self._LOG_PREFIX} Exchange '{exchange_name}' verified/declared successfully.")
+                self._logger.debug(f"{self._LOG_PREFIX} Exchange '{exchange_name}' verified/declared successfully.")
 
             return exchange
         except ChannelNotFoundEntity as e:
@@ -281,7 +281,7 @@ class AsyncRabbitMQConnector:
             queue_name = f'{queue_conf.pop("queue_prefix")}{random.randint(0, 999999):06d}{queue_name}'
 
         if self._logger:
-            self._logger.info(f"{self._LOG_PREFIX} Declaring queue '{queue_name}'...")
+            self._logger.debug(f"{self._LOG_PREFIX} Declaring queue '{queue_name}'...")
 
         try:
             queue = await self._channel.declare_queue(name=queue_name, **queue_conf)
@@ -289,12 +289,12 @@ class AsyncRabbitMQConnector:
             # TODO VALIDAR EXISTÊNCIA DA EXCHANGE
             if exchange_name:
                 if self._logger:
-                    self._logger.info(
+                    self._logger.debug(
                         f"{self._LOG_PREFIX} Binding queue '{queue_name}' to exchange '{exchange_name}' with key '{routing_key}'...")
                 await queue.bind(exchange=exchange_name, routing_key=routing_key)
 
             if self._logger:
-                self._logger.info(f"{self._LOG_PREFIX} Queue '{queue_name}' integration complete.")
+                self._logger.debug(f"{self._LOG_PREFIX} Queue '{queue_name}' integration complete.")
             return queue.name
         except Exception as e:
             error_msg = f"{self._LOG_PREFIX} Failed to declare/bind queue '{queue_name}': {e}"
@@ -383,7 +383,7 @@ class AsyncRabbitMQConnector:
         consume_conf.pop("requeue") # TODO TER DE RETIRAR NÃO FAZ MT SENTIDO VER MELHOR ALTERNATIVA SERÁ QUE CONFIGURAÇÕES DE CONSUMO E DE APROVAÇÃO DE MENSAGENS DEVERIAM FICAR SEPARADAS?
 
         if self._logger:
-            self._logger.info(f"{self._LOG_PREFIX} Registering consumer callback on queue '{queue_name}'...")
+            self._logger.debug(f"{self._LOG_PREFIX} Registering consumer callback on queue '{queue_name}'...")
 
         try:
             queue = await self._channel.get_queue(queue_name, ensure=False)
@@ -394,7 +394,7 @@ class AsyncRabbitMQConnector:
             ) # TODO pode ser util no futuro guardar o consumer_tag para fechar a queue certa
             self._consuming = True # TODO NÃO SEI BEM PARA QUE SERVE ISTO AQUI
             if self._logger:
-                self._logger.info(f"{self._LOG_PREFIX} Consumer successfully established with tag: {consumer_tag}")
+                self._logger.debug(f"{self._LOG_PREFIX} Consumer successfully established with tag: {consumer_tag}")
             return consumer_tag
         except Exception as e:
             error_msg = f"{self._LOG_PREFIX} Failed to setup async consumer on queue '{queue_name}': {e}"
@@ -466,7 +466,7 @@ class AsyncRabbitMQConnector:
         that a failing channel closure does not leak the underlying TCP connection socket.
         """
         if self._logger:
-            self._logger.info(f"{self._LOG_PREFIX} Initiating graceful connection teardown...")
+            self._logger.debug(f"{self._LOG_PREFIX} Initiating graceful connection teardown...")
 
         # 1. Attempt isolated channel closure
         if self._channel and not self._channel.is_closed:
@@ -490,4 +490,4 @@ class AsyncRabbitMQConnector:
             self._consuming = False
 
             if self._logger:
-                self._logger.info(f"{self._LOG_PREFIX} Infrastructure teardown completed.")
+                self._logger.debug(f"{self._LOG_PREFIX} Infrastructure teardown completed.")

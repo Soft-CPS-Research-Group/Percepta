@@ -55,7 +55,7 @@ class AsyncHTTPConnector:
         self._verify_ssl = server_configurations.get("verify_ssl", False)
         self._session = None
 
-        self._logger.info(f"{self._LOG_PREFIX} Transport initialized with base URL: '{self._base_url}'")
+        self._logger.debug(f"{self._LOG_PREFIX} Transport initialized with base URL: '{self._base_url}'")
 
     async def connect(self) -> None:
         """
@@ -150,15 +150,15 @@ class AsyncHTTPConnector:
         # aiohttp sessions hold a mutable multidict representing global headers
         session = cast(aiohttp.ClientSession, self._session)
         session.headers.update(new_headers)
-        self._logger.info(f"{self._LOG_PREFIX} ClientSession global headers updated dynamically.")
+        self._logger.debug(f"{self._LOG_PREFIX} ClientSession global headers updated dynamically.")
 
     async def close(self) -> None:
         """Closes the HTTP ClientSession cleanly."""
         if self._session:
-            self._logger.info(f"{self._LOG_PREFIX} Initiating clean shutdown of the ClientSession context pool...")
+            self._logger.debug(f"{self._LOG_PREFIX} Initiating clean shutdown of the ClientSession context pool...")
             try:
                 await self._session.close()
-                self._logger.info(f"{self._LOG_PREFIX} Persistent connections successfully discarded.")
+                self._logger.debug(f"{self._LOG_PREFIX} Persistent connections successfully discarded.")
             except Exception as e:
                 error_msg = f"{self._LOG_PREFIX} Failed to close HTTP session: {e}"
                 raise HTTPErrorWrapper(error_msg) from e

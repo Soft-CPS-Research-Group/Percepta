@@ -1,15 +1,13 @@
 # --- Standard Library Imports ---
 import datetime
 import json
+import re
 from typing import Any, Dict, List, Optional, Union
 
 # --- Internal Framework Imports ---
 from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
-from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label, ParamLabel
-
-# SoftCPS reports the state of charge as a percentage (0-100). It is stored as a fraction (0-1).
-SOC_DECIMAL_PLACES = 4
+from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
 
 # Adaptation strategies registered by entity type id.
 _ENTITY_TYPES_STRATEGIES = {}
@@ -63,7 +61,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
                     "parameters": {
                         "b01_energy_in": {"parameter_type_id": "energy_in", "measurement_unit": "kWh"},
                         "b01_energy_out": {"parameter_type_id": "energy_out", "measurement_unit": "kWh"},
-                        "b01_soc": {"parameter_type_id": "state_of_charge", "measurement_unit": "%"}
+                        "b01_soc": {"parameter_type_id": "state_of_charge", "measurement_unit": "ratio"}
                     }
                 },
                 "GR01": {
@@ -81,10 +79,16 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
             # Parameter id -> where the data comes from and which key of the payload holds it.
             # Only the last part of the 'fetch_key' is compared with the last part of the
             # envelope's `source` (e.g. "softcps/batteries/battery_id_1" -> "battery_id_1").
-            "b01_energy_in": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "energy_charged_kwh_window"},
-            "b01_energy_out": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "energy_discharged_kwh_window"},
-            "b01_soc": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "soc_pct"},
-            "gr01_in_total": {"fetch_key": "softcps/grid_meters/hq-grid-meter", "match_key": "energy_in_total"}
+            # The 'source_measurement_unit' is mandatory when the parameter has a 'measurement_unit' in the schema. It is
+            # the unit in which the source gives the readings. They are converted to the unit of the schema.
+            "b01_energy_in": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "energy_charged_kwh_window",
+                              "source_measurement_unit": "kWh"},
+            "b01_energy_out": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "energy_discharged_kwh_window",
+                               "source_measurement_unit": "kWh"},
+            "b01_soc": {"fetch_key": "softcps/batteries/battery_id_1", "match_key": "soc_pct",
+                        "source_measurement_unit": "%"},
+            "gr01_in_total": {"fetch_key": "softcps/grid_meters/hq-grid-meter", "match_key": "energy_in_total",
+                              "source_measurement_unit": "kWh"}
         }
 
         Args:
@@ -130,6 +134,8 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # Reverse lookup: id used in the envelope's source -> entity_id
         # Expected `_source_to_entity` Data Structure:
@@ -160,8 +166,8 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
                 match_key = str(rule.get("match_key", "")).strip() if isinstance(rule, dict) else ""
                 if not fetch_key or not match_key:
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' "
-                        f"has no 'fetch_key' or 'match_key' in 'source_mapping_rules'."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"it has no 'fetch_key' or 'match_key' in 'source_mapping_rules'."
                     )
                     continue
 
@@ -273,6 +279,8 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
         if not parameters:
             return []
 
+        # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+        parameters = self.convert_to_schema_units(parameters)
         parameters = self.parameters_validation(
             parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
         )
@@ -384,7 +392,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
         Expected Input (`values_by_type`):
         ----------------------------------
-        {"energy_in": 0.4, "state_of_charge": 0.85}
+        {"energy_in": 0.4, "state_of_charge": 85.0}
 
         Expected Output Structure:
         --------------------------
@@ -395,7 +403,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
             },
             "b01_soc": {
                 "parameter_type_id": "state_of_charge",
-                "values": [{"timestamp": "2026-08-19 10:00:00 +0000", "value": 0.85}]
+                "values": [{"timestamp": "2026-08-19 10:00:00 +0000", "value": 85.0}]
             }
         }
 
@@ -462,7 +470,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
             parameter_type_id = param_spec.get("parameter_type_id")
             if not parameter_type_id:
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' has no "
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no "
                     f"'parameter_type_id' configured. Skipping its reading."
                 )
                 continue
@@ -527,8 +535,9 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
     def _battery(self, entity_id: str, payload: dict) -> Dict[str, Any]:
         """Reads a battery's values from the payload.
 
-        The state of charge arrives as a percentage (0-100) and is converted to a
-        fraction (0-1).
+        The values stay in the unit of SoftCPS (e.g., the state of charge as a percentage, 0-100). The conversion to
+        the unit of the schema (e.g., a proportion from 0 to 1) is done afterwards for all the adapters, with the
+        'source_measurement_unit' of the source mapping.
 
         Expected Input (`payload`):
         ---------------------------
@@ -541,7 +550,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
         Expected Output:
         ----------------
-        {"energy_in": 0.4, "energy_out": 0.1, "state_of_charge": 0.85}
+        {"energy_in": 0.4, "energy_out": 0.1, "state_of_charge": 85.0}
 
         Args:
             entity_id (str): Id of the battery entity.
@@ -550,15 +559,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
         Returns:
             Dict[str, Any]: The value found for each parameter type id.
         """
-        values = self._read_values(entity_id, payload)
-
-        # Only numbers are converted. Anything else is left as is, and flagged
-        # as invalid later by parameters_validation.
-        soc = values.get(ParamLabel.STATE_OF_CHARGE.value)
-        if isinstance(soc, (int, float)) and not isinstance(soc, bool):
-            values[ParamLabel.STATE_OF_CHARGE.value] = round(soc / 100, SOC_DECIMAL_PLACES)
-
-        return values
+        return self._read_values(entity_id, payload)
 
     @staticmethod
     def _clean_source(source: Any) -> str:
@@ -587,17 +588,30 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
     @classmethod
     def _last_part_of_source(cls, source: Any) -> str:
-        """Returns the last part of a source, which identifies where the data comes from.
+        """Returns the id of the asset that a source identifies, which says where the data comes from.
 
-        Example: "softcps/batteries/battery_id_1" gives "battery_id_1".
+        If the source has the path of the SoftCPS API ("/assets/<asset_id>/..."), the id is the part after "/assets/",
+        and whatever comes after it (e.g., "/observations?window_seconds=15", or the same path repeated) is ignored.
+        Otherwise, the id is the last part of the source.
+
+        Examples:
+        ---------
+        "http://193.136.62.78:8003/assets/Sao-Mamede-Battery/observations?window_seconds=15"
+                                                          -> "sao-mamede-battery"
+        "softcps/batteries/battery_id_1"                  -> "battery_id_1"
+        "hq-grid-meter"                                   -> "hq-grid-meter"
 
         Args:
             source (Any): The envelope's source, or the 'fetch_key' of a rule.
 
         Returns:
-            str: The last part of the source, normalized for comparison.
+            str: The id of the asset, normalized for comparison.
         """
-        return cls._clean_source(source).split("/")[-1]
+        cleaned = cls._clean_source(source)
+        match = re.search(r"/assets/([^/?#]+)", cleaned)
+        if match:
+            return match.group(1)
+        return cleaned.split("/")[-1]
 
     @staticmethod
     def _parse_date(raw_date: Any) -> Optional[datetime.datetime]:  # TODO passar isto para um utils

@@ -224,9 +224,11 @@ class DataProcessingService:
         #   10:10:01 -> targets = [_accumulated, _next_period]    -> period 10:00-10:10 and period 10:10-10:20
         #   10:10:03 -> targets = [_accumulated]                  -> period 10:10-10:20 only (it is the new
         #                                                            '_accumulated' since 10:10:02)
-        targets = [self._accumulated]
+        # Each target has a name, only to say in the logs which structure a message is about: the two have the same
+        # message, so without the name the two warnings would be the same.
+        targets = [("current period dictionary", self._accumulated)]
         if self._next_period is not None:
-            targets.append(self._next_period)
+            targets.append(("next period dictionary", self._next_period))
 
         for entity in entities:
             # --- Guard Clause 1: an entity needs an id and a dictionary of parameters ---
@@ -235,10 +237,13 @@ class DataProcessingService:
                 self._logger.warning(f"{self._LOG_PREFIX} Skipping an entity without 'id' or 'parameters'.")
                 continue
 
-            for accumulated in targets:
-                self._add_entity(accumulated, entity, arrival)
+            for target_name, accumulated in targets:
+                self._add_entity(accumulated, entity, arrival, target_name)
 
-    def _add_entity(self, accumulated: Dict[str, Dict[str, Any]], entity: Dict[str, Any], arrival: str) -> None:
+    def _add_entity(
+            self, accumulated: Dict[str, Dict[str, Any]], entity: Dict[str, Any], arrival: str,
+            target_name: str = "current period dictionary"
+    ) -> None:
         """Adds an entity of a message to an accumulation structure.
 
         Args:
@@ -246,6 +251,7 @@ class DataProcessingService:
             entity (Dict[str, Any]): The entity of the message. It has already been checked to have an 'id' and a
                 dictionary 'parameters'.
             arrival (str): The arrival time of the message, as a timestamp.
+            target_name (str): Name of the structure ("current period dictionary" or "next period dictionary"), only for the logs.
         """
         # Finds the entity in 'accumulated', or creates it if it is not there yet. 'dict.setdefault(key, default)' does
         # exactly that, in one step:
@@ -273,8 +279,10 @@ class DataProcessingService:
             # --- Guard Clause 1: a parameter needs a list 'values' ---
             if not isinstance(parameter, dict) or not isinstance(parameter.get("values"), list):
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Skipping parameter '{parameter_id}' of entity '{entity['id']}': it has no "
-                    f"list 'values'."
+                    f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity['id']}' (parameter type: "
+                    f"{parameter.get('parameter_type_id') if isinstance(parameter, dict) else None}): "
+                    f"not added to the {target_name}, where the readings received for the period are accumulated, "
+                    f"because its 'values' is not a list of readings or a dictionary."
                 )
                 continue
 
@@ -321,14 +329,23 @@ class DataProcessingService:
         nothing to combine, so nothing is sent.
         """
         period_end = self._current_period_end()
-        self._logger.info(f"{self._LOG_PREFIX} Period ending at {format_timestamp(period_end)} has ended.")
+        self._logger.debug(f"{self._LOG_PREFIX} Period ending at {format_timestamp(period_end)} has ended.")
 
         # Step 2. A grace period of zero or less means that there is nothing to wait for.
         # While the service waits, '_next_period' is a dictionary, and so 'receive_message' also accumulates the
         # messages that arrive in it (see the class docstring).
         if self._grace_period_seconds > 0:
             self._next_period = {}
-            await asyncio.sleep(self._grace_period_seconds)
+            try:
+                await asyncio.sleep(self._grace_period_seconds)
+            except asyncio.CancelledError:
+                # The application is stopping while the service waits. The period is not processed, and the job ends
+                # quietly (re-raising would make the scheduler print a traceback for a normal shutdown)
+                self._logger.debug(
+                    f"{self._LOG_PREFIX} Stopped during the grace period, so the period ending at "
+                    f"{format_timestamp(period_end)} was not processed."
+                )
+                return
 
         # Step 3. The accumulated data is taken, and the data accumulated for the next period (the messages of the
         # grace period, or an empty one) takes its place, in one step, before anything else is done. The service runs in
@@ -356,6 +373,10 @@ class DataProcessingService:
         # Step 4. Hands the message of the period to the Output Handler, which delivers it to the next container
         # (Inference). The message is the final result of the period: the accumulated data was already replaced above
         # (step 3), so the service does not keep anything of this period after this point.
+        self._logger.info(
+            f"{self._LOG_PREFIX} Message of the period ending at {format_timestamp(period_end)}: "
+            f"\n{json.dumps(message, default=str, indent=2)}"
+        )
         try:
             await self._output_handler.send(message)
         except Exception as err:

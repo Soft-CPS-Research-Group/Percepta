@@ -60,7 +60,7 @@ class SyncPeriodicScheduler:
             **cron_kwargs
         )
         self._scheduler.configure(wakeup_interval=0.1)
-        self._logger.info(f"Scheduler | Job [{job_id}] created successfully with an interval of {time_interval}s.")
+        self._logger.debug(f"Scheduler | Job [{job_id}] created successfully with an interval of {time_interval}s.")
 
     def get_next_run_time(self, job_id: str) -> Optional[datetime.datetime]:
         """
@@ -77,7 +77,7 @@ class SyncPeriodicScheduler:
         if job and job.next_run_time:
             # Localize the next run time to the scheduler's configured timezone
             localized_next_run = job.next_run_time.astimezone(self._tz)
-            self._logger.info(f"Scheduler | Next scheduled run for job [{job_id}] is: {localized_next_run}")
+            self._logger.debug(f"Scheduler | Next scheduled run for job [{job_id}] is: {localized_next_run}")
             return localized_next_run
 
         self._logger.warning(f"Scheduler | Job [{job_id}] not found or has no upcoming execution scheduled.")
@@ -88,10 +88,10 @@ class SyncPeriodicScheduler:
         Starts the scheduler engine.
         WARNING: This call is BLOCKING and will halt the main thread.
         """
-        self._logger.info("Scheduler | Entering blocking loop. Main thread is now managed by the scheduler.")
+        self._logger.debug("Scheduler | Entering blocking loop. Main thread is now managed by the scheduler.")
         self._scheduler.start()
 
     def stop(self) -> None:
         """Gracefully shuts down the scheduler engine."""
         self._scheduler.shutdown()
-        self._logger.info("Scheduler | Blocked loop released. Shut down gracefully.")
+        self._logger.debug("Scheduler | Blocked loop released. Shut down gracefully.")

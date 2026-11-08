@@ -80,7 +80,7 @@ class CWTelemetryLauncher(TelemetrySystemLauncherBase):
                             "rpc_properties": {"enabled": True}
                         },
                         {
-                            "path": "/sessions/refresh?token={token}&refresh_token={refresh_token}",
+                            "path": "/session/refresh?token={token}&refresh_token={refresh_token}",
                             "method": "PUT",
                             "timeout_ms": 5000,
                             "headers": {"Content-Type": "application/json"},

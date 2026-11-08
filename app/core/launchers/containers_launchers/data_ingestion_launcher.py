@@ -277,7 +277,7 @@ class DataIngestionLauncher:
 
                     # Reaching this point means this Telemetry System is running for the environment:
                     # its Input Handler was built, connected to the pipeline and started
-                    logger.info(
+                    logger.debug(
                         f"{self._LOG_PREFIX} Telemetry system '{system_id}' launched for environment "
                         f"'{environment_name}'."
                     )

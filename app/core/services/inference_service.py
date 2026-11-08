@@ -140,6 +140,10 @@ class InferenceService:
         model_input = self._adapter.adapt_model_input(message)
 
         decisions = await self._request_decisions(model_input, period_id)
+        self._logger.info(
+            f"{self._LOG_PREFIX} Decisions of the ML Model for the period '{period_id}': "
+            f"\n{json.dumps(decisions, default=str, indent=2)}"
+        )
 
         # Guard Clause 1: When the Model Execution Error Handling Logic ends the process, nothing else is done.
         if decisions is None:
@@ -164,6 +168,10 @@ class InferenceService:
             self._logger.warning(f"{self._LOG_PREFIX} No decisions to send for the period '{period_id}'.")
             return
 
+        self._logger.info(
+            f"{self._LOG_PREFIX} Normalised decisions of the period '{period_id}': "
+            f"\n{json.dumps(normalised_decisions, default=str, indent=2)}"
+        )
         try:
             await self._output_handler.send(normalised_decisions)
         except Exception as err:

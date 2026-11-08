@@ -92,8 +92,10 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
         {
             # Parameter id -> forecast of the payload that holds its values ('consumption' or 'production').
             # There is no 'fetch_key': the forecasts are not requested, they are sent by the Predictor.
-            "pr01_consumption": {"match_key": "consumption"},
-            "pr01_production": {"match_key": "production"}
+            # The 'source_measurement_unit' is mandatory when the parameter has a 'measurement_unit' in the schema. It is
+            # the unit in which the Predictor gives the values. They are converted to the unit of the schema.
+            "pr01_consumption": {"match_key": "consumption", "source_measurement_unit": "kWh"},
+            "pr01_production": {"match_key": "production", "source_measurement_unit": "kWh"}
         }
 
         Args:
@@ -139,6 +141,8 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # Forecast of the payload that holds the values of each parameter
         # Expected `_forecast_keys` Data Structure:
@@ -167,8 +171,8 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
                 match_key = str(rule.get("match_key", "")).strip() if isinstance(rule, dict) else ""
                 if not match_key:
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' "
-                        f"has no 'match_key' in 'source_mapping_rules'."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"it has no 'match_key' in 'source_mapping_rules'."
                     )
                     continue
 
@@ -283,6 +287,8 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
             # 6. Validate the parameters against the schema, and create the message
             # Example: a parameter whose values have the wrong type is dropped by 'parameters_validation'
             entity_parameters = entity_data.get("parameters", {})
+            # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+            parameters = self.convert_to_schema_units(parameters)
             parameters = self.parameters_validation(
                 parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
             )
@@ -484,7 +490,7 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
             parameter_type_id = param_spec.get("parameter_type_id")
             if not parameter_type_id:
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' has no "
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no "
                     f"'parameter_type_id' configured. Skipping its forecast."
                 )
                 continue
@@ -499,8 +505,8 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
                 if param_id not in self._missing_forecast_warned:
                     self._missing_forecast_warned.add(param_id)
                     self._logger.warning(
-                        f"{self._LOG_PREFIX} Forecast '{forecast_key}' of parameter '{param_id}' "
-                        f"of entity '{entity_id}' is missing, empty or not a list in the payload."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"forecast '{forecast_key}' is missing, empty or not a list in the payload."
                     )
                 continue
 

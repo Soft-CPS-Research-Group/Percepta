@@ -101,7 +101,7 @@ class AsyncLocalInputHandler(InputHandlerBase):
 
         self._is_running = True
         self._consumer_task = asyncio.create_task(self._consume_loop())
-        self._logger.info(f"{self._LOG_PREFIX} In-memory message consumer loop started.")
+        self._logger.debug(f"{self._LOG_PREFIX} In-memory message consumer loop started.")
 
     async def _consume_loop(self) -> None:
         while self._is_running:
@@ -125,7 +125,7 @@ class AsyncLocalInputHandler(InputHandlerBase):
 
     async def stop(self) -> None:
         """Gracefully terminates the consumer task and closes the physical connector."""
-        self._logger.info(f"{self._LOG_PREFIX} Stopping in-memory consumer loop.")
+        self._logger.debug(f"{self._LOG_PREFIX} Stopping in-memory consumer loop.")
         self._is_running = False
 
         if self._consumer_task and not self._consumer_task.done():

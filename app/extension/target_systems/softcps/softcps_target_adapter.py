@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 from app.core.adapters.target_system_adapter_base import MappedDecision, TargetSystemAdapterBase
 from app.core.output_handlers.async_http_output_handler import HttpPublishMode
 from app.core.utils.logger import LoggingUtils
+from app.core.utils.unit_utils import build_converter
 from app.extension.utils.labels import Label
 
 
@@ -113,10 +114,11 @@ class SoftCPSTargetAdapter(TargetSystemAdapterBase):
                     if entity_type_id != Label.BATTERY.value:
                         raise ValueError(f"SoftCPS has no actuation for the entity type {entity_type_id!r}")
 
-                    # Guard Clause 2: Checks that the device is controlled in kW, the only unit SoftCPS accepts.
-                    unit = actuator.get("measurement_unit")
-                    if unit not in (None, "kW"):
-                        raise ValueError(f"SoftCPS only accepts kW, and the actuator is in {unit!r}")
+                    # Guard Clause 2: Checks that the device is controlled in kW, the only unit SoftCPS accepts. The
+                    # 'destination_measurement_unit' is mandatory.
+                    unit = actuator.get("destination_measurement_unit")
+                    if unit != "kW":
+                        raise ValueError(f"SoftCPS only accepts 'destination_measurement_unit' kW, and it is {unit!r}")
 
                     # Guard Clause 3: Checks that the power is a number (a boolean is not).
                     power_kw = actuator["value"]
@@ -137,7 +139,7 @@ class SoftCPSTargetAdapter(TargetSystemAdapterBase):
 
                 endpoint = {**self._endpoint, "path": self._endpoint["path"].replace(self._ASSET_PLACEHOLDER, asset_id)}
                 mapped_decisions.append(MappedDecision(
-                    message={"power_kw": float(power_kw)},
+                    message={"power_kw": float(build_converter(self.DECISIONS_UNIT, unit)(power_kw))},
                     send_arguments={"dynamic_endpoints": [endpoint], "mode": HttpPublishMode.OVERRIDE}
                 ))
 

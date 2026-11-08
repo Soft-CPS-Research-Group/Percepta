@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 from app.core.adapters.target_system_adapter_base import MappedDecision, TargetSystemAdapterBase
 from app.core.output_handlers.async_http_output_handler import HttpPublishMode
 from app.core.utils.logger import LoggingUtils
+from app.core.utils.unit_utils import build_converter, unit_family
 from app.extension.telemetry_systems.cleanwatts.cw_session import CWSession
 
 
@@ -12,11 +13,13 @@ class CWTargetAdapter(TargetSystemAdapterBase):
     """Adapter of the Cleanwatts Target System.
 
     Cleanwatts receives one actuation request for each actuator. The decisions have powers in kW, and the request needs
-    the value in the unit that the real device is controlled in, which the 'actuator_mapping' of the environment says:
-    - no 'measurement_unit', or "kW": the power in kW is sent as it is (e.g., a battery; positive charges, negative
-      discharges);
+    the value in the unit that the real device is controlled in, which is the mandatory 'destination_measurement_unit'
+    of the 'actuator_mapping' of the environment:
+    - a unit of power ("W", "kW" or "MW"): the power is converted from kW to that unit (e.g., a battery in "kW":
+      positive charges, negative discharges);
     - "A": the current in amperes, calculated from the power with the 'voltage' of the actuator,
-      `kW * 1000 / voltage` (e.g., an EV charger, which Cleanwatts controls in amperes).
+      `kW * 1000 / voltage` (e.g., an EV charger, which Cleanwatts controls in amperes). Amperes are not a unit of
+      power, so they cannot be converted with `app.core.utils.unit_utils`.
     The tag that receives the actuation is the 'destination' of the actuator.
 
     The requests need the token of the session of the Cleanwatts launcher, which changes every time it is renewed, so it
@@ -29,8 +32,7 @@ class CWTargetAdapter(TargetSystemAdapterBase):
     _ACTION_NUMERIC: int = 2
     # The value is given as a plain number
     _VALUE_FORMAT_NUMBER: int = 0
-    # The units in which Cleanwatts controls a device
-    UNIT_KILOWATT: str = "kW"
+    # The unit in which Cleanwatts controls a device that is not controlled in a unit of power
     UNIT_AMPERE: str = "A"
 
     def __init__(
@@ -100,7 +102,7 @@ class CWTargetAdapter(TargetSystemAdapterBase):
                 "actuators": {
                     "act_power_2": {
                         "actuator_type_id": "power", "value": 4.6, "destination": "39052",
-                        "measurement_unit": "A", "voltage": 230
+                        "destination_measurement_unit": "A", "voltage": 230
                     }
                 },
                 "timestamp": "2026-08-19 11:15:00 +0000"
@@ -143,7 +145,9 @@ class CWTargetAdapter(TargetSystemAdapterBase):
         for decision in decisions:
             for actuator_id, actuator in decision.get("actuators", {}).items():
                 try:
-                    value = self._convert_value(actuator["value"], actuator.get("measurement_unit"), actuator.get("voltage"))
+                    value = self._convert_value(
+                        actuator["value"], actuator.get("destination_measurement_unit"), actuator.get("voltage")
+                    )
                     tag_id = int(actuator["destination"])
                 except (KeyError, TypeError, ValueError) as err:
                     self._logger.warning(
@@ -165,38 +169,40 @@ class CWTargetAdapter(TargetSystemAdapterBase):
         return mapped_decisions
 
     @classmethod
-    def check_device(cls, measurement_unit: Any, voltage: Any) -> None:
+    def check_device(cls, destination_measurement_unit: Any, voltage: Any) -> None:
         """Checks that Cleanwatts can control a device with this unit and voltage.
 
         Args:
-            measurement_unit (Any): The unit of the device, from the 'actuator_mapping'. None means kW.
+            destination_measurement_unit (Any): The unit of the device, from the 'actuator_mapping'. It is mandatory.
             voltage (Any): The voltage of the device, from the 'actuator_mapping'. Only needed for amperes.
 
         Raises:
-            ValueError: If the unit is not kW or A, or it is A and there is no voltage.
+            ValueError: If there is no unit, or it is not a unit of power or A, or it is A and there is no voltage.
         """
-        # Guard Clause 1: Checks that the unit is one that Cleanwatts controls.
-        if measurement_unit not in (None, cls.UNIT_KILOWATT, cls.UNIT_AMPERE):
+        # Guard Clause 1: Checks that the unit is there, and is one that Cleanwatts controls: a unit of power, or
+        # amperes.
+        if destination_measurement_unit != cls.UNIT_AMPERE and unit_family(destination_measurement_unit) != "power":
             raise ValueError(
-                f"the unit {measurement_unit!r} is not supported by Cleanwatts "
-                f"(supported: {cls.UNIT_KILOWATT!r}, {cls.UNIT_AMPERE!r})"
+                f"the 'destination_measurement_unit' {destination_measurement_unit!r} is missing or is not supported "
+                f"by Cleanwatts (supported: a unit of power such as 'W', 'kW' or 'MW', or {cls.UNIT_AMPERE!r})"
             )
 
         # Guard Clause 2: Checks that a device in amperes has the voltage to convert the power.
-        if measurement_unit == cls.UNIT_AMPERE and (
+        if destination_measurement_unit == cls.UNIT_AMPERE and (
                 isinstance(voltage, bool) or not isinstance(voltage, (int, float)) or voltage <= 0):
             raise ValueError(f"a device in {cls.UNIT_AMPERE!r} needs a positive 'voltage', got {voltage!r}")
 
-    def _convert_value(self, power_kw: Any, measurement_unit: Any, voltage: Any) -> float:
+    def _convert_value(self, power_kw: Any, destination_measurement_unit: Any, voltage: Any) -> float:
         """Converts the power of a decision into the value that Cleanwatts expects for the device.
 
         Args:
             power_kw (Any): The power of the decision, in kW.
-            measurement_unit (Any): The unit of the device, from the 'actuator_mapping'. None means kW.
+            destination_measurement_unit (Any): The unit of the device, from the 'actuator_mapping'.
             voltage (Any): The voltage of the device, from the 'actuator_mapping'.
 
         Returns:
-            float: The power in kW, or the current in amperes (`kW * 1000 / voltage`) if the device is in amperes.
+            float: The power in the unit of the device, or the current in amperes (`kW * 1000 / voltage`) if the device
+                is in amperes.
 
         Raises:
             ValueError: If the power is not a number, or the device is not supported (see `check_device`).
@@ -205,9 +211,9 @@ class CWTargetAdapter(TargetSystemAdapterBase):
         if isinstance(power_kw, bool) or not isinstance(power_kw, (int, float)):
             raise ValueError(f"the value must be a number, got {power_kw!r}")
 
-        self.check_device(measurement_unit, voltage)
+        self.check_device(destination_measurement_unit, voltage)
 
-        if measurement_unit == self.UNIT_AMPERE:
+        if destination_measurement_unit == self.UNIT_AMPERE:
             return power_kw * 1000 / voltage
 
-        return float(power_kw)
+        return float(build_converter(self.DECISIONS_UNIT, destination_measurement_unit)(power_kw))

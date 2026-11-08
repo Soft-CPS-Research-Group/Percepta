@@ -120,7 +120,10 @@ class InstanceConfiguration:
                 "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {}}
             }
         },
-        "logging": {"log_files": {"max_size": 10485760}}            # (dict, optional)
+        "logging": {                                                # (dict, optional)
+            "console_level": "INFO",                                # (str, optional) Level of the console: DEBUG, INFO, WARNING, ERROR or CRITICAL. Defaults to INFO. The log files always keep DEBUG
+            "log_files": {"max_size": 10485760}
+        }
     }
     """
 
@@ -322,6 +325,13 @@ class InstanceConfiguration:
         # --- Guard Clause 9: logging is optional, but must be well formed if given ---
         logging_configuration = self._get_dict(content, "logging")
         self._get_dict(logging_configuration, "log_files", parent_name="logging")
+        console_level = logging_configuration.get("console_level", "INFO")
+        accepted_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        if not isinstance(console_level, str) or console_level.strip().upper() not in accepted_levels:
+            raise ValueError(
+                f"{self._LOG_PREFIX} 'logging.console_level' is '{console_level}', which is not a known level. "
+                f"Known levels: {accepted_levels}."
+            )
 
         # --- Guard Clause 10: the grace period is optional, but it must be shorter than the frequency ---
         # Zero or less means that there is no grace period: the data of a period is processed as soon as it ends

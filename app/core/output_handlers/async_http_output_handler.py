@@ -197,7 +197,8 @@ class AsyncHTTPOutputHandler(OutputHandlerBase):
                 response = await self._perform_request(method, path_name, prepared_data, headers, timeout_ms)
                 pretty_msg = json.dumps(message, indent=4)
                 self._logger.info(
-                    f"{self._LOG_PREFIX} Request sent to [{method} {path_name}] with content-type [{content_type}]:\n{pretty_msg}"
+                    f"{self._LOG_PREFIX} Request sent to [{method} {self._full_url(path_name)}] with content-type "
+                    f"[{content_type}]. Response status: [{response.status}]. Message:\n{pretty_msg}"
                 )
 
                 try:
@@ -250,13 +251,19 @@ class AsyncHTTPOutputHandler(OutputHandlerBase):
             response = await self._perform_request(method, endpoint, data, headers, timeout_ms)
             self._logger.info(
                 f"{self._LOG_PREFIX} [Background Fire-and-Forget] Request successfully sent to "
-                f"[{method} {endpoint}] with status [{response.status}]."
+                f"[{method} {self._full_url(endpoint)}] with status [{response.status}]."
             )
         except Exception as e:
             self._logger.error(
                 f"{self._LOG_PREFIX} [Background Fire-and-Forget] Outbound task failed "
                 f"on path [{endpoint}]: {e}"
             )
+
+    def _full_url(self, endpoint: str) -> str:
+        """Returns the complete URL of an endpoint (the base URL of the server plus the path), only for the logs.
+        If the connector does not tell its base URL, the path is returned as it is."""
+        base_url = getattr(self._publisher_connector, "_base_url", None)
+        return f"{base_url.rstrip('/')}/{endpoint.lstrip('/')}" if base_url else endpoint
 
     async def _perform_request(
             self,
@@ -292,7 +299,7 @@ class AsyncHTTPOutputHandler(OutputHandlerBase):
         Graceful shutdown pipeline hook. Halts logical transmission pipelines
         and safely closes the underlying HTTP publisher connector session.
         """
-        self._logger.info(f"{self._LOG_PREFIX} Stopping outbound message dispatcher and closing transport pipelines.")
+        self._logger.debug(f"{self._LOG_PREFIX} Stopping outbound message dispatcher and closing transport pipelines.")
 
         # 1. Signal background consumption loops to reject/stop processing new frames
         self._stop_event.set()

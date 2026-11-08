@@ -100,10 +100,14 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         Expected `source_mapping_rules` Data Structure:
         ------------------------------------------------
         {
-            "37507": {"fetch_key": "37507", "match_key": "37507"},
-            "41836": {"fetch_key": "41836", "match_key": "41836"},
+            "37507": {"fetch_key": "37507", "match_key": "37507", "source_measurement_unit": "Status"},
+            "41836": {"fetch_key": "41836", "match_key": "41836", "source_measurement_unit": "kW"},
             "connected_vehicle": None                # Derived by this adapter, so it has no keys
         }
+
+        The 'source_measurement_unit' is mandatory for a parameter that has a 'measurement_unit' in the schema. It is the
+        unit in which the source gives the readings. They are converted to the 'measurement_unit' of the schema (e.g.,
+        from "Wh" to "kWh"), which must be the same unit or one of the same kind.
 
         The 'match_key' is the Cleanwatts tag id that appears in the request URL of the
         envelope, which is how a reading is matched to its parameter. The 'fetch_key' is
@@ -122,15 +126,16 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         """
         super().__init__(environment, timezone, logger)
 
-        # --- Guard Clause: environment_specs must have an 'entities' key ---
-        if not isinstance(environment_specs, dict) or "entities" not in environment_specs:
+        # --- Guard Clause 1: environment_specs must be a dictionary ---
+        if not isinstance(environment_specs, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'environment_specs' must be a dictionary "
-                f"containing an 'entities' key for environment '{environment}'."
+                f"for environment '{environment}'."
             )
             logger.error(error_msg)
             raise ValueError(error_msg)
 
+        # --- Guard Clause 2: environment_specs must have a non-empty 'entities' dictionary ---
         entities_dict = environment_specs.get("entities")
         if not isinstance(entities_dict, dict) or not entities_dict:
             error_msg = (
@@ -140,17 +145,19 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-        # --- Guard Clause: source_mapping_rules must be a dict ---
+        # --- Guard Clause 3: source_mapping_rules must be a dict ---
         if not isinstance(source_mapping_rules, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'source_mapping_rules' must be a dictionary, "
-                f"got {type(source_mapping_rules).__name__}."
+                f"got {type(source_mapping_rules).__name__} for environment '{environment}'."
             )
             logger.error(error_msg)
             raise TypeError(error_msg)
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # Tracks, per EV charger entity, the last time an active charging
         # session was reported, used to bridge short gaps in telemetry.
@@ -272,6 +279,8 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             return []
 
         # 3. Validate the received parameter's readings
+        # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+        parameters = self.convert_to_schema_units(parameters)
         parameters = self.parameters_validation(
             parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
         )
@@ -356,7 +365,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             "values": values
         }
 
-    def _build_values_list(self, parameter_values_list: list) -> list:
+    def _build_values_list(self, parameter_values_list: list, entity_id: str = "?", param_id: str = "?") -> list:
         """Converts raw timeseries readings into standardized timestamp-value records.
 
         Readings that cannot be used are discarded with a warning: readings with an
@@ -390,6 +399,8 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
 
         Args:
             parameter_values_list (list): Raw readings to convert.
+            entity_id (str, optional): Id of the entity, only to say where a discarded reading comes from.
+            param_id (str, optional): Id of the parameter, only to say where a discarded reading comes from.
 
         Returns:
             list: Normalized 'timestamp'/'value' records.
@@ -407,7 +418,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             if raw_val is None:
                 raw_val = item.get("Read")
             if raw_val is None:
-                self._logger.warning(f"{self._LOG_PREFIX} Skipping reading with no value: {item}")
+                self._logger.warning(f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): skipping reading, it has no value: {item}")
                 continue
 
             # 2. Parse and localize the timestamp
@@ -415,14 +426,15 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             if raw_date is None:
                 raw_date = item.get("DateUTC")
             if raw_date is None:
-                self._logger.warning(f"{self._LOG_PREFIX} Skipping reading with no date: {item}")
+                self._logger.warning(f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): skipping reading, it has no date: {item}")
                 continue
 
             dt = self._parse_date(raw_date)
             if dt is None:
                 # Skip readings with an invalid date, as they cannot be placed in time
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Skipping reading with invalid date '{raw_date}'."
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                    f"skipping reading, invalid date '{raw_date}'."
                 )
                 continue
 
@@ -441,11 +453,12 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             param_id: str,
             parameter_type_id: str,
             raw_values: Any
-    ) -> Dict[str, Any]:
+    ) -> Any:
         """Builds the canonical entry for a single parameter from its raw readings.
 
-        If no readings were received (nothing, or an empty list), 'values' is an
-        empty list, and parameters_validation reports it as empty. If something was
+        If no readings were received (nothing, or an empty list), an empty list is
+        returned as it is: it is parameters_validation that turns it into "values": None
+        and reports it as empty. If something was
         received but it cannot be used, the parameter is flagged here as malformed.
         That covers a payload that is not a list of readings, and readings that are
         all discarded (for example, all have invalid dates). Readings that are
@@ -463,15 +476,16 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         # Nothing was received: no readings for this parameter
         if raw_values is None or raw_values == []:
             self._logger.warning(
-                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' has no readings."
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no readings."
             )
-            return {"parameter_type_id": parameter_type_id, "values": []}
+            # The empty list is returned as it is: it is parameters_validation that turns it into "values": None
+            return []
 
         # Something was received, but it is not a list of readings
         if not isinstance(raw_values, list):
             self._logger.warning(
-                f"{self._LOG_PREFIX} Readings of parameter '{param_id}' of entity '{entity_id}' "
-                f"are not a list: {type(raw_values).__name__}."
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                f"its readings are not a list: {type(raw_values).__name__}."
             )
             return {
                 "parameter_type_id": parameter_type_id,
@@ -479,10 +493,10 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
                 "metadata": "Parameter readings malformed"
             }
 
-        values = self._build_values_list(raw_values)
+        values = self._build_values_list(raw_values, entity_id, param_id)
         if not values:
             self._logger.warning(
-                f"{self._LOG_PREFIX} All readings of parameter '{param_id}' of entity '{entity_id}' are malformed."
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): all its readings are malformed."
             )
             return {
                 "parameter_type_id": parameter_type_id,
@@ -568,23 +582,54 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
                 param_id: self._build_parameter(entity_id, param_id, parameter_type_id, raw_values)
             }
 
+        # Nothing was received: no readings for this parameter
+        if raw_values is None or raw_values == []:
+            self._logger.warning(
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no readings."
+            )
+            # The empty list is returned as it is: it is parameters_validation that turns it into "values": None
+            return {}
+
+        # Something was received, but it is not a list of readings
+        if not isinstance(raw_values, list):
+            self._logger.warning(
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                f"its readings are not a list: {type(raw_values).__name__}."
+            )
+            return {
+                "parameter_type_id": parameter_type_id,
+                "values": None,
+                "metadata": "Parameter readings malformed"
+            }
+
         # This reading is the session_status heartbeat: resolve the session state
         session_status = {}
         if isinstance(raw_values, list) and raw_values and isinstance(raw_values[0], dict):
             session_status = raw_values[0]
 
-        # The heartbeat's date may come as 'DateUTC' or as 'Date'.
-        date_str = session_status.get("DateUTC") or session_status.get("Date")
-        if date_str:
-            parsed_dt = self._parse_date(date_str)
-            if parsed_dt is None:
-                self._logger.warning(f"{self._LOG_PREFIX} Skipping reading with no date: {session_status}")
-                return {}
-        else:
-            self._logger.warning(f"{self._LOG_PREFIX} Skipping reading with no date: {session_status}")
+        read_status = session_status.get("Value")
+        if read_status is None:
+            read_status = session_status.get("Read")
+        if read_status is None:
+            self._logger.warning(
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): skipping reading, it has no value: {session_status}")
+            read_status = None
+
+        raw_date = session_status.get("Date")
+        if raw_date is None:
+            raw_date = session_status.get("DateUTC")
+        if raw_date is None:
+            self._logger.warning(
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): skipping reading, it has no date: {session_status}")
             return {}
 
-        read_status = session_status.get("Read") if session_status.get("Read") is not None else session_status.get("Value", None)
+        parsed_dt = self._parse_date(raw_date)
+        if parsed_dt is None:
+            self._logger.warning(
+                f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {parameter_type_id}): "
+                f"skipping reading, invalid date '{raw_date}'."
+            )
+            return {}
 
         if read_status == 1:
             # Active session reported: record when this happened (timezone-aware).
@@ -612,14 +657,17 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
 
         if ev_param_id is None:
             self._logger.warning(
-                f"{self._LOG_PREFIX} Entity '{entity_id}' has no configured electric_vehicle parameter."
+                f"{self._LOG_PREFIX} Entity '{entity_id}': no parameter of type 'electric_vehicle' is configured in the "
+                f"environment, so the connected vehicle cannot be reported."
             )
             return {}
 
         vehicle_id = entity_parameters[ev_param_id].get("vehicle_id")
         if not vehicle_id:
             self._logger.warning(
-                f"{self._LOG_PREFIX} Parameter '{ev_param_id}' of entity '{entity_id}' has no 'vehicle_id' configured."
+                f"{self._LOG_PREFIX} Parameter '{ev_param_id}' of entity '{entity_id}' (parameter type: "
+                f"{self._parameter_type(entity_id, ev_param_id)}): no 'vehicle_id' is configured for it in the environment, "
+                f"so the connected vehicle cannot be reported."
             )
             return {}
 

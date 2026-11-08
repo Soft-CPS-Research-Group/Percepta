@@ -70,7 +70,7 @@ class SchemaStorageLauncher:
             ValueError: If the storage type is not registered, or the storage rejects its connection info.
         """
         logger = logger or self._logger
-        logger.info(f"{self._LOG_PREFIX} Resolving Schema Storage type: '{schema_storage_type_id}'...")
+        logger.debug(f"{self._LOG_PREFIX} Resolving Schema Storage type: '{schema_storage_type_id}'...")
 
         # Guard clause protecting against storage types that were never registered
         if schema_storage_type_id not in _SCHEMA_STORAGE_BUILDERS:

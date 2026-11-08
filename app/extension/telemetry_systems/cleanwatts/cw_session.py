@@ -48,7 +48,7 @@ class CWSession:
                     }
                 },
                 {
-                    "path": "/sessions/refresh?token={token}&refresh_token={refresh_token}",
+                    "path": "/session/refresh?token={token}&refresh_token={refresh_token}",
                     "method": "PUT",
                     "timeout_ms": 5000,
                     "headers": {
@@ -212,7 +212,7 @@ class CWSession:
         login_path = login_endpoint.get("path", "/sessions")
 
         self.token_valid = False
-        self._logger.info(f"{self._LOG_PREFIX} Authenticating with Cleanwatts server via [{login_path}]...")
+        self._logger.debug(f"{self._LOG_PREFIX} Authenticating with Cleanwatts server via [{login_path}]...")
 
         try:
             if isinstance(self._output_handler, AsyncHTTPOutputHandler):
@@ -229,7 +229,7 @@ class CWSession:
                 self.token = token
                 self.refresh_token = refresh_token
                 self.token_valid = True
-                self._logger.info(f"{self._LOG_PREFIX} Authentication successful. Access token acquired: {self.token}")
+                self._logger.info(f"{self._LOG_PREFIX} Authentication successful. Access token acquired.")
                 if self.refresh_token:
                     self._logger.debug(f"{self._LOG_PREFIX} Refresh token acquired: {self.refresh_token}")
 
@@ -246,7 +246,7 @@ class CWSession:
         # Avoid race condition during active ingestions in top 10 seconds of the minute
         if now.second < 10:
             sleep_time = 10 - now.second
-            self._logger.info(f"{self._LOG_PREFIX} Waiting {sleep_time}s before refresh to avoid ingestion contention.")
+            self._logger.debug(f"{self._LOG_PREFIX} Waiting {sleep_time}s before refresh to avoid ingestion contention.")
             await asyncio.sleep(sleep_time)
 
         # If no refresh endpoint template is configured, fall back to full login
@@ -262,7 +262,7 @@ class CWSession:
         refresh_endpoint = dict(self._refresh_endpoint_template)
         refresh_endpoint["path"] = resolved_path
 
-        self._logger.info(f"{self._LOG_PREFIX} Refreshing access token via [{resolved_path}]...")
+        self._logger.debug(f"{self._LOG_PREFIX} Refreshing access token via [{resolved_path}]...")
 
         try:
             if isinstance(self._output_handler, AsyncHTTPOutputHandler):
@@ -279,7 +279,7 @@ class CWSession:
                 self.token = token
                 self.refresh_token = refresh_token
                 self.token_valid = True
-                self._logger.info(f"{self._LOG_PREFIX} Token refreshed successfully. New access token: {self.token}")
+                self._logger.info(f"{self._LOG_PREFIX} Token refreshed successfully.")
                 if self.refresh_token:
                     self._logger.debug(f"{self._LOG_PREFIX} New refresh token: {self.refresh_token}")
 

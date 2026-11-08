@@ -31,7 +31,7 @@ class TargetSystemResolver:
             "target_systems": {
                 "cleanwatts": {"actuator_mapping": {
                     "act_power_1": "35447",                                                 # The destination alone
-                    "act_power_2": {"destination": "39052", "measurement_unit": "A", "voltage": 230}
+                    "act_power_2": {"destination": "39052", "destination_measurement_unit": "A", "voltage": 230}
                 }},
                 "softcps": {"actuator_mapping": {"act_power_3": "ASSET_3"}}
             },
@@ -61,7 +61,7 @@ class TargetSystemResolver:
         self._logger = logger
 
         # Actuator id -> (id of the Target System, what the mapping says about the actuator in that system: its
-        # 'destination' and, if it has them, the 'measurement_unit' and the 'voltage' of the real device)
+        # 'destination', the 'destination_measurement_unit' and, if it has it, the 'voltage' of the real device)
         self._actuators: Dict[str, Tuple[str, Dict[str, Any]]] = {}
         for target_system_id, target_system in (environment.get("target_systems") or {}).items():
             for actuator_id, mapping in target_system["actuator_mapping"].items():
@@ -111,7 +111,8 @@ class TargetSystemResolver:
                             "actuator_type_id": "power",
                             "value": 4.6,
                             "destination": "39052",         # What the 'actuator_mapping' of the Target System says
-                            "measurement_unit": "A",        # about the actuator (the last two only if it has them)
+                            "destination_measurement_unit": "A",   # about the actuator (the voltage only if
+                                                                  # it has it)
                             "voltage": 230
                         }
                     },

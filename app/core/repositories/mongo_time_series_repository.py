@@ -69,7 +69,7 @@ class MongoTimeSeriesRepository(TimeSeriesRepository):
             try:
                 # Insert the provided value as a single document in the collection
                 self._collection.insert_one(value)
-                self._logger.info("Value successfully written to MongoDB.")
+                self._logger.debug("Value successfully written to MongoDB.")
             except PyMongoError as e:
                 self._logger.error(f"Failed to write value: {e}")
 

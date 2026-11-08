@@ -10,17 +10,6 @@ from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 
-# How many kWh one unit of each energy measurement unit is worth. Readings are
-# always reported in kWh, so each parameter's 'measurement_unit' must be one of these.
-ENERGY_UNIT_TO_KWH_FACTOR: Dict[str, float] = {
-    "wh": 0.001,
-    "kwh": 1.0,
-    "mwh": 1000.0,
-}
-
-# Number of decimal places kept after converting to kWh, to avoid floating point noise.
-KWH_DECIMAL_PLACES = 6
-
 # A lifetime reading older than this (in seconds) is considered too old to
 # compute a meaningful delta against.
 MAX_LIFETIME_READING_AGE_SECONDS = 120
@@ -48,9 +37,17 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
     """Adapter for Cleanwatts v2 (Shelly MQTT/AMQP) telemetry.
 
     Converts raw Shelly energy meter data into standardized canonical entity
-    messages, with energy always reported in kWh. For parameters that report a
+    messages. For parameters that report a
     running lifetime total instead of a per-interval reading, it computes the
     per-period delta.
+
+    Two different units are involved, and they are kept apart:
+    - the 'measurement_unit' of the parameter in the schema is the unit of the data that Percepta carries
+      (the one that the adapter delivers): "kWh";
+    - the 'source_measurement_unit' of the parameter in the source mapping is the unit in which the Shelly device
+      reports (e.g., "Wh"). It is mandatory.
+    The readings are converted from the second to the first after they are built, for all the adapters (see
+    `convert_to_schema_units` of the base class).
     """
 
     _entities: dict
@@ -85,7 +82,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
                             "parameter_type_id": "energy_in_l1"
                         },
                         "67fgh": {
-                            "measurement_unit": "Wh",
+                            "measurement_unit": "kWh",
                             "temporal_behavior": {
                                 "cumulative": true,
                                 "periodicity": {"value": 1, "unit": "min"},
@@ -106,13 +103,15 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
                 "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",   # AMQP exchange the entity's messages come from
                 "match_key": "a_total_act_energy",                  # Key of the value in the Shelly message
                 "topic": "/status/emdata:0",                        # Topic the Shelly message is published on
-                "shelly_accumulation": "lifetime"                   # "lifetime" (running total) or "interval"
+                "shelly_accumulation": "lifetime",                  # "lifetime" (running total) or "interval"
+                "source_measurement_unit": "kWh"                    # Unit in which the device reports (mandatory)
             },
             "67fgh": {
                 "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",
                 "match_key": "total_act_energy",
                 "topic": "/status/emdata:0",
-                "shelly_accumulation": "interval"
+                "shelly_accumulation": "interval",
+                "source_measurement_unit": "Wh"
             }
         }
 
@@ -129,15 +128,16 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         """
         super().__init__(environment, timezone, logger)
 
-        # --- Guard Clause 1: environment_specs must have an 'entities' key ---
-        if not isinstance(environment_specs, dict) or "entities" not in environment_specs:
+        # --- Guard Clause 1: environment_specs must be a dictionary ---
+        if not isinstance(environment_specs, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'environment_specs' must be a dictionary "
-                f"containing an 'entities' key for environment '{environment}'."
+                f"for environment '{environment}'."
             )
             self._logger.error(error_msg)
             raise ValueError(error_msg)
 
+        # --- Guard Clause 2: environment_specs must have a non-empty 'entities' dictionary ---
         entities_dict = environment_specs.get("entities")
         if not isinstance(entities_dict, dict) or not entities_dict:
             error_msg = (
@@ -147,17 +147,19 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             self._logger.error(error_msg)
             raise ValueError(error_msg)
 
-        # --- Guard Clause 2: source_mapping_rules must be a dict ---
+        # --- Guard Clause 3: source_mapping_rules must be a dict ---
         if not isinstance(source_mapping_rules, dict):
             error_msg = (
                 f"{self._LOG_PREFIX} Initialization error: 'source_mapping_rules' must be a dictionary, "
-                f"got {type(source_mapping_rules).__name__}."
+                f"got {type(source_mapping_rules).__name__} for environment '{environment}'."
             )
             self._logger.error(error_msg)
             raise TypeError(error_msg)
 
         self._entities = entities_dict
         self._source_mapping_rules = source_mapping_rules
+        # Checks the units of the parameters and prepares the conversion of the readings to the units of the schema
+        self._prepare_unit_conversion(entities_dict, source_mapping_rules)
 
         # For each parameter, the last raw lifetime value reported by the
         # Shelly device (in the unit it reports in) and when it was recorded.
@@ -181,21 +183,42 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         for param_id, rule in source_mapping_rules.items():
             for entity_id, entity_spec in self._entities.items():
                 if param_id in entity_spec.get("parameters", {}):
-                    exchange = str(rule["fetch_key"]).strip("/").strip().lower()
+                    exchange = self._exchange_of(rule["fetch_key"])
                     self._source_to_entity[exchange] = entity_id
                     break
+
+    @staticmethod
+    def _exchange_of(source: Any) -> str:
+        """Gets the name of the exchange from the source of an envelope, or from a 'fetch_key'.
+
+        The source that the RabbitMQ Input Handler puts in the envelope is the exchange followed by the queue that the
+        message was consumed from: "<exchange>/<queue>". The queue changes (its name has a random part), so only the
+        exchange is used to find the entity. The result is in lower case, so that the comparison ignores upper and lower
+        case.
+
+        Example: "Shelly-shellypro3em-0cb815fd4324/isep_consumer_927770"  ->  "shelly-shellypro3em-0cb815fd4324"
+                 "Shelly-shellypro3em-0cb815fd4324/"                       ->  "shelly-shellypro3em-0cb815fd4324"
+                 "Shelly-shellypro3em-0cb815fd4324"                        ->  "shelly-shellypro3em-0cb815fd4324"
+
+        Args:
+            source (Any): The 'source' of the envelope, or the 'fetch_key' of a rule.
+
+        Returns:
+            str: The name of the exchange.
+        """
+        return str(source).strip().strip("/").split("/")[0].strip().lower()
 
     def adapt(self, message: dict) -> List[Dict[str, Any]]:
         """Converts an incoming Cleanwatts v2 message into canonical entity messages.
 
-        Energy readings are always reported in kWh, converted from each
-        parameter's configured 'measurement_unit'.
+        The readings are converted from the 'source_measurement_unit' of each parameter (source mapping) to its
+        'measurement_unit' (schema), for example from Wh to kWh.
 
         Expected Input Data Structure (`message`):
         ------------------------------------------
         {
             "protocol": "AMQP",
-            "source": "Shelly-shellyproem50-08f9e0e6a5a4/",
+            "source": "Shelly-shellyproem50-08f9e0e6a5a4/isep_consumer_927770",
             "status": null,
             "content_type": "application/octet-stream",
             "metadata": {},
@@ -230,7 +253,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             List[Dict[str, Any]]: Standardized canonical entity messages.
         """
         if not message:
-            self._logger.info(f"{self._LOG_PREFIX} Skipping empty message payload.")
+            self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
             return []
 
         now_dt = datetime.datetime.now(self._tz)
@@ -271,6 +294,8 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             return []
 
         # 3. Validate the received parameters' readings
+        # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
+        adapted_parameters = self.convert_to_schema_units(adapted_parameters)
         adapted_parameters = self.parameters_validation(
             adapted_parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
         )
@@ -285,7 +310,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         -------------------------------------
         {
             "protocol": "AMQP",
-            "source": "Shelly-shellyproem50-08f9e0e6a5a4/",
+            "source": "Shelly-shellyproem50-08f9e0e6a5a4/isep_consumer_927770",
             "status": null,
             "content_type": "application/octet-stream",
             "metadata": {},
@@ -314,8 +339,9 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(f"{self._LOG_PREFIX} Skipping message that is not a dictionary.")
             return None
 
-        # 1. Get the exchange this message came from
-        source = str(message.get("source")).strip("/").strip().lower()
+        # 1. Get the exchange this message came from. The source of the envelope is "<exchange>/<queue>", so only the
+        # part before the first "/" is the exchange.
+        source = self._exchange_of(message.get("source"))
 
         # 2. Find the entity this message belongs to
         entity_id = self._source_to_entity.get(source)
@@ -388,9 +414,8 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
     ) -> Dict[str, Dict[str, Any]]:
         """Builds the canonical readings for a grid meter entity from the raw Shelly values.
 
-        Every reading is converted to kWh, based on the parameter's 'measurement_unit'.
-        A parameter whose unit is missing or unknown is skipped, as its reading could
-        not be converted safely. Readings that are not numbers are skipped too.
+        The readings stay in the unit of the device (the conversion to the unit of the schema is done afterwards).
+        Readings that are not numbers are skipped.
 
         For parameters whose 'shelly_accumulation' (in the source mapping) is "lifetime", the Shelly device
         reports a running total since its own reset, not a per-interval value. In
@@ -413,12 +438,12 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         }
 
         Expected Output Structure (with the example configuration, and a previous
-        stored value of 4961.5 for parameter "32df"):
+        stored value of 4961.5 for parameter "32df"). The values are still in the unit of the device:
         ----------------------------------------------
         {
             "67fgh": {
                 "parameter_type_id": "energy_in_total",
-                "values": [{"timestamp": "2026-08-19 16:15:31 +0000", "value": 0.0452}]
+                "values": [{"timestamp": "2026-08-19 16:15:31 +0000", "value": 45.2}]
             },
             "32df": {
                 "parameter_type_id": "energy_in_l1",
@@ -435,7 +460,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             timestamp (str): Current time, formatted as a string, used for the resulting readings.
 
         Returns:
-            Dict[str, Dict[str, Any]]: The resulting parameters, with values in kWh.
+            Dict[str, Dict[str, Any]]: The resulting parameters, with values in the unit of the device.
         """
         adapted_parameters: Dict[str, Dict[str, Any]] = {}
 
@@ -445,17 +470,10 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             if not parameter_type_id:
                 continue
 
-            # The output is always in kWh, so the parameter's unit must be known to convert it
-            measurement_unit = param_spec.get("measurement_unit")
-            kwh_factor = ENERGY_UNIT_TO_KWH_FACTOR.get(str(measurement_unit).strip().lower())
-            if kwh_factor is None:
-                self._logger.warning(
-                    f"{self._LOG_PREFIX} Skipping parameter '{param_id}' of entity '{entity_id}': "
-                    f"measurement unit {measurement_unit!r} is missing or not a known energy unit."
-                )
-                continue
-
             rule = self._source_mapping_rules[param_id]
+
+            # The value stays in the unit of the device. The conversion to the unit of the schema is done afterwards
+            # for all the adapters, with the 'source_measurement_unit' of the source mapping (see `adapt`).
             raw_value = raw_payload.get(rule["match_key"])
 
             if raw_value is None:
@@ -465,8 +483,8 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             # Python treats True/False as the numbers 1/0, but they are not readings.
             if isinstance(raw_value, bool) or not isinstance(raw_value, (int, float)):
                 self._logger.warning(
-                    f"{self._LOG_PREFIX} Skipping non-numeric reading for parameter '{param_id}' "
-                    f"of entity '{entity_id}': {raw_value!r}"
+                    f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                    f"skipping non-numeric reading: {raw_value!r}"
                 )
                 continue
 
@@ -478,15 +496,15 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
 
                 if last_entry is None:
                     self._logger.debug(
-                        f"{self._LOG_PREFIX} No previous lifetime reading for parameter '{param_id}' "
-                        f"of entity '{entity_id}'. Skipping until a baseline is established."
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): "
+                        f"no previous lifetime reading, skipping until a baseline is established."
                     )
                     continue
 
                 elapsed_seconds = (now_dt - last_entry["ts"]).total_seconds()
                 if elapsed_seconds > MAX_LIFETIME_READING_AGE_SECONDS:
                     self._logger.debug(
-                        f"{self._LOG_PREFIX} Skipping reading for parameter '{param_id}' of entity '{entity_id}': "
+                        f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): skipping reading, "
                         f"last known value is {elapsed_seconds:.0f}s old, older than the "
                         f"{MAX_LIFETIME_READING_AGE_SECONDS}s limit."
                     )
@@ -508,7 +526,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
                 "parameter_type_id": parameter_type_id,
                 "values": [{
                     "timestamp": timestamp,
-                    "value": round(value * kwh_factor, KWH_DECIMAL_PLACES)
+                    "value": value
                 }]
             }
 

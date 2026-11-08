@@ -77,7 +77,7 @@ class PCEndpointBuilder(EndpointBuilderBase):
 
         self._static_topology = self._precalculate_topology()
 
-        self._logger.info(
+        self._logger.debug(
             f"{self._LOG_PREFIX} Topology constructed for environment '{self._environment_name}' "
             f"with {len(self._static_topology['exchanges'])} AMQP exchange binding(s)."
         )

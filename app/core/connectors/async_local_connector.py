@@ -153,6 +153,6 @@ class AsyncLocalConnector:
 
     async def close(self) -> None:
         """Releases internal resources and closes the connector."""
-        self._logger.info(f"{self._LOG_PREFIX} Closing local in-memory connector transport.")
+        self._logger.debug(f"{self._LOG_PREFIX} Closing local in-memory connector transport.")
         self._is_connected = False
         self._target_callable = None
