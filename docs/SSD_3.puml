@@ -1,0 +1,30 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+participant "Data\nIngestion" as DI
+participant "Connector\n(Inbound)" as Conn
+participant "Input\nHandler" as IH
+participant "Scheduler" as Sched
+participant "Data\nProcessing\nService" as DPS
+participant "Output\nHandler" as OH
+participant "Connector\n(Outbound)" as ConnOut
+participant "Inference" as Inf
+
+loop for each message received from Data Ingestion
+    DI -> Conn : Data (Standard format)
+    Conn -> IH : Data (Standard format)
+    IH -> DPS : Data (Standard format)
+end
+
+loop at the configured frequency
+    Sched -> DPS : trigger processing
+    DPS -> DPS : Apply configured data-issue handling approaches
+    DPS -> DPS : Apply combination logic
+    DPS -> DPS : Apply data-derivation logic, if integrated
+    DPS -> OH : Data (Unified Message)
+    OH -> ConnOut : Data (Unified Message)
+    ConnOut -> Inf : Data (Unified Message)
+end
+
+@enduml

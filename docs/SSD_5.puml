@@ -1,0 +1,56 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+skinparam defaultFontSize 30
+
+participant "Inference" as Inf
+participant "Connector (Inbound)" as Conn
+participant "Input\nHandler" as IH
+participant "Decision\nDispatching\nService" as DDS
+participant "Target\nSystem\nResolution\nLogic" as TSR
+participant "Adapter A" as AdA
+participant "Output\nHandler A" as OHA
+participant "Connector\n(Outbound) A" as ConnOutA
+participant "Target System A" as TSA
+participant "Actuation\nError\nHandling\nLogic A" as AEHA
+
+Inf -> Conn : Decisions\n(Standard\nformat)
+Conn -> IH : Decisions\n(Standard\nformat)
+IH -> DDS : Decisions\n(Standard\nformat)
+
+loop for each decision
+    DDS -> TSR :Determine the\nTarget System\nthe decision is\ndirected to
+    TSR --> DDS : Resolved\nTarget\nSystem
+end
+
+par for each resolved decision
+    DDS -> AdA : Map decision into the format expected by that Target System
+    AdA --> DDS : Mapped\nDecision
+    DDS -> OHA : Mapped\nDecision
+    OHA -> ConnOutA : Mapped\nDecision
+
+    alt actuation error
+        ConnOutA --> OHA : Error
+        OHA --> DDS : Error
+        DDS -> AEHA : Invoke Actuation\nError Handling Logic
+        note left
+            Depending on its
+            configuration, this
+            logic may
+            terminate the decision's
+            processing or instruct
+            the service to retry the
+            dispatch.
+        end note
+    else success
+        ConnOutA -> TSA : Mapped\nDecision
+    end
+end
+
+note over TSR, ConnOutA
+    Shown here for Target System A. Decisions resolved to a
+    different Target System use that system's own Adapter,
+    Output Handler, and Actuation Error Handling Logic instead.
+end note
+
+@enduml
