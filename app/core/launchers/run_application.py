@@ -2,7 +2,7 @@
 
 Each instance (e.g., each Docker container) can use a different Application Launcher, set in
 'application_launcher.path' of its configuration. Without it, the SingleProcessApplicationLauncher is used, which
-launches all the containers. To run only until the REC Bridge, use the UntilRECBridgeApplicationLauncher.
+launches all the containers.
 
 Run with: python -m app.core.launchers.run_application
 """
@@ -32,6 +32,10 @@ def _load_application_launcher_class(instance_configuration_path: str) -> type:
         ValueError: If the configuration is not valid, or the class cannot be loaded.
     """
     path = InstanceConfiguration(instance_configuration_path).application_launcher_path
+    # The path is a text like "a.b.c.ClassName" (or "a.b.c:ClassName"). It is split at the last "." (or at the ":")
+    # into the module ("a.b.c") and the name of the class ("ClassName"), which is what is needed to import it:
+    # 'rpartition' returns (before, separator, after), and the separator is not needed, so it goes to '_'.
+    # 'import_module' imports the module from the text, and 'getattr' gets the class from it by its name.
     module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
     try:
         return getattr(importlib.import_module(module_path), class_name)

@@ -228,6 +228,10 @@ class SingleProcessApplicationLauncher:
             ValueError: If the class cannot be loaded (the path was already checked when the configuration was read).
         """
         path = self._instance_configuration.rec_bridge["path"]
+        # The path is a text like "a.b.c.ClassName" (or "a.b.c:ClassName"). It is split at the last "." (or at the ":")
+        # into the module ("a.b.c") and the name of the class ("ClassName"), which is what is needed to import it:
+        # 'rpartition' returns (before, separator, after), and the separator is not needed, so it goes to '_'.
+        # 'import_module' imports the module from the text, and 'getattr' gets the class from it by its name.
         module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
         try:
             return getattr(importlib.import_module(module_path), class_name)

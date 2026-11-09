@@ -22,6 +22,27 @@ class EnergAIzeRECBridgeAdapter(RECBridgeAdapterBase):
     value adds nothing). The result is added to the message in the key "community"; the rest of the message is not
     changed.
 
+    Each total has its "value" and "generated":
+    - "value" is the sum of the values that exist, or None if no installation has one (None is not 0.0: it means
+      "no data").
+    - "generated" is True if the sum is not complete: a value is None, or an installation has no value for it, or an
+      installation of the REC did not send its data in time. Otherwise it is False.
+    - Each total has its own "generated": a None in "energy_in_total" does not mark "energy_out_total".
+
+    Examples (the installation itself plus one peer, "B"):
+    - Both have a value: 0.5 + 0.25 -> {"value": 0.75, "generated": False}.
+    - Both are None -> {"value": None, "generated": True}.
+    - The installation itself is None and B has 0.25 -> {"value": 0.25, "generated": True}.
+    - B did not send its data in time, and the installation has 0.5 -> {"value": 0.5, "generated": True}.
+    - Only the "energy_in_total" of B is None -> "energy_in_total" is generated, "energy_out_total" is not.
+
+    Notes:
+    - A total is a {"value", "generated"} dictionary, and not a number, so that each total can say if it is complete.
+      It follows the structure of the parameters of the message.
+    - The "generated" of the parameter that each installation shared (e.g., a value filled by the Missing Data
+      Approach) is not used: a total is generated only for the reasons above.
+    - None is not 0.0: 0.0 is a real value, None means that there is no data.
+
     Expected `environment` structure (only the parts used here):
     ------------------------------------------------------------
     {
@@ -43,7 +64,10 @@ class EnergAIzeRECBridgeAdapter(RECBridgeAdapterBase):
 
     Key added to the message (what 'combine_with_received_data' adds):
     ------------------------------------------------------------------
-    message["community"] = {"energy_in_total": 0.018354421768707493, "energy_out_total": 0.00705}
+    message["community"] = {
+        "energy_in_total": {"value": 0.018354421768707493, "generated": False},
+        "energy_out_total": {"value": 0.00705, "generated": False}
+    }
     """
 
     _LOG_PREFIX: str = "EnergAIze REC Bridge Adapter |"
@@ -59,6 +83,8 @@ class EnergAIzeRECBridgeAdapter(RECBridgeAdapterBase):
         rec = environment.get("rec") if isinstance(environment.get("rec"), dict) else {}
         derived_data_to_share = rec.get("derived_data_to_share", [])
         self._shared_derived_data: List[str] = derived_data_to_share if isinstance(derived_data_to_share, list) else []
+        peers = rec.get("peers", [])
+        self._peers: List[str] = peers if isinstance(peers, list) else []
 
     def extract_rec_data(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Extracts the shared parameters and derived data from the unified message.
@@ -108,21 +134,37 @@ class EnergAIzeRECBridgeAdapter(RECBridgeAdapterBase):
             received_data (Dict[str, Dict[str, Any]]): The data shared by each other installation, by installation.
 
         Returns:
-            Dict[str, Any]: A copy of the message with "community": {"energy_in_total": x, "energy_out_total": y}.
+            Dict[str, Any]: A copy of the message with "community": {"energy_in_total": {"value": x, "generated": g},
+                "energy_out_total": {"value": y, "generated": h}}. The value is None if no installation has one.
         """
         installations = [self.extract_rec_data(message), *received_data.values()]
-        totals: Dict[str, float] = {name: 0.0 for name in self._COMMUNITY_TOTALS.values()}
+
+        # An installation of the REC that did not send its data in time makes every total incomplete
+        incomplete = {name: any(peer not in received_data for peer in self._peers) for name in self._COMMUNITY_TOTALS.values()}
+        totals: Dict[str, float | None] = {name: None for name in self._COMMUNITY_TOTALS.values()}
+
         for shared in installations:
+            found = {name: False for name in self._COMMUNITY_TOTALS.values()}
             for entity in (shared.get("entities") or {}).values():
                 for parameter in ((entity or {}).get("parameters") or {}).values():
                     total_name = self._COMMUNITY_TOTALS.get((parameter or {}).get("parameter_type_id"))
                     if total_name is None:
                         continue
+                    found[total_name] = True
                     final_values = parameter.get("final_values")
                     value = final_values[0] if isinstance(final_values, list) and final_values else None
                     if isinstance(value, (int, float)) and not isinstance(value, bool):
-                        totals[total_name] += value
+                        totals[total_name] = (totals[total_name] or 0.0) + value
+                    else:
+                        incomplete[total_name] = True
+
+            # An installation that has no parameter for a total leaves that sum incomplete
+            for total_name, was_found in found.items():
+                if not was_found:
+                    incomplete[total_name] = True
 
         combined = copy.deepcopy(message)
-        combined["community"] = totals
+        combined["community"] = {
+            name: {"value": totals[name], "generated": incomplete[name]} for name in self._COMMUNITY_TOTALS.values()
+        }
         return combined
