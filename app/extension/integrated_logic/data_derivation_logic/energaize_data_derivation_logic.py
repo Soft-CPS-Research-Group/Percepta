@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 # --- Internal Framework Imports ---
 from app.core.data_processing.data_derivation_logic_base import DataDerivationLogicBase
 from app.core.utils.logger import LoggingUtils
+from app.core.utils.unit_utils import convert
 from app.core.utils.time_utils import format_timestamp
 from app.extension.utils.labels import AggregationLabel, Label, ParamLabel
 
@@ -205,27 +206,45 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
             "generated": generated,
         }
 
-    @staticmethod
-    def _sum_parameter(entities: Dict[str, Dict[str, Any]], entity_type: Label, parameter_type: ParamLabel) -> tuple:
+    def _sum_parameter(
+            self, entities: Dict[str, Dict[str, Any]], entity_type: Label, parameter_type: ParamLabel
+    ) -> tuple:
         """Sums the first value of every parameter of the given type, in every entity of the given type.
 
-        A parameter that has no usable value (e.g., its 'final_values' is None because the entity sent no data) adds
-        nothing to the sum, and it makes the result 'generated': the sum is not made only of measured data.
+        The sum is in kWh. Before adding, each value is checked: if the 'measurement_unit' of its parameter is not
+        kWh, the value is converted to kWh (e.g., 500 Wh -> 0.5 kWh). A parameter without 'measurement_unit' is taken
+        as already in kWh. If the unit cannot be converted to kWh (e.g., "kW"), the value is not used and a warning is
+        logged.
+
+        A parameter that has no usable value (e.g., its 'final_values' is None because the entity sent no data, or its
+        unit cannot be converted) adds nothing to the sum, and it makes the result 'generated': the sum is not made
+        only of measured data.
 
         Returns:
             tuple: (the sum, True if any value used was synthesised or any parameter had no usable value).
         """
         total: float = 0.0
         generated: bool = False
-        for entity in entities.values():
+        for entity_id, entity in entities.items():
             if entity.get("entity_type_id") != entity_type.value:
                 continue
-            for parameter in entity.get("parameters", {}).values():
+            for parameter_id, parameter in entity.get("parameters", {}).items():
                 if parameter.get("parameter_type_id") != parameter_type.value:
                     continue
                 values = parameter.get("final_values") or []
                 if values and isinstance(values[0], (int, float)) and not isinstance(values[0], bool):
-                    total += values[0]
+                    # Every value is added in kWh
+                    unit = parameter.get("measurement_unit")
+                    try:
+                        value = values[0] if unit is None else convert(values[0], unit, self._MEASUREMENT_UNIT)
+                    except ValueError as err:
+                        self._logger.warning(
+                            f"{self._LOG_PREFIX} The parameter '{parameter_id}' of '{entity_id}' is in '{unit}', which "
+                            f"cannot be converted to {self._MEASUREMENT_UNIT}, so it is not used: {err}"
+                        )
+                        generated = True
+                        continue
+                    total += value
                     generated = generated or bool(parameter.get("generated", False))
                 else:
                     generated = True

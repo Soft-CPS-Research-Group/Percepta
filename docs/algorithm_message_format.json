@@ -935,11 +935,15 @@
     "community": {
         "energy_in_total": {
             "value": 0.01022000000025,
-            "generated": false
+            "generated": false,
+            "start_date": "2026-11-09 16:19:15 +0000",
+            "measurement_unit": "kWh"
         },
         "energy_out_total": {
             "value": 0.0,
-            "generated": false
+            "generated": false,
+            "start_date": "2026-11-09 16:19:15 +0000",
+            "measurement_unit": "kWh"
         }
     }
 }
