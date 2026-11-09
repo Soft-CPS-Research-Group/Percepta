@@ -1,0 +1,43 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 100
+skinparam sequenceArrowFontSize 20
+
+participant "Data\nProcessing" as DP
+participant "Connector\n(Inbound)" as Conn
+participant "Input\nHandler" as IH
+participant "REC\nBridge\nService" as RBS
+participant "Adapter" as Ad
+participant "Output\nHandler\n(RabbitMQ)" as OHR
+participant "Connector\n(RabbitMQ),\npublishing" as ConnPub
+participant "Own\nFanout\nExchange" as OwnEx
+participant "Connector\n(RabbitMQ),\nsubscribing" as ConnSub
+participant "Input\nHandler\n(RabbitMQ)" as IHR
+participant "Output\nHandler" as OHD
+participant "Connector\n(Outbound)" as ConnOut
+participant "Inference" as Inf
+
+DP -> Conn : Unified\nmessage
+Conn -> IH : Unified\nmessage
+IH -> RBS : Unified\nmessage
+
+RBS -> Ad : Extract REC-relevant data
+Ad --> RBS : REC-relevant data
+
+RBS -> OHR : REC-relevant data
+OHR -> ConnPub : REC-relevant data
+ConnPub -> OwnEx : Publish
+
+loop for the configured amount of time
+    ConnSub -> IHR : Data from another installation
+    IHR -> RBS : Data from another installation
+end
+
+RBS -> Ad : Combine\nreceived\ndata with\nthe original message
+Ad --> RBS : Resulting message
+
+RBS -> OHD : Resulting message
+OHD -> ConnOut : Resulting message
+ConnOut -> Inf : Resulting message
+
+@enduml
