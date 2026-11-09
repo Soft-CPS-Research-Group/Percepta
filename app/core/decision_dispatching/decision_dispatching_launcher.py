@@ -164,7 +164,7 @@ class DecisionDispatchingLauncher:
             Example: `input_handler, dispatching_receiver = await launcher.launch_environment(...)`
 
         Raises:
-            ValueError: If the environment is invalid, it has no Target Systems, or one of them is not configured in
+            ValueError: If the environment is invalid or one of its Target Systems is not configured in
                 the instance.
         """
         if not isinstance(environment_name, str) or not environment_name.strip():
@@ -176,12 +176,17 @@ class DecisionDispatchingLauncher:
                 f"'entities'."
             )
 
-        # --- Guard Clause 1: the environment must have Target Systems, as that is where the decisions go ---
-        environment_target_systems = environment.get("target_systems")
-        if not isinstance(environment_target_systems, dict) or not environment_target_systems:
+        # --- The Target Systems are optional: without them the decisions are only logged, not sent anywhere ---
+        environment_target_systems = environment.get("target_systems") or {}
+        if not isinstance(environment_target_systems, dict):
             raise ValueError(
-                f"{self._LOG_PREFIX} Launch error: environment '{environment_name}' has no 'target_systems', so its "
-                f"decisions have nowhere to go."
+                f"{self._LOG_PREFIX} Launch error: 'target_systems' of environment '{environment_name}' must be a "
+                f"dictionary."
+            )
+        if not environment_target_systems:
+            (logger or self._logger).warning(
+                f"{self._LOG_PREFIX} Environment '{environment_name}' has no 'target_systems': its decisions will "
+                f"only be logged, not dispatched."
             )
 
         # --- Guard Clause 2: every Target System of the environment must be configured in the instance ---
@@ -235,7 +240,7 @@ class DecisionDispatchingLauncher:
 
             logger.info(
                 f"{self._LOG_PREFIX} Environment '{environment_name}' launched with the Target Systems "
-                f"{sorted(environment_target_systems)}."
+                f"{sorted(environment_target_systems) or 'none'}."
             )
 
             # If the link is not local, Inference sends the decisions over the network, to the Input Handler built

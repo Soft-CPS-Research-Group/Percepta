@@ -106,6 +106,14 @@ class DecisionDispatchingService:
 
         period_id: str = self._period_id(decisions)
 
+        # Without Target Systems there is nowhere to send the decisions: they are only logged
+        if not self._target_systems:
+            self._logger.info(
+                f"{self._LOG_PREFIX} No Target Systems: decisions of the period '{period_id}' not dispatched: "
+                f"{decisions}"
+            )
+            return
+
         try:
             resolved = self._resolver.resolve(decisions)
 
