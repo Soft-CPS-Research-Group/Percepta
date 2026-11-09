@@ -93,7 +93,7 @@ class InferenceService:
         self._runtime_data_storage = runtime_data_storage
         self._output_handler = output_handler
 
-        # Gives an id to the messages that have no 'timestamp', so the errors of a period can still be told apart
+        # Gives an id to the messages that have no 'period_end', so the errors of a period can still be told apart
         self._message_counter = itertools.count(1)
 
     async def receive_message(self, envelope: Dict[str, Any]) -> None:
@@ -110,7 +110,8 @@ class InferenceService:
             "content_type": "application/json",
             "metadata": {},
             "payload": {                                    # The unified message, or the same message as JSON text/bytes
-                "timestamp": "2026-08-19 11:15:00 +0000",
+                "period_start": "2026-08-19 11:00:00 +0000",
+                "period_end": "2026-08-19 11:15:00 +0000",
                 "entities": {...},
                 ...                                         # The structure depends on the Combination Logic
             }
@@ -189,7 +190,7 @@ class InferenceService:
         A failure of the storage is logged and does not stop the service: the decisions must be dispatched anyway.
 
         Args:
-            message (Dict[str, Any]): The unified message, whose 'timestamp' is the one of the record.
+            message (Dict[str, Any]): The unified message, whose 'period_end' is the 'timestamp' of the record.
             model_input (Any): The input of the ML Model.
             decisions (Any): The decisions of the ML Model, before any correction.
             corrected_decisions (Optional[Any]): The decisions after the correction, or None if there is no
@@ -215,8 +216,8 @@ class InferenceService:
 
     @staticmethod
     def _record_timestamp(message: Dict[str, Any]) -> str:
-        """The 'timestamp' of the message if it is valid, otherwise the current time (UTC)."""
-        timestamp = message.get("timestamp")
+        """The 'period_end' of the message if it is valid, otherwise the current time (UTC)."""
+        timestamp = message.get("period_end")
         try:
             parse_timestamp(timestamp)
             return timestamp
@@ -324,8 +325,8 @@ class InferenceService:
         return payload
 
     def _period_id(self, message: Dict[str, Any]) -> str:
-        """Identifies the period of a message: its 'timestamp' (the end of the period), or a number if it has none."""
-        timestamp = message.get("timestamp")
+        """Identifies the period of a message: its 'period_end' (the end of the period), or a number if it has none."""
+        timestamp = message.get("period_end")
         if isinstance(timestamp, str) and timestamp.strip():
             return timestamp
         return f"message-{next(self._message_counter)}"

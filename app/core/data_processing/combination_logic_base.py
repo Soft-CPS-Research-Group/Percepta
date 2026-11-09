@@ -107,7 +107,7 @@ class CombinationLogicBase(ABC):
             data (Dict[str, Dict[str, Any]]): The data of the period, already treated by the Data-Issue Handling
                 Approaches, by the id of the entity, one entry for each entity that reported data.
             period_end (datetime): The end of the period being processed, with a timezone. The logic may use it as the
-                timestamp of the message.
+                'period_end' of the message (and 'period_end' minus the period as its 'period_start').
 
         Returns:
             Dict[str, Any]: The combined message of the period.

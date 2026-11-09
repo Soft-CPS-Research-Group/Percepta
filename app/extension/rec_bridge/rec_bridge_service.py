@@ -122,7 +122,7 @@ class RECBridgeService:
 
         Expected Input Structure (the payload):
         ---------------------------------------
-        {"installation_id": "lab-02", "timestamp": "2026-08-19 11:15:00 +0000", "data": {...}}
+        {"installation_id": "lab-02", "period_end": "2026-08-19 11:15:00 +0000", "data": {...}}
 
         Args:
             envelope (Dict[str, Any]): The message, as given by the Input Handler.
@@ -131,13 +131,13 @@ class RECBridgeService:
         if payload is None:
             return
 
-        installation_id, timestamp, data = payload.get("installation_id"), payload.get("timestamp"), payload.get("data")
+        installation_id, timestamp, data = payload.get("installation_id"), payload.get("period_end"), payload.get("data")
 
         # Guard Clause 1: only well formed messages of the known peers are kept
         if not isinstance(installation_id, str) or not isinstance(timestamp, str) or not isinstance(data, dict):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Skipping a message of another installation: it needs 'installation_id', "
-                f"'timestamp' and 'data'."
+                f"'period_end' and 'data'."
             )
             return
         if installation_id == self._installation_id:
@@ -150,7 +150,7 @@ class RECBridgeService:
             return
 
         # The same moment can be written in different ways (e.g., with another UTC offset), so the timestamps are
-        # compared as moments: the data is of the period of this installation if its timestamp is the same one.
+        # compared as moments: the data is of the period of this installation if its 'period_end' is the same one.
         timestamp = self._same_moment_key(timestamp)
 
         # Guard Clause 2: while a period is being waited for, data from another period is discarded
@@ -171,7 +171,7 @@ class RECBridgeService:
         """Publishes the REC data of the period, waits for the data of the peers and combines everything."""
         rec_data = self._adapter.extract_rec_data(message)
         await self._rec_output_handler.send(
-            {"installation_id": self._installation_id, "timestamp": message.get("timestamp"), "data": rec_data}
+            {"installation_id": self._installation_id, "period_end": message.get("period_end"), "data": rec_data}
         )
         self._logger.info(
             f"{self._LOG_PREFIX} Shared the data of the period '{period_id}' with the REC "
@@ -243,8 +243,8 @@ class RECBridgeService:
 
     @staticmethod
     def _period_id(message: Dict[str, Any]) -> str:
-        """Identifies the period of a message by its 'timestamp' ('?' if it has none)."""
-        timestamp = message.get("timestamp")
+        """Identifies the period of a message by its 'period_end' ('?' if it has none)."""
+        timestamp = message.get("period_end")
         if isinstance(timestamp, str) and timestamp.strip():
             return RECBridgeService._same_moment_key(timestamp)
         return "?"

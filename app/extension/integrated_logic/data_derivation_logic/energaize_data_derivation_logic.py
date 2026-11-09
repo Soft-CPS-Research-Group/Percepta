@@ -33,7 +33,8 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
     Expected Input Structure:
     -------------------------
     {
-        "timestamp": "2026-10-13 16:35:45 +0000",                       # The end of the period
+        "period_start": "2026-10-13 16:35:30 +0000",             # The start of the period
+        "period_end": "2026-10-13 16:35:45 +0000",               # The end of the period
         "entities": {
             "PV01": {
                 "entity_type_id": "pv_panel",
@@ -56,7 +57,8 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
     Expected Output Structure:
     --------------------------
     {
-        "timestamp": "2026-10-13 16:35:45 +0000",
+        "period_start": "2026-10-13 16:35:30 +0000",
+        "period_end": "2026-10-13 16:35:45 +0000",
         "entities": {...},                                              # As received
         "derived_data": {
             "solar_generation": {
@@ -136,7 +138,8 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
         Expected Input Structure:
         -------------------------
         message = {
-            "timestamp": "2026-10-13 16:35:45 +0000",
+            "period_start": "2026-10-13 16:35:30 +0000",
+            "period_end": "2026-10-13 16:35:45 +0000",
             "entities": {
                 "GR01": {"entity_type_id": "grid_meter", "parameters": {
                     "energy_in_total": {"final_values": [0.30], "generated": False, ...},

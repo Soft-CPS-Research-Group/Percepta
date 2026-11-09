@@ -34,7 +34,7 @@ class EnergAIzeRECBridgeAdapter(RECBridgeAdapterBase):
       "generated".
     - Each total has its own "generated": a None in "energy_in_total" does not mark "energy_out_total".
     - "start_date" is the start of the period. It is the one of the parameter of the installation itself (all the
-      installations of the REC are in the same period, as their messages have the same timestamp), or, if it has none,
+      installations of the REC are in the same period, as their messages have the same 'period_end'), or, if it has none,
       the first one found in the data received.
 
     Examples (the installation itself plus one peer, "B"; only "value" and "generated" are shown):

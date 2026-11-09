@@ -87,7 +87,8 @@ class MLModelAdapterBase(ABC):
         Expected Input Structure:
         -------------------------
         message = {
-            "timestamp": "2026-08-19 11:00:00 +0000",
+            "period_start": "2026-08-19 10:45:00 +0000",
+            "period_end": "2026-08-19 11:00:00 +0000",
             "entities": {...},                  # The structure depends on the Combination Logic of the instance
             ...
         }

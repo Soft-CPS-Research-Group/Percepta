@@ -1,5 +1,6 @@
 {
-    "timestamp": "2026-11-09 16:19:30 +0000",
+    "period_start": "2026-11-09 16:19:15 +0000",
+    "period_end": "2026-11-09 16:19:30 +0000",
     "entities": {
         "EM01": {
             "entity_type_id": "energy_market",

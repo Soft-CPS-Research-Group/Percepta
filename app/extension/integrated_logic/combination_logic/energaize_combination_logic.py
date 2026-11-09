@@ -118,7 +118,8 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         For the input above, if the environment defines the parameter "33711" with the unit "kWh" and the
         'aggregation_operation' "sum", and 'frequency_seconds' is 15, the two readings (0.05 and 0.07) become 0.12:
         {
-            "timestamp": "2026-10-13 16:35:45 +0000",
+            "period_start": "2026-10-13 16:35:30 +0000",
+            "period_end": "2026-10-13 16:35:45 +0000",
             "entities": {
                 "PV01": {
                     "entity_type_id": "pv_panel",
@@ -190,7 +191,11 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
 
             entities[entity_id] = {"entity_type_id": entity_type_id, "parameters": parameters}
 
-        return {"timestamp": format_timestamp(period_end), "entities": entities}
+        return {
+            "period_start": format_timestamp(period_start),
+            "period_end": format_timestamp(period_end),
+            "entities": entities
+        }
 
     def _build_parameter(
             self, entity_id: str, parameter_id: str, parameter: Dict[str, Any], parameter_schema: Dict[str, Any],
