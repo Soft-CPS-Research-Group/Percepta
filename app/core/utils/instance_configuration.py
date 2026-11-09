@@ -126,6 +126,9 @@ class InstanceConfiguration:
                 "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {}}
             }
         },
+        "application_launcher": {                                   # (dict, optional) Which Application Launcher runs this instance
+            "path": "app.core.launchers.application_launchers.until_rec_bridge_application_launcher.UntilRECBridgeApplicationLauncher"
+        },                                                          # Default: the SingleProcessApplicationLauncher (all the containers)
         "rec_bridge": {                                             # (dict, optional) Adds the REC Bridge container
             "path": "app.extension.rec_bridge.energaize.energaize_rec_bridge_launcher.EnergAIzeRECBridgeLauncher",
             "connection_configuration": {                           # How the installations of the REC talk to each other
@@ -145,6 +148,9 @@ class InstanceConfiguration:
     """
 
     _LOG_PREFIX: str = "Instance Configuration |"
+    _DEFAULT_APPLICATION_LAUNCHER_PATH: str = (
+        "app.core.launchers.application_launchers.single_process_application_launcher.SingleProcessApplicationLauncher"
+    )
     _SECONDS_IN_AN_HOUR: int = 3600
     _SECONDS_PER_UNIT: dict = {"seconds": 1, "minutes": 60, "hours": 3600}
     # The types of integrated logic, and the base class that the class of each one must extend. The Target System of
@@ -397,6 +403,15 @@ class InstanceConfiguration:
 
             self._validate_launcher_path(logic_path, logic_full_name, self._INTEGRATED_LOGIC_BASE_CLASSES[logic_name])
 
+        # --- Guard Clause 12b: the Application Launcher is optional. Without it, all the containers are launched ---
+        application_launcher_content = self._get_dict(content, "application_launcher")
+        application_launcher_path = self._DEFAULT_APPLICATION_LAUNCHER_PATH
+        if application_launcher_content:
+            application_launcher_path = application_launcher_content.get("path")
+            if not isinstance(application_launcher_path, str) or not application_launcher_path.strip():
+                raise ValueError(f"{self._LOG_PREFIX} 'application_launcher.path' must be the path of a class.")
+            self._validate_launcher_path(application_launcher_path, "application_launcher.path")
+
         # --- Guard Clause 13: the REC Bridge is optional. If it is configured, it needs everything below ---
         rec_bridge_content = self._get_dict(content, "rec_bridge")
         rec_bridge = None
@@ -476,6 +491,7 @@ class InstanceConfiguration:
         self._data_processing_to_rec_bridge = data_processing_to_rec_bridge_connection
         self._rec_bridge_to_inference = rec_bridge_to_inference_connection
         self._rec_bridge = rec_bridge
+        self._application_launcher_path = application_launcher_path
         self._logging = logging_configuration
 
     @property
@@ -642,6 +658,19 @@ class InstanceConfiguration:
         It is the link from the REC Bridge if the instance uses it, and the link from Data Processing otherwise.
         """
         return self._rec_bridge_to_inference if self._rec_bridge else self._data_processing_to_inference
+
+    @property
+    def application_launcher_path(self) -> str:
+        """str: Path of the class of the Application Launcher that runs this instance.
+
+        It is the one in 'application_launcher.path', or the SingleProcessApplicationLauncher (all the containers) if
+        the instance does not configure one.
+
+        Expected Output Structure:
+        --------------------------
+        "app.core.launchers.application_launchers.single_process_application_launcher.SingleProcessApplicationLauncher"
+        """
+        return self._application_launcher_path
 
     @property
     def logging(self) -> dict:

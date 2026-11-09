@@ -5,4 +5,4 @@ COPY requirements.txt /percepta
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-CMD ["python", "-m", "app.core.launchers.application_launchers.single_process_application_launcher"]
+CMD ["python", "-m", "app.core.launchers.run_application"]
