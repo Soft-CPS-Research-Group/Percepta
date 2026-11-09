@@ -167,7 +167,8 @@
               "aggregation_operation": "sum",
               "fill_operation": "linear"
             },
-            "necessary": true
+            "necessary": true,
+            "rec_relevant": true
           },
           "energy_out_l1": {
             "parameter_type_id": "energy_out_l1",
@@ -223,7 +224,8 @@
               "aggregation_operation": "sum",
               "fill_operation": "linear"
             },
-            "necessary": true
+            "necessary": true,
+            "rec_relevant": true
           }
         }
       },
@@ -563,6 +565,130 @@
           }
         }
       }
+    },
+    "rec": {
+      "community_id": "energaize",
+      "installation_id": "R-H-01",
+      "peers": [
+        "R-H-02"
+      ],
+      "derived_data_to_share": []
+    }
+  },
+  "R-H-02": {
+    "group": "living lab",
+    "ml_model_id": "energaize_r_h_01",
+    "entities": {
+      "GR02": {
+        "entity_type_id": "grid_meter",
+        "parameters": {
+          "energy_in_l1": {
+            "parameter_type_id": "energy_in_l1",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": true,
+              "periodicity": {
+                "value": 1,
+                "unit": "min"
+              },
+              "aggregation_operation": "sum",
+              "fill_operation": "linear"
+            },
+            "necessary": true
+          },
+          "energy_in_total": {
+            "parameter_type_id": "energy_in_total",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": true,
+              "periodicity": {
+                "value": 1,
+                "unit": "min"
+              },
+              "aggregation_operation": "sum",
+              "fill_operation": "linear"
+            },
+            "necessary": true,
+            "rec_relevant": true
+          },
+          "energy_out_l1": {
+            "parameter_type_id": "energy_out_l1",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": true,
+              "periodicity": {
+                "value": 1,
+                "unit": "min"
+              },
+              "aggregation_operation": "sum",
+              "fill_operation": "linear"
+            },
+            "necessary": true
+          },
+          "energy_out_total": {
+            "parameter_type_id": "energy_out_total",
+            "measurement_unit": "kWh",
+            "temporal_behavior": {
+              "cumulative": true,
+              "periodicity": {
+                "value": 1,
+                "unit": "min"
+              },
+              "aggregation_operation": "sum",
+              "fill_operation": "linear"
+            },
+            "necessary": true,
+            "rec_relevant": true
+          }
+        }
+      }
+    },
+    "telemetry_systems": {
+      "cleanwatts_2": {
+        "source_mapping": {
+          "energy_in_l1": {
+            "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",
+            "match_key": "total_act_energy",
+            "topic": "/status/em1data:0",
+            "shelly_accumulation": "lifetime",
+            "source_measurement_unit": "Wh"
+          },
+          "energy_in_total": {
+            "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",
+            "match_key": "total_act_energy",
+            "topic": "/status/em1data:0",
+            "shelly_accumulation": "lifetime",
+            "source_measurement_unit": "Wh"
+          },
+          "energy_out_l1": {
+            "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",
+            "match_key": "total_act_ret_energy",
+            "topic": "/status/em1data:0",
+            "shelly_accumulation": "lifetime",
+            "source_measurement_unit": "Wh"
+          },
+          "energy_out_total": {
+            "fetch_key": "Shelly-shellyproem50-08f9e0e6a5a4",
+            "match_key": "total_act_ret_energy",
+            "topic": "/status/em1data:0",
+            "shelly_accumulation": "lifetime",
+            "source_measurement_unit": "Wh"
+          }
+        }
+      }
+    },
+    "target_systems": {
+      "softcps": {
+        "actuator_mapping": {}
+      }
+    },
+    "rec": {
+      "community_id": "energaize",
+      "installation_id": "R-H-02",
+      "peers": [
+        "R-H-01"
+      ],
+      "derived_data_to_share": []
     }
   }
 }

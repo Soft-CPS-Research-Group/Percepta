@@ -4,7 +4,7 @@ import json
 from typing import Any, Dict, List, Optional, Union
 
 # --- Internal Framework Imports ---
-from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
+from app.core.data_ingestion.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
 from app.core.utils.time_utils import duration_to_seconds
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
@@ -167,7 +167,7 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                 # Example: self._series_keys["em01_price"] = "pt_spot_price"
                 self._series_keys[param_id] = match_key
 
-    def adapt(self, message: Union[dict, bytes, str]) -> List[Dict[str, Any]]:
+    def adapt(self, message: Union[dict, bytes, str]) -> Dict[str, Dict[str, Any]]:
         """Converts an OMIE envelope into canonical entity messages.
 
         Expected Input Format (`message`):
@@ -192,9 +192,8 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
 
         Expected Output Structure:
         --------------------------
-        [
-            {
-                "id": "EM01",
+        {
+            "EM01": {
                 "entity_type_id": "energy_market",
                 "parameters": {
                     "em01_price": {
@@ -207,18 +206,18 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
                 },
                 "timestamp": "2026-10-15 13:37:42 +0000"
             }
-        ]
+        }
 
         Args:
             message (Union[dict, bytes, str]): Raw inbound envelope.
 
         Returns:
-            List[Dict[str, Any]]: One canonical message for each entity that received prices, or an
-                empty list if the message could not be processed.
+            Dict[str, Dict[str, Any]]: One canonical message, by entity id, for each entity that received prices, or an
+                empty dictionary if the message could not be processed.
         """
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
-            return []
+            return {}
 
         # Time of the message, in the adapter timezone. Example (timezone "UTC"): 2026-10-15 13:37:42 +0000
         now_dt = datetime.datetime.now(self._tz)
@@ -227,9 +226,9 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
         # 1. Decode the envelope and keep its payload
         payload = self._normalize_ingress_payload(message)
         if payload is None:
-            return []
+            return {}
 
-        messages: List[Dict[str, Any]] = []
+        messages: Dict[str, Dict[str, Any]] = {}
 
         # 2. Every entity of the environment that has prices to receive gets its own message
         # Example: entities = {"EM01": {...}} -> one message for "EM01" (if its parameters have prices)
@@ -264,10 +263,15 @@ class OMIETelemetryAdapter(TelemetryAdapterBase):
             # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
             parameters = self.convert_to_schema_units(parameters)
             parameters = self.parameters_validation(
-                parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
+                parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES, entity_id
             )
 
-            messages.append(self._message_creator(parameters, entity_id, entity_type_id, timestamp))
+            # Only correct data is sent: an entity without any correct parameter has no message
+            if not parameters:
+                self._logger.debug(f"{self._LOG_PREFIX} No correct data for entity '{entity_id}' in this message.")
+                continue
+
+            messages.update(self._message_creator(parameters, entity_id, entity_type_id, timestamp))
 
         return messages
 

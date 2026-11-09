@@ -1,17 +1,18 @@
 # --- Standard Library Imports ---
 import asyncio
+import importlib
 import signal
 import sys
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
 # --- Internal Framework Imports ---
-from app.core.data_issue_handling.data_issue_handling_approaches_launcher import DataIssueHandlingApproachesLauncher
+from app.core.data_processing.data_issue_handling.data_issue_handling_approaches_launcher import DataIssueHandlingApproachesLauncher
 from app.core.input_handlers.input_handlers_launcher import InputHandlersLauncher
-from app.core.launchers.containers_launchers.data_ingestion_launcher import DataIngestionLauncher
-from app.core.launchers.containers_launchers.data_processing_launcher import DataProcessingLauncher
-from app.core.launchers.containers_launchers.decision_dispatching_launcher import DecisionDispatchingLauncher
-from app.core.launchers.containers_launchers.inference_launcher import InferenceLauncher
+from app.core.data_ingestion.data_ingestion_launcher import DataIngestionLauncher
+from app.core.data_processing.data_processing_launcher import DataProcessingLauncher
+from app.core.decision_dispatching.decision_dispatching_launcher import DecisionDispatchingLauncher
+from app.core.inference.inference_launcher import InferenceLauncher
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.core.storages.runtime_data_storage.runtime_data_storage_launcher import RuntimeDataStorageLauncher
 from app.core.storages.schema_storage.schema_storage_launcher import SchemaStorageLauncher
@@ -64,10 +65,15 @@ class SingleProcessApplicationLauncher:
     _DEFAULT_LOG_MAX_SIZE: int = 10 * 1024 * 1024     # Bytes. Used if 'logging.log_files.max_size' is not configured
 
     # From the last container of the pipeline to the first. It is the launch order, and the stop order is the reverse.
+    # The REC Bridge, between Data Processing and Inference, is only launched if the instance uses it ('rec_bridge').
     _LAUNCH_ORDER: Tuple[str, ...] = ("decision_dispatching", "inference", "data_processing", "data_ingestion")
+    _LAUNCH_ORDER_WITH_REC_BRIDGE: Tuple[str, ...] = (
+        "decision_dispatching", "inference", "rec_bridge", "data_processing", "data_ingestion"
+    )
 
     _LINKS: Tuple[str, ...] = (
-        "data_ingestion_to_data_processing", "data_processing_to_inference", "inference_to_decision_dispatching"
+        "data_ingestion_to_data_processing", "data_processing_to_inference", "inference_to_decision_dispatching",
+        "data_processing_to_rec_bridge", "rec_bridge_to_inference"
     )
 
     def __init__(self, instance_configuration_path: str) -> None:
@@ -107,6 +113,11 @@ class SingleProcessApplicationLauncher:
         self._logging_configuration = self._resolve_logging_configuration()
         self._logger = LoggingUtils("application_launcher", self._logging_configuration)
 
+        # The containers of the pipeline, from the last to the first (the REC Bridge only if the instance uses it)
+        self._launch_order: Tuple[str, ...] = (
+            self._LAUNCH_ORDER_WITH_REC_BRIDGE if self._instance_configuration.rec_bridge else self._LAUNCH_ORDER
+        )
+
         # Guard Clause 1: Checks that no link between containers is in memory. The containers run in different threads
         # (each with its own event loop), and a call from one loop to an object of another is not safe.
         for link in self._LINKS:
@@ -124,7 +135,7 @@ class SingleProcessApplicationLauncher:
         # the logger of that environment and container, created when the environment is launched.
         self._container_loggers: Dict[str, LoggingUtils] = {
             container_name: LoggingUtils(container_name, self._logging_configuration)
-            for container_name in self._LAUNCH_ORDER
+            for container_name in self._launch_order
         }
 
         # The storage is mounted here, and the environments are read from it
@@ -149,7 +160,7 @@ class SingleProcessApplicationLauncher:
         self._launched_environments: List[str] = []
 
     def _create_containers(self, environment_name: str) -> Dict[str, _Container]:
-        """Creates the launchers of the four containers of an environment and the thread of each one.
+        """Creates the launchers of the containers of an environment (four, or five with the REC Bridge) and the thread of each one.
 
         Args:
             environment_name (str): Name of the environment (used in the names of the threads).
@@ -186,10 +197,33 @@ class SingleProcessApplicationLauncher:
                 logger=self._container_loggers["inference"]
             )
         }
+        if self._instance_configuration.rec_bridge:
+            launchers["rec_bridge"] = self._load_rec_bridge_launcher_class()(
+                instance_configuration=self._instance_configuration,
+                input_launcher=InputHandlersLauncher(self._container_loggers["rec_bridge"]),
+                output_launcher=OutputHandlersLauncher(self._container_loggers["rec_bridge"]),
+                logger=self._container_loggers["rec_bridge"]
+            )
         return {
             container_name: _Container(launcher, EventLoopThread(f"{container_name}_{environment_name}"))
             for container_name, launcher in launchers.items()
         }
+
+    def _load_rec_bridge_launcher_class(self) -> type:
+        """Loads the launcher class of the REC Bridge, which is an extension: its path is in 'rec_bridge.path'.
+
+        Returns:
+            type: The class. It is built with the same arguments as the other container launchers.
+
+        Raises:
+            ValueError: If the class cannot be loaded (the path was already checked when the configuration was read).
+        """
+        path = self._instance_configuration.rec_bridge["path"]
+        module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
+        try:
+            return getattr(importlib.import_module(module_path), class_name)
+        except (ImportError, AttributeError) as err:
+            raise ValueError(f"{self._LOG_PREFIX} Initialization error: could not load 'rec_bridge.path' '{path}': {err}") from err
 
     async def launch(self) -> None:
         """Launches all the environments of the Schema Storage, one at a time.
@@ -212,7 +246,7 @@ class SingleProcessApplicationLauncher:
                 # The containers are launched from the last to the first. The links are over the network, so no
                 # container needs a method of the next one: it is enough that the consumers of a link exist (and have
                 # their queue) before the container that sends to them starts.
-                for container_name in self._LAUNCH_ORDER:
+                for container_name in self._launch_order:
                     container = self._containers[name][container_name]
 
                     # Each container has its own logger, so every log line shows which environment it belongs to
@@ -258,7 +292,7 @@ class SingleProcessApplicationLauncher:
         """Stops everything that was started, from the first container to the last (so that nothing is sent to a
         container that has already stopped): Data Ingestion, Data Processing, Inference and then Decision
         Dispatching. Each container is stopped inside its own thread, and the thread is closed at the end."""
-        for container_name in reversed(self._LAUNCH_ORDER):
+        for container_name in reversed(self._launch_order):
             for name, containers in self._containers.items():
                 container = containers[container_name]
 

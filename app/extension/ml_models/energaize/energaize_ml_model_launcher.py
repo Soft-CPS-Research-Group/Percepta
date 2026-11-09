@@ -1,9 +1,9 @@
 # --- Internal Framework Imports ---
-from app.core.integrated_logic.decision_validation_correction_logic_base import (
+from app.core.inference.decision_validation_correction_logic_base import (
     DecisionValidationCorrectionLogicBase
 )
-from app.core.integrated_logic.model_execution_error_handling_logic_base import ModelExecutionErrorHandlingLogicBase
-from app.core.launchers.external_systems_launchers.ml_model_launcher_base import (
+from app.core.inference.model_execution_error_handling_logic_base import ModelExecutionErrorHandlingLogicBase
+from app.core.inference.ml_model_launcher_base import (
     MLModelComponents,
     MLModelLauncherBase
 )

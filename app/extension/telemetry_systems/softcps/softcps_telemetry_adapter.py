@@ -5,7 +5,7 @@ import re
 from typing import Any, Dict, List, Optional, Union
 
 # --- Internal Framework Imports ---
-from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
+from app.core.data_ingestion.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
 
@@ -182,7 +182,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
                 self._payload_keys[param_id] = match_key
 
-    def adapt(self, message: Union[dict, bytes, str]) -> List[Dict[str, Any]]:
+    def adapt(self, message: Union[dict, bytes, str]) -> Dict[str, Dict[str, Any]]:
         """Converts a SoftCPS envelope into a canonical entity message.
 
         Expected Input Format (`message`), battery:
@@ -203,9 +203,8 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
 
         Expected Output Structure (battery):
         -------------------------------------
-        [
-            {
-                "id": "B01",
+        {
+            "B01": {
                 "entity_type_id": "battery",
                 "parameters": {
                     "b01_energy_in": {
@@ -223,18 +222,18 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
                 },
                 "timestamp": "2026-08-19 10:00:03 +0000"
             }
-        ]
+        }
 
         Args:
             message (Union[dict, bytes, str]): Raw inbound envelope.
 
         Returns:
-            List[Dict[str, Any]]: A single standardized canonical entity message, or an
-                empty list if the message could not be processed.
+            Dict[str, Dict[str, Any]]: A single standardized canonical entity message, by entity id, or an
+                empty dictionary if the message could not be processed.
         """
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
-            return []
+            return {}
 
         now_dt = datetime.datetime.now(self._tz)
         timestamp = now_dt.strftime("%Y-%m-%d %H:%M:%S %z")
@@ -242,7 +241,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
         # 1. Find the entity and decode the payload
         resolved = self._normalize_ingress_payload(message)
         if not resolved:
-            return []
+            return {}
 
         entity_id = resolved["entity_id"]
         entity_type_id = resolved["entity_type_id"]
@@ -252,7 +251,7 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Entity '{entity_id}' has no 'entity_type_id' configured."
             )
-            return []
+            return {}
 
         # 2. Pick the strategy for this entity type
         strategy_func = _ENTITY_TYPES_STRATEGIES.get(entity_type_id)
@@ -260,32 +259,37 @@ class SoftCPSTelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} No adaptation strategy registered for entity type '{entity_type_id}'."
             )
-            return []
+            return {}
 
         # 3. Decide when the readings were taken
         reading_timestamp = self._resolve_reading_timestamp(payload.get("timestamp"), now_dt)
         if reading_timestamp is None:
-            return []
+            return {}
 
         # 4. Extract the values, by parameter type id
         values_by_type = strategy_func(self, entity_id, payload)
         if not values_by_type:
             self._logger.debug(f"{self._LOG_PREFIX} No readings found for entity '{entity_id}'.")
-            return []
+            return {}
 
         # 5. Assign them to the entity's parameters, and validate
         entity_parameters = self._entities.get(entity_id, {}).get("parameters", {})
         parameters = self._build_parameters(entity_id, entity_parameters, values_by_type, reading_timestamp)
         if not parameters:
-            return []
+            return {}
 
         # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
         parameters = self.convert_to_schema_units(parameters)
         parameters = self.parameters_validation(
-            parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
+            parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES, entity_id
         )
 
-        return [self._message_creator(parameters, entity_id, entity_type_id, timestamp)]
+        # Only correct data is sent: without any correct parameter there is no message
+        if not parameters:
+            self._logger.debug(f"{self._LOG_PREFIX} No correct data for entity '{entity_id}' in this message.")
+            return {}
+
+        return self._message_creator(parameters, entity_id, entity_type_id, timestamp)
 
     def _normalize_ingress_payload(self, message: Union[dict, bytes, str]) -> Optional[Dict[str, Any]]:
         """Finds the entity an envelope belongs to and decodes its payload.

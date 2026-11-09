@@ -28,7 +28,7 @@ package UseCaseConfigAggregate {
     +String id
     +String theme
     +List<String> activeDataIssueHandlingApproachIds
-    +Boolean hasParameterDerivationLogic
+    +Boolean hasDataDerivationLogic
     +Boolean hasDecisionValidationLogic
     +Int deliveryFrequencyValue
     +String deliveryFrequencyUnit

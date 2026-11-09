@@ -9,7 +9,7 @@ package PerceptaInstanceConfigurationAggregate {
     +String id
     +List<String> activeDataIssueHandlingApproachIds
     +String combinationLogicId
-    +String parameterDerivationLogicId
+    +String dataDerivationLogicId
     +String targetSystemResolutionLogicId
   }
   class Frequency <<ValueObject>> {

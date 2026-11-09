@@ -4,8 +4,8 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 # --- Internal Framework Imports ---
-from app.core.integrated_logic.actuation_error_handling_logic_base import ActuationErrorHandlingLogicBase
-from app.core.launchers.external_systems_launchers.target_system_launcher_base import (
+from app.core.decision_dispatching.actuation_error_handling_logic_base import ActuationErrorHandlingLogicBase
+from app.core.decision_dispatching.target_system_launcher_base import (
     TargetSystemComponents,
     TargetSystemLauncherBase
 )

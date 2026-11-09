@@ -5,7 +5,7 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 
 # --- Internal Framework Imports ---
-from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
+from app.core.data_ingestion.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label, ParamLabel
 
@@ -193,7 +193,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
                     f"does not belong to any entity."
                 )
 
-    def adapt(self, message: dict) -> List[Dict[str, Any]]:
+    def adapt(self, message: dict) -> Dict[str, Dict[str, Any]]:
         """Converts a single incoming Cleanwatts envelope into a canonical entity message.
 
         Each call handles the reading of one parameter, received from one HTTP
@@ -213,9 +213,8 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
 
         Expected Output Structure:
         --------------------------
-        [
-            {
-                "id": "B01",
+        {
+            "B01": {
                 "entity_type_id": "battery",
                 "parameters": {
                     "35927": {
@@ -227,18 +226,18 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
                 },
                 "timestamp": "2026-08-19 10:00:31 +0000"
             }
-        ]
+        }
 
         Args:
             message (dict): Raw inbound envelope from the Input Handler, for a single endpoint.
 
         Returns:
-            List[Dict[str, Any]]: A single standardized canonical entity message, or an
-                empty list if the message could not be processed.
+            Dict[str, Dict[str, Any]]: A single standardized canonical entity message, by entity id, or an
+                empty dictionary if the message could not be processed.
         """
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
-            return []
+            return {}
 
         now_dt = datetime.datetime.now(self._tz)
         timestamp = now_dt.strftime("%Y-%m-%d %H:%M:%S %z")
@@ -246,7 +245,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         # 1. Resolve which entity and parameter this message belongs to
         resolved = self._normalize_ingress_payload(message)
         if not resolved:
-            return []
+            return {}
 
         entity_id = resolved["id"]
         entity_type_id = resolved["entity_type_id"]
@@ -258,7 +257,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Entity '{entity_id}' has no 'entity_type_id' configured."
             )
-            return []
+            return {}
 
         entity_parameters = self._entities.get(entity_id, {}).get("parameters", {})
 
@@ -276,16 +275,21 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
 
         # Nothing to report
         if not parameters:
-            return []
+            return {}
 
         # 3. Validate the received parameter's readings
         # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
         parameters = self.convert_to_schema_units(parameters)
         parameters = self.parameters_validation(
-            parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
+            parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES, entity_id
         )
 
-        return [self._message_creator(parameters, entity_id, entity_type_id, timestamp)]
+        # Only correct data is sent: without any correct parameter there is no message
+        if not parameters:
+            self._logger.debug(f"{self._LOG_PREFIX} No correct data for entity '{entity_id}' in this message.")
+            return {}
+
+        return self._message_creator(parameters, entity_id, entity_type_id, timestamp)
 
     def _normalize_ingress_payload(self, message: dict) -> Optional[Dict[str, Any]]:
         """Resolves the entity and parameter a single envelope belongs to, from the
@@ -457,9 +461,9 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         """Builds the canonical entry for a single parameter from its raw readings.
 
         If no readings were received (nothing, or an empty list), an empty list is
-        returned as it is: it is parameters_validation that turns it into "values": None
-        and reports it as empty. If something was
-        received but it cannot be used, the parameter is flagged here as malformed.
+        returned as it is: parameters_validation drops it and logs why (debug). If something
+        was received but it cannot be used, the parameter is flagged here as malformed
+        (and also dropped, so only correct data is sent).
         That covers a payload that is not a list of readings, and readings that are
         all discarded (for example, all have invalid dates). Readings that are
         individually invalid are discarded, and the valid ones are kept.
@@ -478,7 +482,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no readings."
             )
-            # The empty list is returned as it is: it is parameters_validation that turns it into "values": None
+            # The empty value is returned as it is: parameters_validation drops it and logs why (debug)
             return []
 
         # Something was received, but it is not a list of readings
@@ -587,7 +591,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Parameter '{param_id}' of entity '{entity_id}' (parameter type: {self._parameter_type(entity_id, param_id)}): it has no readings."
             )
-            # The empty list is returned as it is: it is parameters_validation that turns it into "values": None
+            # The empty value is returned as it is: parameters_validation drops it and logs why (debug)
             return {}
 
         # Something was received, but it is not a list of readings

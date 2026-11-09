@@ -2,7 +2,7 @@
 from typing import Any, Dict, List
 
 # --- Internal Framework Imports ---
-from app.core.adapters.target_system_adapter_base import MappedDecision, TargetSystemAdapterBase
+from app.core.decision_dispatching.target_system_adapter_base import MappedDecision, TargetSystemAdapterBase
 from app.core.output_handlers.async_http_output_handler import HttpPublishMode
 from app.core.utils.logger import LoggingUtils
 from app.core.utils.unit_utils import build_converter, unit_family

@@ -2,7 +2,7 @@
 from typing import Callable
 
 # --- Internal Framework Imports ---
-from app.core.launchers.external_systems_launchers.telemetry_system_launcher_base import (
+from app.core.data_ingestion.telemetry_system_launcher_base import (
     TelemetrySystemComponents,
     TelemetrySystemLauncherBase
 )

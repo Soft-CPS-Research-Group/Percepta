@@ -3,7 +3,7 @@ import asyncio
 from typing import Any, Dict, Optional
 
 # --- Internal Framework Imports ---
-from app.core.integrated_logic.model_execution_error_handling_logic_base import ModelExecutionErrorHandlingLogicBase
+from app.core.inference.model_execution_error_handling_logic_base import ModelExecutionErrorHandlingLogicBase
 from app.core.utils.logger import LoggingUtils
 
 

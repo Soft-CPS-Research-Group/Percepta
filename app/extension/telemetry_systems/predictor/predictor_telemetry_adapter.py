@@ -4,7 +4,7 @@ import json
 from typing import Any, Dict, List, Optional, Union
 
 # --- Internal Framework Imports ---
-from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
+from app.core.data_ingestion.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
 
@@ -179,7 +179,7 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
                 # Example: self._forecast_keys["pr01_consumption"] = "consumption"
                 self._forecast_keys[param_id] = match_key
 
-    def adapt(self, message: Union[dict, bytes, str]) -> List[Dict[str, Any]]:
+    def adapt(self, message: Union[dict, bytes, str]) -> Dict[str, Dict[str, Any]]:
         """Converts a Predictor envelope into canonical entity messages.
 
         Expected Input Format (`message`):
@@ -201,9 +201,8 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
 
         Expected Output Structure (timezone "Europe/Lisbon"):
         -----------------------------------------------------
-        [
-            {
-                "id": "PR01",
+        {
+            "PR01": {
                 "entity_type_id": "forecast_service",
                 "parameters": {
                     "pr01_consumption": {
@@ -225,36 +224,36 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
                 },
                 "timestamp": "2026-10-22 10:00:00 +0100"
             }
-        ]
+        }
 
         Args:
             message (Union[dict, bytes, str]): Raw inbound envelope.
 
         Returns:
-            List[Dict[str, Any]]: One canonical message for each entity that received a forecast, or an
-                empty list if the message could not be processed.
+            Dict[str, Dict[str, Any]]: One canonical message, by entity id, for each entity that received a forecast, or an
+                empty dictionary if the message could not be processed.
         """
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
-            return []
+            return {}
 
         # 1. Decode the envelope and keep its payload
         payload = self._normalize_ingress_payload(message)
         if payload is None:
-            return []
+            return {}
 
         # 2. Time of the first value of the forecasts. Example: "2026-10-22T09:00:00Z" -> 2026-10-22 09:00:00 UTC
         # (a time with no offset is taken as UTC)
         # Without it the values cannot be placed in time, so the whole message is discarded
         start_time = self._parse_target_time(payload.get("target_time"))
         if start_time is None:
-            return []
+            return {}
 
         # The message is stamped with the time of the first value, in the adapter timezone.
         # Example (timezone "Europe/Lisbon"): 2026-10-22 10:00:00 +0100
         timestamp = start_time.astimezone(self._tz).strftime("%Y-%m-%d %H:%M:%S %z")
 
-        messages: List[Dict[str, Any]] = []
+        messages: Dict[str, Dict[str, Any]] = {}
 
         # 3. Every entity of the environment that has a forecast to receive gets its own message
         # (there is expected to be only one forecast service entity in the environment, see the class docstring)
@@ -290,10 +289,15 @@ class PredictorTelemetryAdapter(TelemetryAdapterBase):
             # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
             parameters = self.convert_to_schema_units(parameters)
             parameters = self.parameters_validation(
-                parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
+                parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES, entity_id
             )
 
-            messages.append(self._message_creator(parameters, entity_id, entity_type_id, timestamp))
+            # Only correct data is sent: an entity without any correct parameter has no message
+            if not parameters:
+                self._logger.debug(f"{self._LOG_PREFIX} No correct data for entity '{entity_id}' in this message.")
+                continue
+
+            messages.update(self._message_creator(parameters, entity_id, entity_type_id, timestamp))
 
         return messages
 

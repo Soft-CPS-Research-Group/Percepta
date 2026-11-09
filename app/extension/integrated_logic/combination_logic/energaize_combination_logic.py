@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 # --- Internal Framework Imports ---
-from app.core.integrated_logic.combination_logic_base import CombinationLogicBase
+from app.core.data_processing.combination_logic_base import CombinationLogicBase
 from app.core.utils.logger import LoggingUtils
 from app.core.utils.type_compatibility import is_type_compatible
 from app.core.utils.time_utils import duration_to_seconds, format_timestamp, parse_timestamp
@@ -90,14 +90,13 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         self._frequency_seconds: float = frequency_seconds
         self._entities_schema: Dict[str, Any] = environment["entities"]
 
-    def combine(self, data: List[Dict[str, Any]], period_end: datetime) -> Dict[str, Any]:
+    def combine(self, data: Dict[str, Dict[str, Any]], period_end: datetime) -> Dict[str, Any]:
         """Combines the data of a period into the message of the EnergAIze algorithm.
 
         Expected Input Structure:
         -------------------------
-        data = [
-            {
-                "id": "PV01",
+        data = {
+            "PV01": {
                 "entity_type_id": "pv_panel",
                 "generated": False,                                      # Optional. True if the entity was synthesised (default False)
                 "parameters": {
@@ -111,7 +110,7 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                 },
                 "timestamp": "2026-10-13 16:35:41 +0000"
             }
-        ]
+        }
         period_end = datetime(2026, 10, 13, 16, 35, 45, tzinfo=timezone.utc)
 
         Expected Output Structure:
@@ -120,14 +119,14 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         'aggregation_operation' "sum", and 'frequency_seconds' is 15, the two readings (0.05 and 0.07) become 0.12:
         {
             "timestamp": "2026-10-13 16:35:45 +0000",
-            "entities": [
-                {
-                    "id": "PV01",
+            "entities": {
+                "PV01": {
                     "entity_type_id": "pv_panel",
                     "parameters": {
                         "33711": {
                             "parameter_type_id": "energy",
-                            "values": [0.12],
+                            "original_values": [0.05, 0.07],
+                            "final_values": [0.12],
                             "measurement_unit": "kWh",
                             "aggregation_method": "sum",
                             "start_date": "2026-10-13 16:35:30 +0000",
@@ -136,11 +135,11 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                         }
                     }
                 }
-            ]
+            }
         }
 
         Args:
-            data (List[Dict[str, Any]]): The data of the period, one dictionary for each entity.
+            data (Dict[str, Dict[str, Any]]): The data of the period, by the id of the entity.
             period_end (datetime): The end of the period, with a timezone.
 
         Returns:
@@ -155,9 +154,8 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
 
         period_start: datetime = period_end - timedelta(seconds=self._frequency_seconds)
 
-        entities: List[Dict[str, Any]] = []
-        for entity in data:
-            entity_id = entity.get("id")
+        entities: Dict[str, Dict[str, Any]] = {}
+        for entity_id, entity in data.items():
             entity_type_id = entity.get("entity_type_id")
 
             # Guard Clause 2: Ignores the entities whose type is not one of the `Label` values.
@@ -190,7 +188,7 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                     entity_id, parameter_id, parameter, parameter_schema, period_start, generated
                 )
 
-            entities.append({"id": entity_id, "entity_type_id": entity_type_id, "parameters": parameters})
+            entities[entity_id] = {"entity_type_id": entity_type_id, "parameters": parameters}
 
         return {"timestamp": format_timestamp(period_end), "entities": entities}
 
@@ -217,7 +215,9 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         --------------------------
         {
             "parameter_type_id": "power",
-            "values": [2.5],
+            "original_values": [2.0, 3.0],         # The values of the readings of the period, before the aggregation
+            "final_values": [2.5],                 # After the aggregation_method (here, the average). None if there are
+                                                   # no values (and so is 'original_values')
             "measurement_unit": "kW",
             "aggregation_method": "average",
             "start_date": "2026-10-13 16:35:30 +0000",
@@ -236,39 +236,19 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         Returns:
             Dict[str, Any]: The parameter of the message.
         """
-        # The readings in time order, because the approaches do not promise it. A reading without a valid timestamp
-        # cannot be placed in time, so it is ignored (and logged) instead of losing the whole period.
-        timed_readings: List[tuple] = []
-        for reading in parameter.get("values") or []:
-            try:
-                timed_readings.append((parse_timestamp(reading["timestamp"]), reading))
-            except (ValueError, KeyError, TypeError):
-                self._logger.warning(
-                    f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
-                    f"{parameter_schema.get('parameter_type_id')}): reading ignored, it has no valid timestamp."
-                )
-        readings: List[Dict[str, Any]] = [
-            reading for _, reading in sorted(timed_readings, key=lambda timed_reading: timed_reading[0])
-        ]
-        raw_values: List[Any] = self._valid_values(
-            entity_id, parameter_id, parameter_schema.get("parameter_type_id"),
-            [reading.get("value") for reading in readings]
-        )
-
+        # How the parameter is represented in the period depends only on the environment, not on the readings
         temporal_behavior: Optional[Dict[str, Any]] = parameter_schema.get("temporal_behavior")
         frequency_seconds: float = self._frequency_seconds
-
+        aggregation: Optional[AggregationLabel]
         if not temporal_behavior:
             # No temporal behavior: the parameter is a state, so the period is represented by the latest state.
-            aggregation: Optional[AggregationLabel] = self._DEFAULT_AGGREGATION
-            values: List[Any] = [raw_values[-1] if raw_values else None]
+            aggregation = self._DEFAULT_AGGREGATION
         else:
             operation_id: Optional[str] = temporal_behavior.get("aggregation_operation")
             if operation_id is None:
                 # A series (e.g., the prices of the day ahead): it is not reduced, and it repeats with the
                 # periodicity of the parameter, not with the one of the period.
                 aggregation = None
-                values = raw_values
                 frequency_seconds = duration_to_seconds(temporal_behavior["periodicity"], "periodicity")
             else:
                 # Guard Clause: Checks that the 'aggregation_operation' is one of the `AggregationLabel` values.
@@ -276,9 +256,68 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                     aggregation = AggregationLabel(operation_id)
                 except ValueError:
                     raise ValueError(f"Unknown aggregation_operation '{operation_id}'.") from None
-                values = [self._reduce(aggregation, raw_values)]
 
-        result: Dict[str, Any] = {"parameter_type_id": parameter_schema.get("parameter_type_id"), "values": values}
+        original_values: Optional[List[Any]]
+        final_values: Optional[List[Any]]
+
+        # --- Guard Clause: no values to work with ---
+        # The Missing Data approach gives "values": None to a parameter that has no value in the period. That None is
+        # kept as it is in 'original_values' and copied to 'final_values': there is nothing to aggregate.
+        if parameter.get("values") is None:
+            original_values = None
+            final_values = original_values
+            self._logger.debug(
+                f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                f"{parameter_schema.get('parameter_type_id')}): no value in the period, so its 'original_values' "
+                f"and 'final_values' are None."
+            )
+        else:
+            # The readings in time order, because the approaches do not promise it. A reading without a valid
+            # timestamp cannot be placed in time, so it is ignored (and logged) instead of losing the whole period.
+            timed_readings: List[tuple] = []
+            for reading in parameter["values"]:
+                try:
+                    timed_readings.append((parse_timestamp(reading["timestamp"]), reading))
+                except (ValueError, KeyError, TypeError):
+                    self._logger.warning(
+                        f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                        f"{parameter_schema.get('parameter_type_id')}): reading ignored, it has no valid timestamp."
+                    )
+            readings: List[Dict[str, Any]] = [
+                reading for _, reading in sorted(timed_readings, key=lambda timed_reading: timed_reading[0])
+            ]
+            raw_values: List[Any] = self._valid_values(
+                entity_id, parameter_id, parameter_schema.get("parameter_type_id"),
+                [reading.get("value") for reading in readings]
+            )
+
+            if not raw_values:
+                # Readings arrived, but none is usable: same as having no value in the period
+                original_values = None
+                final_values = original_values
+                self._logger.debug(
+                    f"{self._LOG_PREFIX} Parameter '{parameter_id}' of entity '{entity_id}' (parameter type: "
+                    f"{parameter_schema.get('parameter_type_id')}): no valid readings in the period, so its "
+                    f"'original_values' and 'final_values' are None."
+                )
+            else:
+                # 'original_values' are the values of the readings of the period (after the Data-Issue Handling
+                # Approaches), and 'final_values' are the ones after the aggregation_method. A series that is not
+                # aggregated has the same values in both. 'original_values' is a copy, so that changing one list never
+                # changes the other.
+                original_values = list(raw_values)
+                if aggregation is None:
+                    final_values = raw_values
+                elif not temporal_behavior:
+                    final_values = [raw_values[-1]]
+                else:
+                    final_values = [self._reduce(aggregation, raw_values)]
+
+        result: Dict[str, Any] = {
+            "parameter_type_id": parameter_schema.get("parameter_type_id"),
+            "original_values": original_values,
+            "final_values": final_values
+        }
         if "measurement_unit" in parameter_schema:
             result["measurement_unit"] = parameter_schema["measurement_unit"]
         result["aggregation_method"] = aggregation.value if aggregation else None

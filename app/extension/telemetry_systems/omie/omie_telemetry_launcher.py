@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 # --- Internal Framework Imports ---
 from app.core.connectors.async_local_connector import AsyncLocalConnector
 from app.core.input_handlers.async_local_input_handler import AsyncLocalInputHandler
-from app.core.launchers.external_systems_launchers.telemetry_system_launcher_base import (
+from app.core.data_ingestion.telemetry_system_launcher_base import (
     TelemetrySystemComponents,
     TelemetrySystemLauncherBase
 )

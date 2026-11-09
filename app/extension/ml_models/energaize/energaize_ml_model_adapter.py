@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 # --- Internal Framework Imports ---
-from app.core.adapters.ml_model_adapter_base import MLModelAdapterBase
+from app.core.inference.ml_model_adapter_base import MLModelAdapterBase
 from app.core.utils.time_utils import format_timestamp
 from app.extension.utils.labels import ActLabel
 
@@ -12,7 +12,7 @@ class EnergAIzeMLModelAdapter(MLModelAdapterBase):
     """Adapter of the EnergAIze ML Model.
 
     Input: EnergAIze receives the data in the exact format produced by the Combination Logic and by the
-    Parameter-Derivation Logic (and, when the installation belongs to a REC, by the REC Bridge container), so the
+    Data-Derivation Logic (and, when the installation belongs to a REC, by the REC Bridge container), so the
     message is not transformed.
 
     Output: EnergAIze controls the energy operation of the installation by producing decisions for its entities. In
@@ -28,7 +28,7 @@ class EnergAIzeMLModelAdapter(MLModelAdapterBase):
 
         Expected Input Structure:
         -------------------------
-        See `EnergAIzeParameterDerivationLogic` (the message already has the derived parameters).
+        See `EnergAIzeDataDerivationLogic` (the message already has the derived data).
 
         Expected Output Structure:
         --------------------------

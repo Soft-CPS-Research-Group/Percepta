@@ -4,8 +4,8 @@ from enum import Enum
 from typing import Optional, Type
 
 # --- Internal Framework Imports ---
-from app.core.integrated_logic.combination_logic_base import CombinationLogicBase
-from app.core.integrated_logic.parameter_derivation_logic_base import ParameterDerivationLogicBase
+from app.core.data_processing.combination_logic_base import CombinationLogicBase
+from app.core.data_processing.data_derivation_logic_base import DataDerivationLogicBase
 from app.core.utils.environment_variables import expand_environment_variables
 from app.core.utils.json_reader import read_json_object
 from app.core.utils.labels import (
@@ -63,7 +63,7 @@ class InstanceConfiguration:
         ],
         "integrated_logic": {                                       # (dict, optional) Each value is the path of a class
             "combination_logic": "app.extension.logic.combination.CombinationLogic1",
-            "parameter_derivation_logic": "app.extension.logic.derivation.DerivationLogic1"     # (optional)
+            "data_derivation_logic": "app.extension.logic.derivation.DerivationLogic1"     # (optional)
         },
         "schema_storage": {
             "connection_configuration": {
@@ -118,6 +118,23 @@ class InstanceConfiguration:
             },
             "inference_to_decision_dispatching": {                  # (dict, optional)
                 "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {}}
+            },
+            "data_processing_to_rec_bridge": {                      # (dict, optional) Only used with 'rec_bridge'
+                "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {}}
+            },
+            "rec_bridge_to_inference": {                            # (dict, optional) Only used with 'rec_bridge'
+                "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {}}
+            }
+        },
+        "rec_bridge": {                                             # (dict, optional) Adds the REC Bridge container
+            "path": "app.extension.rec_bridge.energaize.energaize_rec_bridge_launcher.EnergAIzeRECBridgeLauncher",
+            "connection_configuration": {                           # How the installations of the REC talk to each other
+                "protocol_id": "AsyncRabbitMQ",                     # Only AsyncRabbitMQ
+                "connection_info": {
+                    "collection_window_seconds": 5,                 # How long it waits for the other installations. Shorter than the frequency
+                    "connection": {},
+                    "topology": {"publish": {}, "subscribe": {}}    # Exchanges and queues, with {community_id}, {installation_id} and {peer_id}
+                }
             }
         },
         "logging": {                                                # (dict, optional)
@@ -134,7 +151,7 @@ class InstanceConfiguration:
     # each decision is not configured: it is given by the 'actuator_mapping' of the environment.
     _INTEGRATED_LOGIC_BASE_CLASSES: dict = {
         "combination_logic": CombinationLogicBase,
-        "parameter_derivation_logic": ParameterDerivationLogicBase
+        "data_derivation_logic": DataDerivationLogicBase
     }
 
     def __init__(self, path: str) -> None:
@@ -199,18 +216,18 @@ class InstanceConfiguration:
             raise ValueError(f"{self._LOG_PREFIX} 'external_systems.telemetry_systems' must not be empty.")
 
         # Imported here, and not at the top of the file, to avoid a circular import (the launchers use this module)
-        from app.core.integrated_logic.decision_validation_correction_logic_base import (
+        from app.core.inference.decision_validation_correction_logic_base import (
             DecisionValidationCorrectionLogicBase
         )
-        from app.core.integrated_logic.model_execution_error_handling_logic_base import (
+        from app.core.inference.model_execution_error_handling_logic_base import (
             ModelExecutionErrorHandlingLogicBase
         )
-        from app.core.integrated_logic.actuation_error_handling_logic_base import ActuationErrorHandlingLogicBase
-        from app.core.launchers.external_systems_launchers.ml_model_launcher_base import MLModelLauncherBase
-        from app.core.launchers.external_systems_launchers.target_system_launcher_base import (
+        from app.core.decision_dispatching.actuation_error_handling_logic_base import ActuationErrorHandlingLogicBase
+        from app.core.inference.ml_model_launcher_base import MLModelLauncherBase
+        from app.core.decision_dispatching.target_system_launcher_base import (
             TargetSystemLauncherBase
         )
-        from app.core.launchers.external_systems_launchers.telemetry_system_launcher_base import (
+        from app.core.data_ingestion.telemetry_system_launcher_base import (
             TelemetrySystemLauncherBase
         )
         for system_id, system in telemetry_systems.items():
@@ -322,6 +339,13 @@ class InstanceConfiguration:
                 valid_ids=OutputHandlerLabel
             )
 
+        # The two links that replace 'data_processing_to_inference' when the REC Bridge is used: Data Processing sends to
+        # the REC Bridge, and the REC Bridge sends to Inference.
+        data_processing_to_rec_bridge_connection = self._optional_link(
+            inter_container, "data_processing_to_rec_bridge"
+        )
+        rec_bridge_to_inference_connection = self._optional_link(inter_container, "rec_bridge_to_inference")
+
         # --- Guard Clause 9: logging is optional, but must be well formed if given ---
         logging_configuration = self._get_dict(content, "logging")
         self._get_dict(logging_configuration, "log_files", parent_name="logging")
@@ -373,6 +397,66 @@ class InstanceConfiguration:
 
             self._validate_launcher_path(logic_path, logic_full_name, self._INTEGRATED_LOGIC_BASE_CLASSES[logic_name])
 
+        # --- Guard Clause 13: the REC Bridge is optional. If it is configured, it needs everything below ---
+        rec_bridge_content = self._get_dict(content, "rec_bridge")
+        rec_bridge = None
+        if rec_bridge_content:
+            # The REC Bridge is an extension: Percepta only knows the path of its launcher. That it extends the right
+            # class is checked by the application launcher, which builds it.
+            launcher_path = rec_bridge_content.get("path")
+            if not isinstance(launcher_path, str) or not launcher_path.strip():
+                raise ValueError(f"{self._LOG_PREFIX} 'rec_bridge.path' must be the path of a class.")
+            self._validate_launcher_path(launcher_path, "rec_bridge.path")
+
+            # How the installations of the REC talk to each other: like the other external systems, with a
+            # 'connection_configuration'. They are different applications, so it has to be over the network.
+            rec_connection = self._validate_connection_configuration(
+                rec_bridge_content.get("connection_configuration"), "rec_bridge.connection_configuration",
+                valid_ids=OutputHandlerLabel
+            )
+            if rec_connection["protocol_id"] != OutputHandlerLabel.ASYNC_RABBITMQ.value:
+                raise ValueError(
+                    f"{self._LOG_PREFIX} 'rec_bridge.connection_configuration.protocol_id' must be "
+                    f"'{OutputHandlerLabel.ASYNC_RABBITMQ.value}', because the installations of a REC are different "
+                    f"applications that talk over the network."
+                )
+
+            # The topology has two parts: where this installation publishes and where it receives from the others
+            topology = rec_connection["connection_info"].get("topology")
+            if not isinstance(topology, dict) or not isinstance(topology.get("publish"), dict) \
+                    or not isinstance(topology.get("subscribe"), dict):
+                raise ValueError(
+                    f"{self._LOG_PREFIX} 'rec_bridge.connection_configuration.connection_info.topology' must be a "
+                    f"dictionary with 'publish' and 'subscribe'."
+                )
+
+            # The Bridge waits for the other installations inside the period, so it must end before the next one.
+            # Like the other settings of an external system, it is in the 'connection_info'.
+            collection_window_seconds = rec_connection["connection_info"].get("collection_window_seconds")
+            if isinstance(collection_window_seconds, bool) or not isinstance(collection_window_seconds, (int, float)) \
+                    or collection_window_seconds <= 0:
+                raise ValueError(
+                    f"{self._LOG_PREFIX} 'rec_bridge.connection_configuration.connection_info.collection_window_seconds'"
+                    f" must be a number greater than zero."
+                )
+            if collection_window_seconds >= frequency_seconds:
+                raise ValueError(
+                    f"{self._LOG_PREFIX} 'rec_bridge.connection_configuration.connection_info.collection_window_seconds'"
+                    f" must be shorter than the 'frequency'."
+                )
+
+            if data_processing_to_rec_bridge_connection is None or rec_bridge_to_inference_connection is None:
+                raise ValueError(
+                    f"{self._LOG_PREFIX} 'rec_bridge' is configured, so 'inter_container_communication' needs "
+                    f"'data_processing_to_rec_bridge' and 'rec_bridge_to_inference'."
+                )
+
+            rec_bridge = {
+                "path": launcher_path,
+                "connection_configuration": rec_connection,
+                "collection_window_seconds": collection_window_seconds
+            }
+
         self._content = content
         self._timezone = timezone
         self._frequency = frequency
@@ -389,6 +473,9 @@ class InstanceConfiguration:
         self._data_ingestion_to_data_processing = data_ingestion_output_connection
         self._data_processing_to_inference = data_processing_output_connection
         self._inference_to_decision_dispatching = inference_output_connection
+        self._data_processing_to_rec_bridge = data_processing_to_rec_bridge_connection
+        self._rec_bridge_to_inference = rec_bridge_to_inference_connection
+        self._rec_bridge = rec_bridge
         self._logging = logging_configuration
 
     @property
@@ -514,6 +601,49 @@ class InstanceConfiguration:
         return self._inference_to_decision_dispatching
 
     @property
+    def rec_bridge(self) -> dict | None:
+        """dict | None: The settings of the REC Bridge container, or None if the instance does not use it.
+
+        When it is not None, the messages go from Data Processing to the REC Bridge ('data_processing_to_rec_bridge')
+        and from it to Inference ('rec_bridge_to_inference'), instead of directly through 'data_processing_to_inference'.
+
+        Expected Output Structure:
+        --------------------------
+        {
+            "path": "app.extension.rec_bridge.energaize.energaize_rec_bridge_launcher.EnergAIzeRECBridgeLauncher",
+            "connection_configuration": {"protocol_id": "AsyncRabbitMQ", "connection_info": {"connection": {}, "topology": {}}},
+            "collection_window_seconds": 5
+        }
+        """
+        return self._rec_bridge
+
+    @property
+    def data_processing_to_rec_bridge(self) -> dict | None:
+        """dict | None: Connection configuration of the link from Data Processing to the REC Bridge (None if not set)."""
+        return self._data_processing_to_rec_bridge
+
+    @property
+    def rec_bridge_to_inference(self) -> dict | None:
+        """dict | None: Connection configuration of the link from the REC Bridge to Inference (None if not set)."""
+        return self._rec_bridge_to_inference
+
+    @property
+    def data_processing_output_link(self) -> dict | None:
+        """dict | None: The link that Data Processing sends the unified message over.
+
+        It is the link to the REC Bridge if the instance uses it, and the link to Inference otherwise.
+        """
+        return self._data_processing_to_rec_bridge if self._rec_bridge else self._data_processing_to_inference
+
+    @property
+    def inference_input_link(self) -> dict | None:
+        """dict | None: The link that Inference receives the unified message from.
+
+        It is the link from the REC Bridge if the instance uses it, and the link from Data Processing otherwise.
+        """
+        return self._rec_bridge_to_inference if self._rec_bridge else self._data_processing_to_inference
+
+    @property
     def logging(self) -> dict:
         """dict: Settings of the logger. Empty if there are none."""
         return self._logging
@@ -543,6 +673,25 @@ class InstanceConfiguration:
         if not isinstance(value, dict):
             raise ValueError(f"{self._LOG_PREFIX} '{name}' must be a dictionary.")
         return value
+
+    def _optional_link(self, inter_container: dict, link_name: str) -> dict | None:
+        """Validates one link between two containers, if it is configured.
+
+        Args:
+            inter_container (dict): The 'inter_container_communication' of the configuration.
+            link_name (str): Name of the link (e.g., "data_processing_to_rec_bridge").
+
+        Returns:
+            dict | None: The connection configuration of the link, or None if it is not configured.
+        """
+        link = self._get_dict(inter_container, link_name, parent_name="inter_container_communication")
+        if not link:
+            return None
+        return self._validate_connection_configuration(
+            link.get("connection_configuration"),
+            f"inter_container_communication.{link_name}.connection_configuration",
+            valid_ids=OutputHandlerLabel
+        )
 
     def _validate_duration(self, value: object, name: str, must_be_positive: bool) -> float:
         """Checks that a duration has a numeric 'value' and a known 'unit', and returns it in seconds.

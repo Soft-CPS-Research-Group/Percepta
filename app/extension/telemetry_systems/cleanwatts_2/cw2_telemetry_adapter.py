@@ -4,7 +4,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 # --- Internal Framework Imports ---
-from app.core.adapters.telemetry_adapter_base import TelemetryAdapterBase
+from app.core.data_ingestion.telemetry_adapter_base import TelemetryAdapterBase
 from app.core.utils.logger import LoggingUtils
 from app.extension.utils.labels import PARAMETER_TYPE_EXPECTED_TYPES, Label
 
@@ -208,7 +208,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         """
         return str(source).strip().strip("/").split("/")[0].strip().lower()
 
-    def adapt(self, message: dict) -> List[Dict[str, Any]]:
+    def adapt(self, message: dict) -> Dict[str, Dict[str, Any]]:
         """Converts an incoming Cleanwatts v2 message into canonical entity messages.
 
         The readings are converted from the 'source_measurement_unit' of each parameter (source mapping) to its
@@ -228,9 +228,8 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         Expected Output Structure (using the example configuration, with timezone "UTC",
         and a previous stored value of 4961.5 for parameter "32df"):
         ------------------------------------------------------------
-        [
-            {
-                "id": "GR02",
+        {
+            "GR02": {
                 "entity_type_id": "grid_meter",
                 "parameters": {
                     "67fgh": {
@@ -244,17 +243,17 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
                 },
                 "timestamp": "2026-08-19 16:15:31 +0000"
             }
-        ]
+        }
 
         Args:
             message (dict): Raw inbound AMQP message.
 
         Returns:
-            List[Dict[str, Any]]: Standardized canonical entity messages.
+            Dict[str, Dict[str, Any]]: Standardized canonical entity messages, by entity id.
         """
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
-            return []
+            return {}
 
         now_dt = datetime.datetime.now(self._tz)
         timestamp = now_dt.strftime(TIMESTAMP_FORMAT)
@@ -262,7 +261,7 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         # 1. Extract entity and parameter info from the raw message
         canonical_message = self._normalize_ingress_payload(message)
         if not canonical_message:
-            return []
+            return {}
 
         entity_id = canonical_message["id"]
         entity_type_id = canonical_message["entity_type_id"]
@@ -273,14 +272,14 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
             self._logger.warning(
                 f"{self._LOG_PREFIX} Entity '{entity_id}' has no 'entity_type_id' configured."
             )
-            return []
+            return {}
 
         # 2. Pick the strategy for this entity type
         if entity_type_id not in _LABEL_STRATEGIES:
             self._logger.warning(
                 f"{self._LOG_PREFIX} No adaptation strategy registered for entity type '{entity_type_id}'."
             )
-            return []
+            return {}
 
         strategy_func = _LABEL_STRATEGIES[entity_type_id]
 
@@ -291,16 +290,21 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         )
         if not adapted_parameters:
             self._logger.debug(f"{self._LOG_PREFIX} No usable readings for entity '{entity_id}' in this message.")
-            return []
+            return {}
 
         # 3. Validate the received parameters' readings
         # Converts the readings from the unit of the source to the unit of the schema (see 'source_measurement_unit')
         adapted_parameters = self.convert_to_schema_units(adapted_parameters)
         adapted_parameters = self.parameters_validation(
-            adapted_parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES
+            adapted_parameters, entity_parameters, PARAMETER_TYPE_EXPECTED_TYPES, entity_id
         )
 
-        return [self._message_creator(adapted_parameters, entity_id, entity_type_id, timestamp)]
+        # Only correct data is sent: without any correct parameter there is no message
+        if not adapted_parameters:
+            self._logger.debug(f"{self._LOG_PREFIX} No correct data for entity '{entity_id}' in this message.")
+            return {}
+
+        return self._message_creator(adapted_parameters, entity_id, entity_type_id, timestamp)
 
     def _normalize_ingress_payload(self, message: dict) -> Optional[Dict[str, Any]]:
         """Finds the entity and its matching parameters for an incoming message, and

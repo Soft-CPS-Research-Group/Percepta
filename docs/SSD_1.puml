@@ -19,7 +19,7 @@ end
 note over DP : At the configured frequency
 DP -> DP : Apply configured data-issue handling approaches
 DP -> DP : Apply combination logic
-DP -> DP : Apply parameter-derivation logic, if integrated
+DP -> DP : Apply data-derivation logic, if integrated
 DP -> INF : Processed data
 
 INF -> INF : Map data into the format expected by the ML Model

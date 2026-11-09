@@ -1,13 +1,15 @@
 {
     "timestamp": "2026-10-13 16:35:45 +0000",
-    "entities": [
-        {
-            "id": "GR01",
+    "entities": {
+        "GR01": {
             "entity_type_id": "grid_meter",
             "parameters": {
                 "energy_in_l1": {
                     "parameter_type_id": "energy_in_l1",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -18,7 +20,10 @@
                 },
                 "energy_in_l2": {
                     "parameter_type_id": "energy_in_l2",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -29,7 +34,10 @@
                 },
                 "energy_in_l3": {
                     "parameter_type_id": "energy_in_l3",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -40,7 +48,10 @@
                 },
                 "energy_in_total": {
                     "parameter_type_id": "energy_in_total",
-                    "values": [
+                    "original_values": [
+                        0.011442050415434451
+                    ],
+                    "final_values": [
                         0.011442050415434451
                     ],
                     "measurement_unit": "kWh",
@@ -51,7 +62,10 @@
                 },
                 "energy_out_l1": {
                     "parameter_type_id": "energy_out_l1",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -62,7 +76,10 @@
                 },
                 "energy_out_l2": {
                     "parameter_type_id": "energy_out_l2",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -73,7 +90,10 @@
                 },
                 "energy_out_l3": {
                     "parameter_type_id": "energy_out_l3",
-                    "values": [
+                    "original_values": [
+                        0
+                    ],
+                    "final_values": [
                         0
                     ],
                     "measurement_unit": "kWh",
@@ -84,7 +104,10 @@
                 },
                 "energy_out_total": {
                     "parameter_type_id": "energy_out_total",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kWh",
@@ -95,13 +118,15 @@
                 }
             }
         },
-        {
-            "id": "PV01",
+        "PV01": {
             "entity_type_id": "pv_panel",
             "parameters": {
                 "33711": {
                     "parameter_type_id": "energy",
-                    "values": [
+                    "original_values": [
+                        0.1
+                    ],
+                    "final_values": [
                         0.1
                     ],
                     "measurement_unit": "kWh",
@@ -112,13 +137,15 @@
                 }
             }
         },
-        {
-            "id": "AC000001_1",
+        "AC000001_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -129,7 +156,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -139,13 +169,15 @@
                 }
             }
         },
-        {
-            "id": "AC000002_1",
+        "AC000002_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.004
+                    ],
+                    "final_values": [
                         0.004
                     ],
                     "measurement_unit": "kW",
@@ -156,7 +188,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -166,13 +201,15 @@
                 }
             }
         },
-        {
-            "id": "AC000004_1",
+        "AC000004_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.001
+                    ],
+                    "final_values": [
                         0.001
                     ],
                     "measurement_unit": "kW",
@@ -183,7 +220,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -193,13 +233,15 @@
                 }
             }
         },
-        {
-            "id": "AC000007_1",
+        "AC000007_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -210,7 +252,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -220,13 +265,15 @@
                 }
             }
         },
-        {
-            "id": "AC000010_1",
+        "AC000010_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -237,7 +284,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -247,13 +297,15 @@
                 }
             }
         },
-        {
-            "id": "AC000013_1",
+        "AC000013_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -264,7 +316,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -274,13 +329,15 @@
                 }
             }
         },
-        {
-            "id": "AC000003_1",
+        "AC000003_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.001
+                    ],
+                    "final_values": [
                         0.001
                     ],
                     "measurement_unit": "kW",
@@ -291,7 +348,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -301,13 +361,15 @@
                 }
             }
         },
-        {
-            "id": "AC000005_1",
+        "AC000005_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.02
+                    ],
+                    "final_values": [
                         0.02
                     ],
                     "measurement_unit": "kW",
@@ -318,7 +380,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -328,13 +393,15 @@
                 }
             }
         },
-        {
-            "id": "AC000006_1",
+        "AC000006_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -345,7 +412,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -355,13 +425,15 @@
                 }
             }
         },
-        {
-            "id": "AC000008_1",
+        "AC000008_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.058
+                    ],
+                    "final_values": [
                         0.058
                     ],
                     "measurement_unit": "kW",
@@ -372,7 +444,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -382,13 +457,15 @@
                 }
             }
         },
-        {
-            "id": "AC000009_1",
+        "AC000009_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        4.236
+                    ],
+                    "final_values": [
                         4.236
                     ],
                     "measurement_unit": "kW",
@@ -399,7 +476,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        11823
+                    ],
+                    "final_values": [
                         11823
                     ],
                     "aggregation_method": "last_value",
@@ -409,13 +489,15 @@
                 }
             }
         },
-        {
-            "id": "AC000011_1",
+        "AC000011_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -426,7 +508,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -436,13 +521,15 @@
                 }
             }
         },
-        {
-            "id": "AC000012_1",
+        "AC000012_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -453,7 +540,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -463,13 +553,15 @@
                 }
             }
         },
-        {
-            "id": "AC000014_1",
+        "AC000014_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.003
+                    ],
+                    "final_values": [
                         0.003
                     ],
                     "measurement_unit": "kW",
@@ -480,7 +572,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -490,13 +585,15 @@
                 }
             }
         },
-        {
-            "id": "ACEXT001_1",
+        "ACEXT001_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.007
+                    ],
+                    "final_values": [
                         0.007
                     ],
                     "measurement_unit": "kW",
@@ -507,7 +604,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -517,13 +617,15 @@
                 }
             }
         },
-        {
-            "id": "ACEXT002_1",
+        "ACEXT002_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.001
+                    ],
+                    "final_values": [
                         0.001
                     ],
                     "measurement_unit": "kW",
@@ -534,7 +636,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -544,13 +649,15 @@
                 }
             }
         },
-        {
-            "id": "ACEXT003_1",
+        "ACEXT003_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.004
+                    ],
+                    "final_values": [
                         0.004
                     ],
                     "measurement_unit": "kW",
@@ -561,7 +668,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -571,13 +681,15 @@
                 }
             }
         },
-        {
-            "id": "ACEXT004_1",
+        "ACEXT004_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -588,7 +700,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -598,13 +713,15 @@
                 }
             }
         },
-        {
-            "id": "BB000018_1",
+        "BB000018_1": {
             "entity_type_id": "ev_charger",
             "parameters": {
                 "power": {
                     "parameter_type_id": "power",
-                    "values": [
+                    "original_values": [
+                        0.0
+                    ],
+                    "final_values": [
                         0.0
                     ],
                     "measurement_unit": "kW",
@@ -615,7 +732,10 @@
                 },
                 "connected_vehicle": {
                     "parameter_type_id": "electric_vehicle",
-                    "values": [
+                    "original_values": [
+                        ""
+                    ],
+                    "final_values": [
                         ""
                     ],
                     "aggregation_method": "last_value",
@@ -625,13 +745,15 @@
                 }
             }
         },
-        {
-            "id": "2",
+        "2": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -641,7 +763,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -658,13 +790,15 @@
                 }
             }
         },
-        {
-            "id": "3",
+        "3": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -674,7 +808,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -691,13 +835,15 @@
                 }
             }
         },
-        {
-            "id": "11823",
+        "11823": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -707,7 +853,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -724,13 +880,15 @@
                 }
             }
         },
-        {
-            "id": "11824",
+        "11824": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -740,7 +898,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -757,13 +925,15 @@
                 }
             }
         },
-        {
-            "id": "11827",
+        "11827": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -773,7 +943,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -790,13 +970,15 @@
                 }
             }
         },
-        {
-            "id": "11832",
+        "11832": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -806,7 +988,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -823,13 +1015,15 @@
                 }
             }
         },
-        {
-            "id": "11834",
+        "11834": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -839,7 +1033,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -856,13 +1060,15 @@
                 }
             }
         },
-        {
-            "id": "11837",
+        "11837": {
             "entity_type_id": "electric_vehicle",
             "parameters": {
                 "state_of_charge": {
                     "parameter_type_id": "state_of_charge",
-                    "values": [
+                    "original_values": [
+                        null
+                    ],
+                    "final_values": [
                         null
                     ],
                     "aggregation_method": "last_value",
@@ -872,7 +1078,17 @@
                 },
                 "flexibility": {
                     "parameter_type_id": "flexibility",
-                    "values": [
+                    "original_values": [
+                        {
+                            "estimated_soc_at_arrival": null,
+                            "estimated_soc_at_departure": null,
+                            "estimated_time_at_arrival": "",
+                            "estimated_time_at_departure": "",
+                            "charger": "",
+                            "mode": ""
+                        }
+                    ],
+                    "final_values": [
                         {
                             "estimated_soc_at_arrival": null,
                             "estimated_soc_at_departure": null,
@@ -889,13 +1105,132 @@
                 }
             }
         },
-        {
-            "id": "OMIE",
+        "OMIE": {
             "entity_type_id": "energy_tariff",
             "parameters": {
                 "energy_price": {
                     "parameter_type_id": "energy_price",
-                    "values": [
+                    "original_values": [
+                        0.20999,
+                        0.22532,
+                        0.21632,
+                        0.2261,
+                        0.23943,
+                        0.24553,
+                        0.26929,
+                        0.26302,
+                        0.25794,
+                        0.25221,
+                        0.23655,
+                        0.23,
+                        0.22892,
+                        0.22532,
+                        0.22532,
+                        0.22332,
+                        0.22,
+                        0.21394,
+                        0.21399,
+                        0.20286,
+                        0.1909,
+                        0.18252,
+                        0.2097,
+                        0.20827,
+                        0.20621,
+                        0.20576,
+                        0.2024,
+                        0.2024,
+                        0.2,
+                        0.2,
+                        0.19334,
+                        0.19319,
+                        0.19319,
+                        0.19319,
+                        0.195,
+                        0.195,
+                        0.195,
+                        0.199,
+                        0.20327,
+                        0.2014,
+                        0.20363,
+                        0.20827,
+                        0.2,
+                        0.205,
+                        0.20827,
+                        0.21657,
+                        0.20827,
+                        0.21,
+                        0.21754,
+                        0.21986,
+                        0.226,
+                        0.24,
+                        0.2541,
+                        0.27889,
+                        0.28601,
+                        0.29541,
+                        0.28814,
+                        0.25935,
+                        0.299,
+                        0.24236,
+                        0.224,
+                        0.20881,
+                        0.21986,
+                        0.20002,
+                        0.1602,
+                        0.14055,
+                        0.11776,
+                        0.095,
+                        0.085,
+                        0.07501,
+                        0.0668,
+                        0.05799,
+                        0.05788,
+                        0.0581,
+                        0.05799,
+                        0.05777,
+                        0.05777,
+                        0.05766,
+                        0.05766,
+                        0.05777,
+                        0.05777,
+                        0.05766,
+                        0.05766,
+                        0.05766,
+                        0.05777,
+                        0.0581,
+                        0.07141,
+                        0.08326,
+                        0.089,
+                        0.10183,
+                        0.11395,
+                        0.13967,
+                        0.15981,
+                        0.18299,
+                        0.1904,
+                        0.2184,
+                        0.2431,
+                        0.29884,
+                        0.25837,
+                        0.29698,
+                        0.299,
+                        0.299,
+                        0.29198,
+                        0.29541,
+                        0.29618,
+                        0.29,
+                        0.27486,
+                        0.25827,
+                        0.24706,
+                        0.23655,
+                        0.24277,
+                        0.235,
+                        0.23,
+                        0.227,
+                        0.23241,
+                        0.226,
+                        0.225,
+                        0.22092
+                    ],
+                    "final_values": [
                         0.20999,
                         0.22532,
                         0.21632,
@@ -1023,29 +1358,9 @@
                 }
             }
         }
-    ],
+    },
     "community": {
-        "energy_in_total": {
-            "parameter_type_id": "energy_in_total",
-            "values": [
-                0.011442050415434451
-            ],
-            "measurement_unit": "kWh",
-            "aggregation_method": "sum",
-            "start_date": "2026-10-13 16:35:30 +0000",
-            "frequency_seconds": 15,
-            "generated": true
-        },
-        "energy_out_total": {
-            "parameter_type_id": "energy_out_total",
-            "values": [
-                0.0
-            ],
-            "measurement_unit": "kWh",
-            "aggregation_method": "sum",
-            "start_date": "2026-10-13 16:35:30 +0000",
-            "frequency_seconds": 15,
-            "generated": true
-        }
+        "energy_in_total": 0.018354421768707493,
+        "energy_out_total": 0.00705
     }
 }
