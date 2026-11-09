@@ -1,0 +1,62 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+skinparam sequenceArrowFontSize 20
+skinparam NoteFontSize 20
+
+participant "Data\nProcessing" as DP
+participant "Connector\n(Inbound)" as Conn
+participant "Input\nHandler" as IH
+participant "Inference\nService" as IS
+participant "Adapter" as Ad
+participant "Output\nHandler\n(ML Model)" as OHM
+participant "Connector\n(ML Model)" as ConnM
+participant "ML Model" as ML
+participant "Model\nExecution\nError\nHandling\nLogic" as MEEHL
+participant "Repo" as Repo
+participant "Persistence" as Pers
+participant "Output\nHandler" as OHD
+participant "Connector\n(Outbound)" as ConnOut
+participant "Decision\nDispatching" as DD
+
+DP -> Conn : Data\n(Unified\nMessage)
+Conn -> IH : Data\n(Unified\nMessage)
+IH -> IS : Data\n(Unified\nMessage)
+
+IS -> Ad : Map\ndata\ninto\nthe\nformat\nexpected\nby\nthe ML\nModel
+Ad --> IS : Mapped\ndata
+
+IS -> OHM : Mapped\ndata
+OHM -> ConnM : Mapped\ndata
+ConnM -> ML : Mapped\ndata
+
+alt communication error
+    ConnM --> OHM : Error
+    OHM --> IS : Error
+    note right
+        Depending on its configuration, this logic may
+        terminate the message's processing or instruct
+        the service to retry the request.
+    end note
+    IS -> MEEHL : Invoke\nModel\nExecution\nError\nHandling\nLogic
+else success
+    ML --> ConnM : Decisions
+    ConnM --> OHM : Decisions
+    OHM --> IS : Decisions
+
+    alt Decision Validation and Correction Logic integrated
+        IS -> IS : Validate\ndecisions\nagainst\nintegrated\nlogic
+        note right: Validates and, if necessary, corrects the decision
+    end
+
+    IS -> Ad :  Map\nresulting\ndecisions\ninto\nstandard\nformat
+    Ad --> IS : Decisions\n(standard\nformat)
+
+    IS -> Repo : Persist\nmodel\ninputs,\ndecisions,\nand corrected\ndecisions
+    Repo -> Pers : Model\ninputs,\ndecisions,\nand\ncorrected\ndecisions
+    IS -> OHD : Decisions\n(Standard\nformat)
+    OHD -> ConnOut : Decisions\n(Standard\nformat)
+    ConnOut -> DD : Decisions\n(Standard\nformat)
+end
+
+@enduml

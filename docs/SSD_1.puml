@@ -1,0 +1,38 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+participant "Telemetry\nSystems" as TS
+participant "Data\nIngestion" as DI
+participant "Data\nProcessing" as DP
+participant "Inference" as INF
+participant "ML Model" as ML
+participant "Decision\nDispatching" as DD
+participant "Target\nSystems" as TGT
+
+loop for each message received from a Telemetry System
+    TS -> DI : Data (Telemetry System-specific format)
+    DI -> DI : Translate data into standard format
+    DI -> DP : Data (Standard format)
+end
+
+note over DP : At the configured frequency
+DP -> DP : Apply configured data-issue handling approaches
+DP -> DP : Apply combination logic
+DP -> DP : Apply data-derivation logic, if integrated
+DP -> INF : Processed data
+
+INF -> INF : Map data into the format expected by the ML Model
+INF -> ML : Mapped data
+ML --> INF : Decisions
+INF -> INF : Validate decisions against integrated logic, if integrated
+INF -> INF : Map resulting decisions into standard format
+INF -> DD : Decisions (standard format)
+
+loop for each decision
+    DD -> DD : Determine the Target System the decision is directed to
+    DD -> DD : Map decision into the format expected by that Target System
+    DD -> TGT : Dispatch decision
+end
+
+@enduml
