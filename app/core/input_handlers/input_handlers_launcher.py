@@ -190,7 +190,7 @@ class InputHandlersLauncher:
 
         # The connector is shared with the previous container's Output Handler,
         # which pushes payloads directly into it; no network connection is required
-        local_connector = AsyncLocalConnector(server_configurations, logger)
+        local_connector = AsyncLocalConnector(server_configurations)
 
         input_handler = AsyncLocalInputHandler(
             connector=local_connector,

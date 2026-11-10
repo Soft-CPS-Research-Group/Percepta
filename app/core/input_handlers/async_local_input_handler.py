@@ -83,13 +83,25 @@ class AsyncLocalInputHandler(InputHandlerBase):
         # Cache reflection inspection once during initialization
         self._is_async_callback: bool = inspect.iscoroutinefunction(self._on_message_callback) # TODO meter isto em todos os que fazem esta validação
 
-    def on_message(self, payload: Any) -> None:
+    async def on_message(self, payload: Any) -> None:
         """Public ingestion entrypoint passed as `target_callable` to local output connectors.
 
-        Pushes the incoming payload directly into the connector's in-memory queue without blocking.
+        It is a coroutine function ('async def') on purpose, even though 'push()' never waits: the local connector
+        of an Output Handler awaits a coroutine function in the event loop, but runs a normal function in another
+        thread, where the queue of this handler could not be used safely. So it can be given as the
+        'target_callable' as it is, without a function in between.
+
+        Pushes the incoming payload directly into the connector's in-memory queue without blocking. If it cannot be
+        buffered, the error is not handled here: it goes up to whoever called, who knows that the payload was not
+        delivered and decides what to do (e.g., log it). The callers already do: the 'send_prices' job of OMIE and
+        the Local Output Handler (in its dispatch).
 
         Args:
             payload (Any): Inbound payload received from upstream components.
+
+        Raises:
+            RuntimeError: If the connector is closed.
+            asyncio.QueueFull: If the in-memory queue reached its capacity limit.
         """
         self._connector.push(payload)
 

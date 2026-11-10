@@ -36,7 +36,6 @@ class OMIETelemetryLauncher(TelemetrySystemLauncherBase):
 
     _LOG_PREFIX: str = "OMIE Telemetry Launcher |"
     _SOURCE: str = "omie_spot_price"           # 'source' of the envelopes created by the Input Handlers
-    _DEFAULT_MAX_QUEUE_SIZE: int = 10000       # Same default as AsyncLocalConnector
 
     def __init__(self, input_launcher, output_launcher, logger) -> None:
         """Initializes the OMIE launcher. The service and the scheduler are created on the first `launch`.
@@ -76,7 +75,7 @@ class OMIETelemetryLauncher(TelemetrySystemLauncherBase):
                 "publication_time": "13:00",            # "HH:MM" (market timezone) after which tomorrow's prices are fetched
                 "refresh_interval_seconds": 600,        # How often the service checks for missing prices
                 "retention_seconds": 7200,              # How long past prices are kept
-                "max_queue_size": 10000                 # Messages buffered for each environment
+                "max_queue_size": 10000                 # Messages buffered for each env. (no limit if missing)
             }
         }
 
@@ -143,10 +142,12 @@ class OMIETelemetryLauncher(TelemetrySystemLauncherBase):
 
         # Messages are not delivered directly: they are pushed into a queue, and the Input Handler takes them from
         # it and gives them to the callback when it is started. So nothing is lost if a job runs before that.
-        connector = AsyncLocalConnector(
-            {"max_queue_size": connection_info.get("max_queue_size", self._DEFAULT_MAX_QUEUE_SIZE)},
-            logger
-        )
+        # 'max_queue_size' is only passed if it is configured; without it the queue has no limit (the default of the
+        # connector, which is the one of asyncio.Queue).
+        queue_configurations = {}
+        if "max_queue_size" in connection_info:
+            queue_configurations["max_queue_size"] = connection_info["max_queue_size"]
+        connector = AsyncLocalConnector(queue_configurations)
         input_handler = AsyncLocalInputHandler(
             connector=connector,
             on_message_callback=callback,
@@ -170,7 +171,7 @@ class OMIETelemetryLauncher(TelemetrySystemLauncherBase):
                     logger.debug(f"{self._LOG_PREFIX} No prices to send to environment '{environment_name}'.")
                     return
 
-                input_handler.on_message(payload)
+                await input_handler.on_message(payload)
             except Exception as err:
                 # A failure here must not stop the job: it will run again at the next time interval
                 logger.error(f"{self._LOG_PREFIX} Failed to send the prices to '{environment_name}': {err}")

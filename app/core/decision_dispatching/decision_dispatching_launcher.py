@@ -257,14 +257,10 @@ class DecisionDispatchingLauncher:
                     f"{AsyncLocalInputHandler.__name__}, got {type(input_handler).__name__}."
                 )
 
-            # The method for Inference. It is a coroutine function so that it runs in the event loop (the queue of
-            # the Input Handler can only be used safely there), and it calls 'on_message'.
-            local_input_handler: AsyncLocalInputHandler = input_handler
-
-            async def receive_from_inference(decisions: Any) -> None:
-                local_input_handler.on_message(decisions)
-
-            return input_handler, receive_from_inference
+            # The method for Inference: the 'on_message' of the Input Handler. It is a coroutine function, so the
+            # local connector of the Output Handler awaits it in the event loop (a normal function would run in
+            # another thread, where the queue of the Input Handler cannot be used safely).
+            return input_handler, input_handler.on_message
         except Exception:
             logger.error(
                 f"{self._LOG_PREFIX} Launch of environment '{environment_name}' failed. "

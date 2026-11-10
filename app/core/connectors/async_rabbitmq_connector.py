@@ -186,13 +186,44 @@ class AsyncRabbitMQConnector:
                 f"'ssl_conf.verify_mode' to be \"required\"."
             )
 
-# TODO perceber melhor como é feito o setup de ssl e como funciona exatamente
     def _setup_ssl_context(self) -> Optional[ssl.SSLContext]:
         """
-        Creates an asynchronous-safe SSLContext for secure network connections.
+        Creates the SSL context (the TLS settings) of the connection, or None if the connection is without TLS.
+
+        How TLS works:
+        TLS (the current name of SSL) protects the connection to the broker in two different ways:
+        1. Encryption: nobody in the middle of the network can read or change the user, the password and the
+           messages. Without TLS, everything travels as plain text.
+        2. Authentication of the broker: the connector can be sure that it is talking to the real broker and not to
+           someone pretending to be it. The broker proves who it is with a certificate (a document that says "I am
+           rabbit.example.com", signed by an authority that the system trusts). The connector makes two checks:
+           - The chain of trust ('verify_mode'): was the certificate signed by an authority that the system trusts?
+           - The name ('check_hostname'): is the name in the certificate the same as the 'host' of the configuration?
+             Without this check, a valid certificate of ANOTHER site would be accepted too. It only makes sense if the
+             chain of trust is verified.
+
+        The 'ssl_conf' of the configuration decides everything, and the port does not matter (5671 is only the usual
+        port of RabbitMQ with TLS, and 5672 the usual one without it):
+        - Not present, or "enabled" false: no TLS, and this method returns None.
+        - "verify_mode": "required" and "check_hostname": true: encrypted and the broker is authenticated (name and
+          chain). It is what must be used in production.
+        - "verify_mode": "required" and "check_hostname": false: encrypted and the chain is verified, but the name is
+          not.
+        - "verify_mode": "none" (and "check_hostname": false): encrypted, but nothing is verified, so anyone who gets
+          in the middle of the network can pretend to be the broker. It is only for tests, or for a broker with a
+          self-signed certificate.
+
+        What this connector does not support (it would need new options in 'ssl_conf'):
+        - An authority that the system does not know (e.g., the internal authority of a company): its file would have
+          to be given to the context with `context.load_verify_locations(cafile=...)`. Until then, "required" refuses
+          the certificates it signed.
+        - A certificate of the client (mutual TLS), for brokers that also want to authenticate the connector:
+          `context.load_cert_chain(certfile, keyfile)`.
+
+        Example 'ssl_conf': {"enabled": True, "check_hostname": True, "verify_mode": "required"}
 
         Returns:
-            Optional[ssl.SSLContext]: A configured SSL context if enabled, otherwise None.
+            Optional[ssl.SSLContext]: The SSL context with the settings of 'ssl_conf' if TLS is enabled, otherwise None.
         """
         # Case 1: no 'ssl_conf' in the configuration, or 'enabled' is false or missing, so no SSL context is created and
         # the connection is made without TLS (None is what 'connect()' passes to aio-pika as "no context").
@@ -232,13 +263,13 @@ class AsyncRabbitMQConnector:
         """
         Establishes the robust non-blocking connection and opens the communication channel.
 
+        If it fails after the connection was opened (e.g., the channel cannot be opened), the connection is closed
+        and the connector stays as it was before, so 'connect()' can be called again.
+
         Raises:
             RuntimeError: If the connector is already connected.
             TimeoutError: If the broker does not answer within the configured timeout.
             aio_pika.exceptions.AMQPException: If the broker refuses the connection (e.g., wrong credentials).
-
-        If it fails after the connection was opened (e.g., the channel cannot be opened), the connection is closed
-        and the connector stays as it was before, so 'connect()' can be called again.
         """
         # Guard Clause 1: Checks that the connector is not connected yet. A second 'connect()' would open another
         # connection and channel and the first ones would be lost without being closed (with the connection still
@@ -249,10 +280,7 @@ class AsyncRabbitMQConnector:
         # The SSL context with the TLS settings of the configuration, or None if the connection is without TLS.
         ssl_context = self._setup_ssl_context()
 
-        # Whether the connection uses TLS (the "amqps" scheme instead of "amqp"). It only depends on the configuration:
-        # it does if there is an SSL context ('ssl_conf' enabled), and it does not otherwise. The port is not used to
-        # decide it: 5671 is the standard port of AMQP over TLS, but a configuration with that port and without
-        # 'ssl_conf' enabled would turn TLS on against what it says (and with the default settings of aio-pika).
+        # Whether the connection uses TLS (the "amqps" scheme instead of "amqp").
         use_ssl = ssl_context is not None
 
         # Only the options that are in the configuration are passed. The others are left out so that aio-pika uses its

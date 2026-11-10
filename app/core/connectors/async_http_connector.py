@@ -121,8 +121,9 @@ class AsyncHTTPConnector:
         Raises:
             ValueError: If the configuration has neither 'url' nor 'host', if 'port' is not between 1 and 65535, if
                 the username of 'auth' has a ":", or if 'auth' has only one of the username and the password.
-            TypeError: If 'port' is not an integer, if 'verify_ssl' is not a boolean, if 'auth' or 'headers' is not a
-                dictionary, or if the username or the password of 'auth' is not a string.
+            TypeError: If 'url', 'host' or 'schema' is not a string, if 'port' is not an integer, if 'verify_ssl' is
+                not a boolean, if 'auth' or 'headers' is not a dictionary, or if the username or the password of
+                'auth' is not a string.
         """
         _port = server_configurations.get("port")
         _verify_ssl = server_configurations.get("verify_ssl", False)
@@ -135,12 +136,16 @@ class AsyncHTTPConnector:
                 f"{self._LOG_PREFIX} Error initializing HTTP setup: Either 'url' or 'host' must be provided."
             )
 
-        # Guard Clause 2: Checks the type of every option that 'connect()' uses, and the 'port'. 'port', 'auth',
-        # 'headers', the username and the password are optional (a missing key or a null value is accepted);
-        # 'verify_ssl' is not. A boolean is not accepted as the port, even though Python sees True as the integer 1.
+        # Guard Clause 2: Checks the type of every option. All of them are optional: a missing key or a null value is
+        # accepted, except for 'verify_ssl', which can be missing (it is False then) but not null. (That there is a
+        # 'url' or a 'host' was already checked in Guard Clause 1.) A boolean is not accepted as the port, even though
+        # Python sees True as the integer 1.
         # The message only says the type of the wrong value, and never the value, because it can be a credential and
         # the message ends up in the logs.
         for name, value, expected_type, description, optional in (
+                ("url", server_configurations.get("url"), str, "a string", True),
+                ("host", server_configurations.get("host"), str, "a string", True),
+                ("schema", server_configurations.get("schema"), str, "a string", True),
                 ("port", _port, int, "an integer", True),
                 ("verify_ssl", _verify_ssl, bool, "a boolean", False),
                 ("auth", server_configurations.get("auth"), dict, "a dictionary", True),

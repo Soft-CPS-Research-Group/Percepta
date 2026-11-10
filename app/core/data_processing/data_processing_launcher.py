@@ -301,19 +301,10 @@ class DataProcessingLauncher:
                     f"{AsyncLocalInputHandler.__name__}, got {type(input_handler).__name__}."
                 )
 
-            # The method for Data Ingestion. The Input Handler already has a method for this ('on_message'), but it is
-            # not a coroutine function. For a function that is not, the local connector of Data Ingestion's Output
-            # Handler runs it in another thread, and the queue of the Input Handler can only be used safely in the
-            # thread of the event loop. So this coroutine function is given instead: it runs in the event loop and
-            # calls 'on_message'.
-            # (The local variable is needed because 'input_handler' starts as None, and a function defined here sees it
-            # with that type. 'local_input_handler' is never None.)
-            local_input_handler: AsyncLocalInputHandler = input_handler
-
-            async def receive_from_data_ingestion(payload: Any) -> None:
-                local_input_handler.on_message(payload)
-
-            return input_handler, receive_from_data_ingestion
+            # The method for Data Ingestion: the 'on_message' of the Input Handler. It is a coroutine function, so the
+            # local connector of the Output Handler awaits it in the event loop (a normal function would run in
+            # another thread, where the queue of the Input Handler cannot be used safely).
+            return input_handler, input_handler.on_message
         except Exception:
             logger.error(
                 f"{self._LOG_PREFIX} Launch of environment '{environment_name}' failed. "

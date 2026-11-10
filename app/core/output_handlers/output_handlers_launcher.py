@@ -94,7 +94,7 @@ class OutputHandlersLauncher:
         Internal async factory provider responsible for configuring and instantiating Local In-Memory Output Handlers.
         """
         # Materialize the physical in-memory connector using target callable
-        local_connector = AsyncLocalConnector(server_configurations, logger)
+        local_connector = AsyncLocalConnector(server_configurations)
 
         logger.debug(f"{self._LOG_PREFIX} Local memory connector bound successfully.")
 
