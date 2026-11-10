@@ -118,7 +118,7 @@ class OutputHandlersLauncher:
         Internal async factory provider responsible for configuring and instantiating HTTP Output Handlers.
         """
         # Establish the physical persistent async HTTP connection pool
-        publisher_connector = AsyncHTTPConnector(server_configurations, logger)
+        publisher_connector = AsyncHTTPConnector(server_configurations)
         await publisher_connector.connect()
 
         logger.debug(f"{self._LOG_PREFIX} HTTP physical persistent network connection session established.")
@@ -144,7 +144,7 @@ class OutputHandlersLauncher:
         Schedules optional standalone RPC listener when reply_to configurations are detected.
         """
         # 1. Establish publisher physical connection
-        publisher_connector = AsyncRabbitMQConnector(server_configurations, logger)
+        publisher_connector = AsyncRabbitMQConnector(server_configurations)
         await publisher_connector.connect()
 
         logger.debug(f"{self._LOG_PREFIX} RabbitMQ physical publisher network connection established.")
@@ -168,7 +168,7 @@ class OutputHandlersLauncher:
         if rpc_topology_aggregated["exchanges"]:
             logger.debug(f"{self._LOG_PREFIX} Valid RPC structures parsed. Assembling standalone AsyncRabbitMQInputHandler...")
 
-            receiver_connector = AsyncRabbitMQConnector(server_configurations, logger)
+            receiver_connector = AsyncRabbitMQConnector(server_configurations)
             await receiver_connector.connect()
 
             logger.debug(f"{self._LOG_PREFIX} RabbitMQ physical receiver RPC network connection established.")

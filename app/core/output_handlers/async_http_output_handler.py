@@ -223,7 +223,13 @@ class AsyncHTTPOutputHandler(OutputHandlerBase):
                 }
         else:
             # --- CASE B: RPC DISABLED (Optimized Fire-and-Forget) ---
-            # Spawn a task inside the event loop background context and exit immediately.
+            # Fire-and-forget: the request is sent by a task that runs in the background of the event loop, and this
+            # method returns right away, without waiting for the response. The pipeline is not blocked by a slow server
+            # and does not get the result of the request.
+            #
+            # The task still has to wait for the response of the server, because that is how HTTP works: the connection
+            # only goes back to the pool when the response is consumed or released. What changes is who waits: the
+            # background task does it, and not the caller. The wait is only used to log the status (or the error).
             asyncio.create_task(
                 self._fire_and_forget_request(
                     method=method,
@@ -253,6 +259,12 @@ class AsyncHTTPOutputHandler(OutputHandlerBase):
                 f"{self._LOG_PREFIX} [Background Fire-and-Forget] Request successfully sent to "
                 f"[{method} {self._full_url(endpoint)}] with status [{response.status}]."
             )
+            # The connector keeps a pool of open connections to the server, and reuses them in the next requests, so
+            # that each request does not have to open a new connection. While a response is not read or released, its
+            # connection is still in use and cannot be reused. The body of the response is not needed, so the
+            # connection is released: it goes back to the pool, free for the next request. (If the body was large and
+            # not fully received, the connection is closed instead of reused, and the next request opens a new one.)
+            response.release()
         except Exception as e:
             self._logger.error(
                 f"{self._LOG_PREFIX} [Background Fire-and-Forget] Outbound task failed "

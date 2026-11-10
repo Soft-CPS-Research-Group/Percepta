@@ -175,21 +175,12 @@ class HTTPInputHandler(InputHandlerBase):
             )
             return
 
-        # 3. Synchronize dynamic authorization headers if present
-        first_group_eps = next(iter(grouped_targets.values()), [])
-        if first_group_eps and isinstance(first_group_eps, list) and len(first_group_eps) > 0:
-            first_ep = first_group_eps[0]
-            if isinstance(first_ep, dict) and "headers" in first_ep:
-                dynamic_headers = first_ep.get("headers", {})
-                if dynamic_headers and hasattr(self._http_connector, "update_headers"):
-                    self._http_connector.update_headers(dynamic_headers)
-
         self._logger.debug(
             f"{self._LOG_PREFIX} Spawning parallel fetch tasks for {len(grouped_targets)} groups: "
             f"{list(grouped_targets.keys())}"
         )
 
-        # 4. Spawn an independent background task for each group so they resolve and dispatch in parallel
+        # 3. Spawn an independent background task for each group so they resolve and dispatch in parallel
         for group_id, endpoints in grouped_targets.items():
             if endpoints:
                 asyncio.create_task(self._fetch_group_and_dispatch(group_id, endpoints))
@@ -317,9 +308,12 @@ class HTTPInputHandler(InputHandlerBase):
         self._logger.debug(f"{self._LOG_PREFIX} Issuing request -> [{method} {path_name}]")
 
         try:
+            # The headers of the endpoint (e.g., its Authorization) go in its own request, and are added to the ones of
+            # the session. They are not kept for the other endpoints.
             response = await self._http_connector.request(
                 method=method,
                 endpoint=path_name,
+                headers=endpoint_block.get("headers"),
                 timeout=timeout_ms / 1000
             )
 

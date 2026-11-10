@@ -54,7 +54,7 @@ class CW2TelemetryLauncher(TelemetrySystemLauncherBase):
                                 {
                                     "queue_name": "isep_consumer_{random_hash}",
                                     "routing_key": "",
-                                    "consume_properties": {"no_ack": False, "requeue": False},
+                                    "consume_properties": {"no_ack": False, "acknowledgement_properties": {"requeue": False}},
                                     "queue_properties": {"durable": True, "exclusive": True}
                                 }
                             ]

@@ -130,7 +130,7 @@ Both synchronous and asynchronous RabbitMQ adapters share the exact same connect
     // Default if omitted: "/"
     "vhost": "/porto_hub",
     // Heartbeat ping interval (in seconds) to keep the TCP connection alive.
-    // Default if omitted: 60 (Sync/pika) or 600 (Async/aio-pika)
+    // Default if omitted: 60 (Sync/pika and Async/aio-pika). 0 turns the heartbeats off.
     "heartbeat": 600,
     // Socket connection establishment timeout threshold (in seconds).
     // Default if omitted: 10
@@ -172,7 +172,8 @@ Both synchronous and asynchronous RabbitMQ adapters share the exact same connect
     * **`queue_name`** *(string)*: Name of the target queue.
     * **`routing_key`** *(string)*: Binding key pattern used to filter/route messages from the exchange.
     * **`queue_properties`** *(dict)*: Additional queue-level parameters (e.g., `durable`, `exclusive`, `auto_delete`, `arguments`).
-    * **`consume_properties`** *(dict)*: Ingestion behavior rules applied during message consumption (e.g., `no_ack`, `requeue`, `prefetch_count`).
+    * **`consume_properties`** *(dict)*: Ingestion behavior rules applied during message consumption (e.g., `no_ack`).
+      * **`acknowledgement_properties`** *(dict)*: Options of the rejection (`NACK`) of a message, given to the broker as they are (e.g., `requeue`). It is not an option of the consumer, so it is only used when a message is rejected. If `requeue` is not given, the default of aio-pika is used (`true`).
 
 > **Note on Protocol Properties (`exchange_properties`, `queue_properties`, `consume_properties`):**  
 > These dictionaries accept any standard RabbitMQ options supported by the underlying driver. Depending on whether your implementation uses a synchronous or asynchronous execution strategy, you can pass any keyword arguments natively recognized by **`pika`** or **`aio-pika`**.
@@ -189,7 +190,7 @@ Both synchronous and asynchronous RabbitMQ adapters share the exact same connect
             "queue_name": "percepta_db_persistence_porto",
             "routing_key": "",
             "consume_properties": { "no_ack": false,
-                                    "requeue": false },
+                                    "acknowledgement_properties": { "requeue": false } },
             "queue_properties": {}
           }
         ]
@@ -202,13 +203,13 @@ Both synchronous and asynchronous RabbitMQ adapters share the exact same connect
 
 #### 3.1.3. Message Lifecycle & Execution Dynamics
 
-##### Acknowledge & Requeue Strategy (`no_ack` & `requeue`)
+##### Acknowledge & Requeue Strategy (`no_ack` & `acknowledgement_properties.requeue`)
 
 The message lifecycle is tightly coupled to the outcome of the injected `on_message_callback` and the consumption rules defined in `consume_properties`:
 
 * **Manual Acknowledgments (`no_ack: false` - Recommended):**
 * **Successful Execution (`callback` returns `True`):** The handler sends a formal `ACK` to the broker, permanently clearing the frame from the queue.
-* **Domain / Business Failure (`callback` returns `False` or raises an exception):** The handler sends a `NACK` / `Reject`. The broker behavior then strictly follows the `requeue` boolean parameter:
+* **Domain / Business Failure (`callback` returns `False` or raises an exception):** The handler sends a `NACK` / `Reject`. The broker behavior then strictly follows the `requeue` boolean parameter of `acknowledgement_properties`:
 * **`requeue: true`:** The frame is immediately returned to the queue.
 > **⚠️ Poison Pill Warning:** Deterministic business logic errors (e.g., malformed JSON, invalid data validation) will fail every time. Using `requeue: true` for business failures causes an infinite re-delivery loop that consumes 100% CPU. Business errors should be caught inside the domain callback and return `True` (or be routed to a Dead Letter Queue) to allow an `ACK`.
 

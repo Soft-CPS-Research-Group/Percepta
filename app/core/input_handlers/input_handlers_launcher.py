@@ -108,7 +108,7 @@ class InputHandlersLauncher:
         input_handler: AsyncRabbitMQInputHandler
 
         # Establish the non-blocking physical network link dedicated strictly to inbound data processing streams
-        consumer_connector = AsyncRabbitMQConnector(server_configurations, logger)
+        consumer_connector = AsyncRabbitMQConnector(server_configurations)
         await consumer_connector.connect()
 
         logger.debug(f"{self._LOG_PREFIX} RabbitMQ physical network connection established.")
@@ -144,7 +144,7 @@ class InputHandlersLauncher:
         timezone_str: Optional[str]
 
         # Establish the physical persistent async HTTP connection pool
-        provider_connector = AsyncHTTPConnector(server_configurations, logger)
+        provider_connector = AsyncHTTPConnector(server_configurations)
         await provider_connector.connect()
 
         # Configure the infrastructure async scheduler boundary

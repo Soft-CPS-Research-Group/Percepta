@@ -435,7 +435,7 @@ class DataProcessingLauncher:
                             "queue_name": "percepta.data_processing.{environment}",
                             "routing_key": "",
                             "queue_properties": {"durable": False, "auto_delete": True},
-                            "consume_properties": {"no_ack": False, "requeue": False}
+                            "consume_properties": {"no_ack": False, "acknowledgement_properties": {"requeue": False}}
                         }]
                     }]
                 }

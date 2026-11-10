@@ -42,7 +42,7 @@ class PCEndpointBuilder(EndpointBuilderBase):
                         {
                             "queue_name": "percepta_local_pulsecharge_{environment}",
                             "routing_key": "",
-                            "consume_properties": {"no_ack": False, "requeue": False},
+                            "consume_properties": {"no_ack": False, "acknowledgement_properties": {"requeue": False}},
                             "queue_properties": {"durable": True, "exclusive": False}
                         }
                     ]
@@ -99,7 +99,7 @@ class PCEndpointBuilder(EndpointBuilderBase):
                         {
                             "queue_name": "percepta_local_pulsecharge_R-H-03",
                             "routing_key": "",
-                            "consume_properties": {"no_ack": False, "requeue": False},
+                            "consume_properties": {"no_ack": False, "acknowledgement_properties": {"requeue": False}},
                             "queue_properties": {"durable": True, "exclusive": False}
                         }
                     ]

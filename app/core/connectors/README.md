@@ -129,7 +129,7 @@ consume_properties = {
 }
 
 # 2. Instantiate and connect asynchronously
-connector = AsyncRabbitMQConnector(server_configurations=connection_dict, logger=logger)
+connector = AsyncRabbitMQConnector(server_configurations=connection_dict)
 await connector.connect()
 
 # 3. Declare infrastructure asynchronously using property dictionaries
@@ -188,15 +188,15 @@ Both synchronous and asynchronous AMQP connectors accept the following configura
   "vhost": "/porto_hub",
 
   // [Optional] Heartbeat ping interval (in seconds) to keep the TCP connection alive.
-  // Default if omitted: 60 (Sync/pika) or 600 (Async/aio-pika)
+  // Default if omitted: 60 (Sync/pika and Async/aio-pika). 0 turns the heartbeats off.
   "heartbeat": 600,
 
   // [Optional] Socket connection establishment timeout threshold (in seconds).
-  // Default if omitted: 10
+  // Default if omitted: none (Async/aio-pika waits for the broker without a time limit)
   "timeout": 10,
 
   // [Optional] Maximum number of unacknowledged messages delivered concurrently per worker (QoS).
-  // Default if omitted: 10
+  // Default if omitted: 0 in Async/aio-pika, i.e., no limit (the broker sends all the messages of the queue at once)
   "prefetch_count": 10,
 
   // [Optional] Authentication credentials block.
@@ -280,7 +280,7 @@ connector.close()
 from app.core.connectors.async_http_connector import AsyncHTTPConnector
 
 # 1. Instantiate and connect asynchronously
-connector = AsyncHTTPConnector(server_configurations=connection_dict, logger=logger)
+connector = AsyncHTTPConnector(server_configurations=connection_dict)
 await connector.connect()
 
 # 2. Fetch data asynchronously (GET) via request
@@ -349,7 +349,7 @@ Both synchronous and asynchronous HTTP connectors accept the following configura
   },
 
   // [Optional] Default global headers applied to every HTTP request session.
-  // Default if omitted: {"Content-Type": "application/json", "Accept": "application/json"} (Sync) / {"Accept": "application/json"} (Async)
+  // Default if omitted: {"Content-Type": "application/json", "Accept": "application/json"} (Sync) / {} (Async: no default headers, set the ones you need, e.g., "Accept")
   "headers": {
     "Authorization": "Bearer token_hash_abc",
     "Accept": "application/json"

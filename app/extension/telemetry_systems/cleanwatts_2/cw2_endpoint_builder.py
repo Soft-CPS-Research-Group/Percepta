@@ -46,7 +46,7 @@ class CW2EndpointBuilder(EndpointBuilderBase):
                         {
                             "queue_name": "isep_consumer_{random_hash}",    # Hash is generated for each queue
                             "routing_key": "",
-                            "consume_properties": {"no_ack": True, "requeue": False},
+                            "consume_properties": {"no_ack": True, "acknowledgement_properties": {"requeue": False}},
                             "queue_properties": {"durable": True, "exclusive": True}
                         }
                     ]

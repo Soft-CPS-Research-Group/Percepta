@@ -51,7 +51,7 @@ class AsyncRabbitMQInputHandler(InputHandlerBase):
                               "routing_key": "",
                               "consume_properties": {
                                 "no_ack": false,
-                                "requeue": false
+                                "acknowledgement_properties": { "requeue": false }
                               }
                             }
                           ]
@@ -197,10 +197,11 @@ class AsyncRabbitMQInputHandler(InputHandlerBase):
             queue_name (str): Name of the queue the message was consumed from. It is given by the
                 functools.partial created in _setup_consumer_service.
         """
-        # The consume properties of this queue (e.g., {"no_ack": False, "requeue": False}) decide if the message
-        # has to be acknowledged. They are found with the queue name given when the consumer was registered.
+        # The consume properties of this queue (e.g., {"no_ack": False, "acknowledgement_properties":
+        # {"requeue": False}}) decide if the message has to be acknowledged, and what happens when it is rejected.
+        # They are found with the queue name given when the consumer was registered.
         # (An aio-pika message has no attribute with its queue, so it cannot be read from the message itself.
-        # With an empty name no properties were found, 'no_ack' defaulted to True and no ack was ever sent.)
+        # With an empty name no properties were found, so 'no_ack' is assumed False, the aio-pika default.)
         consume_properties = self._queue_consumers_props.get(queue_name, {})
 
         # --- Lifecycle Gate ---
@@ -261,8 +262,8 @@ class AsyncRabbitMQInputHandler(InputHandlerBase):
         """
         # --- Guard Clause: Nothing to settle with 'no_ack' ---
         # The broker considers the message delivered as soon as it is sent, so it cannot be acknowledged or rejected.
-        # The default matches the one the connector applies when consuming.
-        if consume_properties.get("no_ack", True):
+        # The default (False) is the one aio-pika applies when consuming.
+        if consume_properties.get("no_ack", False):
             return
 
         if accepted:
@@ -356,4 +357,13 @@ class AsyncRabbitMQInputHandler(InputHandlerBase):
                 if "consume_properties" in queue_block and not isinstance(queue_block["consume_properties"], dict):
                     raise ValueError(
                         f"Topology validation error: 'consume_properties' for queue '{queue_name}' must be a dictionary."
+                    )
+
+                # Validate optional acknowledgement_properties type if present (inside consume_properties)
+                _consume_properties = queue_block.get("consume_properties", {})
+                _acknowledgement_properties = _consume_properties.get("acknowledgement_properties")
+                if _acknowledgement_properties is not None and not isinstance(_acknowledgement_properties, dict):
+                    raise ValueError(
+                        f"Topology validation error: 'acknowledgement_properties' for queue '{queue_name}' must be a "
+                        f"dictionary."
                     )
