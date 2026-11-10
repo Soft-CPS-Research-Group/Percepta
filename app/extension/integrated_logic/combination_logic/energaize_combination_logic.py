@@ -126,12 +126,15 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                     "parameters": {
                         "33711": {
                             "parameter_type_id": "energy",
-                            "original_values": [0.05, 0.07],
-                            "final_values": [0.12],
+                            "original_values": [
+                                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.05},
+                                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.07}
+                            ],
+                            "final_values": [
+                                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.12}
+                            ],
                             "measurement_unit": "kWh",
                             "aggregation_method": "sum",
-                            "start_date": "2026-10-13 16:35:30 +0000",
-                            "frequency_seconds": 15,
                             "generated": False
                         }
                     }
@@ -220,13 +223,15 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
         --------------------------
         {
             "parameter_type_id": "power",
-            "original_values": [2.0, 3.0],         # The values of the readings of the period, before the aggregation
-            "final_values": [2.5],                 # After the aggregation_method (here, the average). None if there are
-                                                   # no values (and so is 'original_values')
+            "original_values": [                   # The readings of the period, before the aggregation. None if
+                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 2.0},   # there are
+                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 3.0}    # no values
+            ],
+            "final_values": [                      # After the aggregation_method (here, the average). None if there
+                {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 2.5}    # are no values
+            ],
             "measurement_unit": "kW",
             "aggregation_method": "average",
-            "start_date": "2026-10-13 16:35:30 +0000",
-            "frequency_seconds": 15,
             "generated": False
         }
 
@@ -318,19 +323,45 @@ class EnergAIzeCombinationLogic(CombinationLogicBase):
                 else:
                     final_values = [self._reduce(aggregation, raw_values)]
 
+        # Each value says the interval that it covers. A parameter that is aggregated has one value for the period, and
+        # its readings (original_values) all belong to the period. A series that is not aggregated (aggregation is None)
+        # has one value for each interval of its periodicity, one after the other from the start of the period.
+        is_series: bool = aggregation is None
         result: Dict[str, Any] = {
             "parameter_type_id": parameter_schema.get("parameter_type_id"),
-            "original_values": original_values,
-            "final_values": final_values
+            "original_values": self._as_intervals(original_values, period_start, frequency_seconds, is_series),
+            "final_values": self._as_intervals(final_values, period_start, frequency_seconds, is_series)
         }
         if "measurement_unit" in parameter_schema:
             result["measurement_unit"] = parameter_schema["measurement_unit"]
         result["aggregation_method"] = aggregation.value if aggregation else None
-        result["start_date"] = format_timestamp(period_start)
-        result["frequency_seconds"] = int(frequency_seconds) if float(frequency_seconds).is_integer() \
-            else frequency_seconds
         result["generated"] = generated
         return result
+
+    @staticmethod
+    def _as_intervals(
+            values: Optional[List[Any]], period_start: datetime, frequency_seconds: float, is_series: bool
+    ) -> Optional[List[Dict[str, Any]]]:
+        """Gives each value the interval that it covers: {"period_start": ..., "period_end": ..., "value": ...}.
+
+        Args:
+            values (Optional[List[Any]]): The values. None means that there is no data, and None is returned.
+            period_start (datetime): The start of the period.
+            frequency_seconds (float): The length of the interval of each value.
+            is_series (bool): True if the values are one after the other (each interval starts where the previous
+                one ends). False if they all belong to the same interval, the one that starts at the period start.
+
+        Returns:
+            Optional[List[Dict[str, Any]]]: The values with their intervals, or None if there are no values.
+        """
+        if values is None:
+            return None
+        intervals: List[Dict[str, Any]] = []
+        for index, value in enumerate(values):
+            start = period_start + timedelta(seconds=frequency_seconds * index) if is_series else period_start
+            end = start + timedelta(seconds=frequency_seconds)
+            intervals.append({"period_start": format_timestamp(start), "period_end": format_timestamp(end), "value": value})
+        return intervals
 
     def _valid_values(self, entity_id: str, parameter_id: str, parameter_type_id: Optional[str],
                       values: List[Any]) -> List[Any]:

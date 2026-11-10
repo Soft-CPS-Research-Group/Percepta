@@ -27,8 +27,8 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
                                  It is never negative (measurement noise can make the balance slightly negative).
 
     The derived data go in the key "derived_data" of the message. They are worked out from the 'final_values' of the
-    parameters, so each one has a single list 'values' (and not 'original_values' and 'final_values'), followed by
-    the other fields of the parameters of the entities. The rest of the message is not changed.
+    parameters, so each one has a single list 'values' (and not 'original_values' and 'final_values'), whose items
+    have the interval that they cover, followed by the other fields of the parameters of the entities. The rest of the message is not changed.
 
     Expected Input Structure:
     -------------------------
@@ -41,12 +41,15 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
                 "parameters": {
                     "33711": {
                         "parameter_type_id": "energy",
-                        "original_values": [0.05, 0.07],
-                        "final_values": [0.12],
+                        "original_values": [
+                            {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.05},
+                            {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.07}
+                        ],
+                        "final_values": [
+                            {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.12}
+                        ],
                         "measurement_unit": "kWh",
                         "aggregation_method": "sum",
-                        "start_date": "2026-10-13 16:35:30 +0000",
-                        "frequency_seconds": 15,
                         "generated": False
                     }
                 }
@@ -62,11 +65,11 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
         "entities": {...},                                              # As received
         "derived_data": {
             "solar_generation": {
-                "values": [0.12],
+                "values": [
+                    {"period_start": "2026-10-13 16:35:30 +0000", "period_end": "2026-10-13 16:35:45 +0000", "value": 0.12}
+                ],
                 "measurement_unit": "kWh",
                 "aggregation_method": "sum",
-                "start_date": "2026-10-13 16:35:30 +0000",
-                "frequency_seconds": 15,
                 "generated": False                                      # True if any value used was synthesised or missing
             },
             "non_shiftable_load": {...}                                 # Same fields
@@ -142,10 +145,11 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
             "period_end": "2026-10-13 16:35:45 +0000",
             "entities": {
                 "GR01": {"entity_type_id": "grid_meter", "parameters": {
-                    "energy_in_total": {"final_values": [0.30], "generated": False, ...},
-                    "energy_out_total": {"final_values": [0.05], "generated": False, ...}}},
+                    "energy_in_total": {"final_values": [{"period_start": ..., "period_end": ..., "value": 0.30}], "generated": False, ...},
+                    "energy_out_total": {"final_values": [{"period_start": ..., "period_end": ..., "value": 0.05}], "generated": False, ...}}},
                 "PV01": {"entity_type_id": "pv_panel", "parameters": {
-                    "33711": {"parameter_type_id": "energy", "final_values": [0.12], "generated": False, ...}}}
+                    "33711": {"parameter_type_id": "energy", "final_values": [{"period_start": ..., "period_end": ..., "value": 0.12}],
+                              "generated": False, ...}}}
             }
         }
 
@@ -153,6 +157,10 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
         --------------------------
         The same message, plus "derived_data" (see the class documentation). For the example above:
         solar_generation = 0.12 and non_shiftable_load = 0.30 + 0.12 - 0.05 = 0.37.
+
+        A datum that is missing, malformed or in a unit that cannot be converted to kWh is not used: the calculation is
+        made without it and 'generated' is True. If there is no datum at all to make a calculation, its 'values' is
+        None (no data) and 'generated' is True.
 
         Args:
             message (Dict[str, Any]): The message built by the Combination Logic.
@@ -171,23 +179,39 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
         entities: Dict[str, Dict[str, Any]] = message.get("entities", {})
         period_start: datetime = period_end - timedelta(seconds=self._frequency_seconds)
 
-        solar_generation, solar_generated = self._sum_parameter(entities, Label.PV_PANEL, ParamLabel.ENERGY)
-        grid_in, grid_in_generated = self._sum_parameter(entities, Label.GRID_METER, ParamLabel.ENERGY_IN_TOTAL)
-        grid_out, grid_out_generated = self._sum_parameter(entities, Label.GRID_METER, ParamLabel.ENERGY_OUT_TOTAL)
-        battery_charge, charge_generated = self._sum_parameter(entities, Label.BATTERY, ParamLabel.ENERGY_IN)
-        battery_discharge, discharge_generated = self._sum_parameter(entities, Label.BATTERY, ParamLabel.ENERGY_OUT)
+        solar_generation, solar_generated, solar_used = self._sum_parameter(
+            entities, Label.PV_PANEL, ParamLabel.ENERGY
+        )
+        grid_in, grid_in_generated, grid_in_used = self._sum_parameter(
+            entities, Label.GRID_METER, ParamLabel.ENERGY_IN_TOTAL
+        )
+        grid_out, grid_out_generated, grid_out_used = self._sum_parameter(
+            entities, Label.GRID_METER, ParamLabel.ENERGY_OUT_TOTAL
+        )
+        battery_charge, charge_generated, charge_used = self._sum_parameter(
+            entities, Label.BATTERY, ParamLabel.ENERGY_IN
+        )
+        battery_discharge, discharge_generated, discharge_used = self._sum_parameter(
+            entities, Label.BATTERY, ParamLabel.ENERGY_OUT
+        )
 
-        non_shiftable_load = grid_in + solar_generation - grid_out + battery_discharge - battery_charge
+        # A datum that cannot be used is left out of the calculation. If no datum of the calculation can be used,
+        # there is nothing to calculate and the result is None (no data), which is not the same as 0.0.
+        non_shiftable_load: Optional[float] = None
+        if solar_used + grid_in_used + grid_out_used + charge_used + discharge_used > 0:
+            non_shiftable_load = grid_in + solar_generation - grid_out + battery_discharge - battery_charge
 
-        # The balance can be slightly negative because of measurement noise, but a load cannot be negative.
-        if non_shiftable_load < 0:
-            self._logger.debug(
-                f"{self._LOG_PREFIX} Negative balance ({non_shiftable_load}) set to 0."
-            )
-            non_shiftable_load = 0.0
+            # The balance can be slightly negative because of measurement noise, but a load cannot be negative.
+            if non_shiftable_load < 0:
+                self._logger.debug(
+                    f"{self._LOG_PREFIX} Negative balance ({non_shiftable_load}) set to 0."
+                )
+                non_shiftable_load = 0.0
 
         derived_data = {
-            "solar_generation": self._build_parameter(solar_generation, period_start, solar_generated),
+            "solar_generation": self._build_parameter(
+                solar_generation if solar_used > 0 else None, period_start, solar_generated
+            ),
             "non_shiftable_load": self._build_parameter(
                 non_shiftable_load, period_start,
                 solar_generated or grid_in_generated or grid_out_generated or charge_generated or discharge_generated
@@ -196,16 +220,28 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
 
         return {**message, "derived_data": derived_data}
 
-    def _build_parameter(self, value: float, period_start: datetime, generated: bool) -> Dict[str, Any]:
-        """Builds a piece of derived data with the fields of the parameters of the entities."""
+    def _build_parameter(self, value: Optional[float], period_start: datetime, generated: bool) -> Dict[str, Any]:
+        """Builds a piece of derived data with the fields of the parameters of the entities.
+
+        If 'value' is None (no data to calculate it), 'values' is None and 'generated' is True.
+        """
+        if value is None:
+            return {
+                "values": None,
+                "measurement_unit": self._MEASUREMENT_UNIT,
+                "aggregation_method": AggregationLabel.SUM.value,
+                "generated": True,
+            }
         return {
             # A derived datum is worked out from the 'final_values' of the parameters, so it has a single list
             # 'values', and not 'original_values' and 'final_values'.
-            "values": [value],
+            "values": [{
+                "period_start": format_timestamp(period_start),
+                "period_end": format_timestamp(period_start + timedelta(seconds=self._frequency_seconds)),
+                "value": value
+            }],
             "measurement_unit": self._MEASUREMENT_UNIT,
             "aggregation_method": AggregationLabel.SUM.value,
-            "start_date": format_timestamp(period_start),
-            "frequency_seconds": self._frequency_seconds,
             "generated": generated,
         }
 
@@ -224,10 +260,12 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
         only of measured data.
 
         Returns:
-            tuple: (the sum, True if any value used was synthesised or any parameter had no usable value).
+            tuple: (the sum, True if any value used was synthesised or any parameter had no usable value, the number
+                of values used in the sum).
         """
         total: float = 0.0
         generated: bool = False
+        used: int = 0
         for entity_id, entity in entities.items():
             if entity.get("entity_type_id") != entity_type.value:
                 continue
@@ -235,11 +273,12 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
                 if parameter.get("parameter_type_id") != parameter_type.value:
                     continue
                 values = parameter.get("final_values") or []
-                if values and isinstance(values[0], (int, float)) and not isinstance(values[0], bool):
+                first_value = values[0].get("value") if values and isinstance(values[0], dict) else None
+                if isinstance(first_value, (int, float)) and not isinstance(first_value, bool):
                     # Every value is added in kWh
                     unit = parameter.get("measurement_unit")
                     try:
-                        value = values[0] if unit is None else convert(values[0], unit, self._MEASUREMENT_UNIT)
+                        value = first_value if unit is None else convert(first_value, unit, self._MEASUREMENT_UNIT)
                     except ValueError as err:
                         self._logger.warning(
                             f"{self._LOG_PREFIX} The parameter '{parameter_id}' of '{entity_id}' is in '{unit}', which "
@@ -248,7 +287,8 @@ class EnergAIzeDataDerivationLogic(DataDerivationLogicBase):
                         generated = True
                         continue
                     total += value
+                    used += 1
                     generated = generated or bool(parameter.get("generated", False))
                 else:
                     generated = True
-        return total, generated
+        return total, generated, used
