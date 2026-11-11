@@ -79,9 +79,11 @@ class CWEndpointBuilder(EndpointBuilderBase):
         {
             "33711": {"fetch_key": "33711", "match_key": "33711"},
             "35927": {"fetch_key": "35927", "match_key": "35927"},
-            "33690": {"fetch_key": "33690", "match_key": "33690"},
-            "connected_vehicle": None               # Derived by the Adapter, so there is nothing to request
+            "33690": {"fetch_key": "33690", "match_key": "33690"}
         }
+
+        The 'connected_vehicle' parameter is in the schema but not in the source mapping: it is derived from another
+        parameter (see 'derived_from'), so the Adapter builds it and there is nothing to request.
 
         The 'fetch_key' is the Cleanwatts tag requested in the endpoint. Each tag is requested
         only once, even if several parameters use it.
@@ -103,7 +105,7 @@ class CWEndpointBuilder(EndpointBuilderBase):
             base_topology_template (dict): Base topology blueprint dictionary containing the 'endpoints' list.
             environment_name (str): Unique identifier of the target environment.
             environment_specs (dict): Specification dictionary describing environment entities.
-            source_mapping_rules (dict): For each parameter id, its keys, or None if the parameter is derived.
+            source_mapping_rules (dict): For each parameter id that Cleanwatts provides, its keys.
             logger (LoggingUtils): Structured telemetry logging interface.
             lookback_seconds (int): How far back from "now" every request asks for data, in seconds.
                 It must be longer than the longest delay Cleanwatts takes to publish a reading, because a
@@ -164,9 +166,9 @@ class CWEndpointBuilder(EndpointBuilderBase):
             parameters = entity_data["parameters"]
 
             for param_id in parameters:
-                rule = self._source_mapping_rules[param_id]
-
-                # A derived parameter is not requested, as the Adapter builds it from the others
+                # A parameter that is not in the source mapping (a derived one) is not requested, as the Adapter builds
+                # it from the others
+                rule = self._source_mapping_rules.get(param_id)
                 if rule is None:
                     continue
 

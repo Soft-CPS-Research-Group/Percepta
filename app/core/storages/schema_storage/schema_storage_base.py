@@ -16,10 +16,11 @@ class SchemaStorageBase(ABC):
     relational database, a NoSQL database...) is up to each implementation, but all of them return it
     in the same format, so the rest of Percepta does not depend on the technology used.
 
-    A Schema Storage does not check that the ids it returns exist in the Percepta Instance Configuration
-    (the ids of the Telemetry Systems, of the Target Systems and of the Machine Learning models). It only
-    returns what it keeps. Each container checks the ids it uses when it launches an environment (e.g.,
-    the Data Ingestion Launcher checks the Telemetry Systems).
+    A Schema Storage does not validate what it returns: it only returns what it keeps. The environments are
+    validated once, when the application starts, by `EnvironmentsConfiguration` (their format, the relations
+    between their parts, and that the Telemetry Systems, the Target Systems and the Machine Learning models that
+    they use are configured in the Percepta Instance Configuration). This way, every type of storage is checked in
+    the same way, and each one does not have to repeat the checks.
 
     To add a new type of Schema Storage, create a class that inherits from this one, and register it
     in the Schema Storage Launcher with an id (see the README of this folder).

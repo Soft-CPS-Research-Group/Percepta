@@ -93,9 +93,12 @@ class TelemetrySystemLauncherBase(ABC):
         Expected `source_mapping` Data Structure:
         -----------------------------------------
         {
-            "37507": {"fetch_key": "37507", "match_key": "37507"},
-            "connected_vehicle": None       # Derived by the Adapter, so it has no keys
+            "37507": {"fetch_key": "37507", "match_key": "37507"}
         }
+
+        A parameter that is built from one of these (it says 'derived_from' in the schema, e.g., the vehicle connected
+        to a charger, built from the session status) is not listed here, but it is in 'environment_specs': it is
+        handled by the Telemetry System that provides the parameter it derives from.
 
         Each key is a parameter id of this Telemetry System. "fetch_key" says where to get the data
         (several parameters may share it, so the launcher must request each one only once) and

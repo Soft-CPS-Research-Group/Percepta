@@ -109,13 +109,13 @@ class CW2EndpointBuilder(EndpointBuilderBase):
         }
 
         Both parameters above share an exchange, so a single exchange is consumed.
-        A derived parameter, which has no exchange, is listed with the value None.
+        A derived parameter, which has no exchange, is not in the source mapping.
 
         Args:
             base_topology_template (dict): Base topology blueprint dictionary containing the 'exchanges' list.
             environment_name (str): Unique identifier of the target environment (e.g., "R-H-01").
             environment_specs (dict): Specification dictionary describing environment entities.
-            source_mapping_rules (dict): For each parameter id, its keys, or None if the parameter is derived.
+            source_mapping_rules (dict): For each parameter id that Cleanwatts 2 provides, its keys.
             logger (LoggingUtils): Structured telemetry logging interface.
             timezone (str): Target execution timezone (e.g., "UTC").
 
@@ -167,7 +167,7 @@ class CW2EndpointBuilder(EndpointBuilderBase):
         """Finds the remote exchange to consume for each entity, from the 'fetch_key' of its parameters.
 
         An exchange used by several parameters (or entities) is returned once.
-        Derived parameters (rule None) have no exchange.
+        Derived parameters (not in the source mapping) have no exchange.
 
         Expected Output Structure:
         --------------------------

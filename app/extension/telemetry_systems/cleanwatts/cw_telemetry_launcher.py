@@ -105,9 +105,11 @@ class CWTelemetryLauncher(TelemetrySystemLauncherBase):
         -----------------------------------------
         {
             "37507": {"fetch_key": "37507", "match_key": "37507"},      # Parameter id -> Cleanwatts tag id
-            "41836": {"fetch_key": "41836", "match_key": "41836"},
-            "connected_vehicle": None                                   # Derived by the Adapter
+            "41836": {"fetch_key": "41836", "match_key": "41836"}
         }
+
+        The 'connected_vehicle' parameter is not listed: it is derived from the '37507' (the session status), as the
+        schema says with 'derived_from', and it is built by the Adapter. It is in 'environment_specs'.
 
         Args:
             telemetry_system_id (str): Id of the Telemetry System.

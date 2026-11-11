@@ -100,6 +100,7 @@
           "connected_vehicle": {
             "parameter_type_id": "electric_vehicle",
             "vehicle_id": "EV01",
+            "derived_from": "37507",
             "necessary": true
           }
         },
@@ -418,8 +419,7 @@
             "fetch_key": "37507",
             "match_key": "37507",
             "source_measurement_unit": "Status"
-          },
-          "connected_vehicle": null
+          }
         }
       },
       "cleanwatts_2": {

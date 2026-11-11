@@ -1,12 +1,12 @@
 # --- Standard Library Imports ---
 import asyncio
-import importlib
 import signal
 import sys
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
 # --- Internal Framework Imports ---
+from app.core.utils.class_loader import load_class
 from app.core.data_processing.data_issue_handling.data_issue_handling_approaches_launcher import DataIssueHandlingApproachesLauncher
 from app.core.input_handlers.input_handlers_launcher import InputHandlersLauncher
 from app.core.data_ingestion.data_ingestion_launcher import DataIngestionLauncher
@@ -16,6 +16,7 @@ from app.core.inference.inference_launcher import InferenceLauncher
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.core.storages.runtime_data_storage.runtime_data_storage_launcher import RuntimeDataStorageLauncher
 from app.core.storages.schema_storage.schema_storage_launcher import SchemaStorageLauncher
+from app.core.utils.environments_configuration import EnvironmentsConfiguration
 from app.core.utils.event_loop_thread import EventLoopThread
 from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.logger import LoggingUtils
@@ -51,7 +52,8 @@ class SingleProcessApplicationLauncher:
 
     It launches the Data Ingestion, Data Processing, Inference and Decision Dispatching containers. It does the following:
     1. Reads the Percepta Instance Configuration.
-    2. Mounts the Schema Storage configured in it and gets the environments from the storage.
+    2. Mounts the Schema Storage configured in it, gets the environments from the storage and validates them (see
+       `EnvironmentsConfiguration`), so that a wrong environment stops the application before anything is launched.
     3. Creates, for each environment, the launchers of the four containers and the thread of each one.
     4. Launches the environments one at a time. In each, the containers are launched from the last to the first
        (Decision Dispatching, Inference, Data Processing and Data Ingestion), so that the consumers of a link exist
@@ -136,18 +138,26 @@ class SingleProcessApplicationLauncher:
             for container_name in self._launch_order
         }
 
-        # The storage is mounted here, and the environments are read from it
+        # The storage is mounted here, and the environments are read from it and validated
         schema_storage_configuration = self._instance_configuration.schema_storage
         schema_storage = SchemaStorageLauncher(self._logger).build_schema_storage(
             schema_storage_type_id=schema_storage_configuration["schema_storage_type_id"],
             connection_info=schema_storage_configuration["connection_info"],
             logger=self._logger
         )
-        self._environments = schema_storage.get_environments()
 
-        # Guard Clause 2: Checks that there is something to launch.
-        if not self._environments:
-            raise ValueError(f"{self._LOG_PREFIX} Initialization error: the Schema Storage has no environments.")
+        # The environments are validated here, once, before any container is created: their format, the relations
+        # between their parts, and the ids that they use (Telemetry Systems, Target Systems and ML Models), which must
+        # be configured in the instance. A wrong environment stops the application at the start, and the containers
+        # receive the environments already validated, so they only check what they need for themselves. It also
+        # checks that there is something to launch (at least one environment).
+        # The dictionaries of the Instance Configuration are given as they are: only their ids (keys) are used.
+        self._environments = EnvironmentsConfiguration(
+            environments=schema_storage.get_environments(),
+            telemetry_system_ids=self._instance_configuration.telemetry_systems,
+            target_system_ids=self._instance_configuration.target_systems,
+            ml_model_ids=self._instance_configuration.ml_models
+        ).environments
 
         # Each container of each environment has its own launcher and its own thread (not started yet). The launchers
         # are created here, and not at launch, so that a wrong configuration is found when the application starts.
@@ -228,15 +238,7 @@ class SingleProcessApplicationLauncher:
             ValueError: If the class cannot be loaded (the path was already checked when the configuration was read).
         """
         path = self._instance_configuration.rec_bridge["path"]
-        # The path is a text like "a.b.c.ClassName" (or "a.b.c:ClassName"). It is split at the last "." (or at the ":")
-        # into the module ("a.b.c") and the name of the class ("ClassName"), which is what is needed to import it:
-        # 'rpartition' returns (before, separator, after), and the separator is not needed, so it goes to '_'.
-        # 'import_module' imports the module from the text, and 'getattr' gets the class from it by its name.
-        module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
-        try:
-            return getattr(importlib.import_module(module_path), class_name)
-        except (ImportError, AttributeError) as err:
-            raise ValueError(f"{self._LOG_PREFIX} Initialization error: could not load 'rec_bridge.path' '{path}': {err}") from err
+        return load_class(path, "rec_bridge.path", f"{self._LOG_PREFIX} Initialization error:")
 
     async def launch(self) -> None:
         """Launches all the environments of the Schema Storage, one at a time.

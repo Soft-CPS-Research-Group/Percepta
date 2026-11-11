@@ -1,9 +1,9 @@
 # --- Standard Library Imports ---
-import importlib
 from enum import Enum
 from typing import Optional, Type
 
 # --- Internal Framework Imports ---
+from app.core.utils.class_loader import load_class
 from app.core.data_processing.combination_logic_base import CombinationLogicBase
 from app.core.data_processing.data_derivation_logic_base import DataDerivationLogicBase
 from app.core.utils.environment_variables import expand_environment_variables
@@ -306,8 +306,9 @@ class InstanceConfiguration:
 
         # --- Guard Clause 8: the communication between containers is optional here ---
         # It is optional for the InstanceConfiguration, because an application may launch only some containers (e.g.,
-        # only Data Ingestion). The launcher of a container requires the links it needs. The 'protocol_id' of each
-        # link says if the containers run in the same process ("AsyncLocal") or talk over the network.
+        # only Data Ingestion). The launcher of a container requires the links it needs, except Data Ingestion, which
+        # does not require its link: without it, the data is only logged. The 'protocol_id' of each link says if the
+        # containers run in the same process ("AsyncLocal") or talk over the network.
         inter_container = self._get_dict(content, "inter_container_communication")
         data_ingestion_output = self._get_dict(
             inter_container, "data_ingestion_to_data_processing", parent_name="inter_container_communication"
@@ -780,28 +781,8 @@ class InstanceConfiguration:
             ValueError: If the path is not in the format above, the module cannot be imported, the module has no
                 such class, or the class does not extend the base class (if one is given).
         """
-        module_path, _, class_name = (
-            launcher_path.rpartition(":") if ":" in launcher_path else launcher_path.rpartition(".")
-        )
-        if not module_path or not class_name:
-            raise ValueError(
-                f"{self._LOG_PREFIX} '{name}' is '{launcher_path}', which is not in the format 'module.ClassName'."
-            )
-
-        try:
-            module = importlib.import_module(module_path)
-        except ImportError as err:
-            raise ValueError(f"{self._LOG_PREFIX} '{name}': could not import the module '{module_path}': {err}") from err
-
-        launcher_class = getattr(module, class_name, None)
-        if launcher_class is None:
-            raise ValueError(f"{self._LOG_PREFIX} '{name}': the module '{module_path}' has no class '{class_name}'.")
-
-        if not isinstance(launcher_class, type):
-            raise ValueError(f"{self._LOG_PREFIX} '{name}': '{class_name}' must be a class.")
-
-        if base_class is not None and not issubclass(launcher_class, base_class):
-            raise ValueError(f"{self._LOG_PREFIX} '{name}': '{class_name}' must extend {base_class.__name__}.")
+        # The path is checked, and the class that it leads to is not needed here, only that it exists
+        load_class(launcher_path, name, self._LOG_PREFIX, base_class)
 
     def _validate_connection_configuration(
             self, value: object, name: str, valid_ids: Type[Enum], id_key: str = "protocol_id"

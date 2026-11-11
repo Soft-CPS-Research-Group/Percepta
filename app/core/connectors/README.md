@@ -315,16 +315,18 @@ await dispatch_connector.close()
 }
 ```
 
+A `target_callable` that is not callable raises `TypeError`.
+
 #### 2.3.3. Usage Notes
 
 * **Give each connector only what its role needs:** the input, `max_queue_size`; the output, `target_callable`. The connector does not check the role, so an output without a `target_callable` only fails in the first `dispatch()`. Each connector belongs to one handler (both would close it in their `stop()`).
-* **Errors:** `push()` raises `RuntimeError` (connector closed) and `asyncio.QueueFull` (queue full); `get()` raises `RuntimeError` (connector closed); `dispatch()` raises `RuntimeError` (closed, or no `target_callable`) and the errors of the `target_callable`. The payload is not kept or retried, so the caller has to handle the error.
+* **Errors:** `push()` raises `RuntimeError` (connector closed) and `asyncio.QueueFull` (queue full); `get()` raises `RuntimeError` (connector closed, or closed while it was waiting); `dispatch()` raises `RuntimeError` (closed, or no `target_callable`) and the errors of the `target_callable`. The payload is not kept or retried, so the caller has to handle the error.
 * **Set `max_queue_size`:** without it the queue has no limit, and the memory grows if the consumer is slower than the producer.
 * **Event loop and threads:** the queue is not thread-safe, so `push()` and `get()` must be called from the thread of the event loop it belongs to. The `target_callable` should be a coroutine function (`async def`), which `dispatch()` awaits in the loop; a normal function runs in another thread, where it must not use the queue. The in-memory link between two containers only works if both run in the same event loop, so it cannot be used between containers that run in different threads (as in the single-process launcher).
 * **One consumer per queue:** each payload is taken by a single `get()`.
 * **The connector does not copy the payload:** the sender must not change it after `push()` or `dispatch()`.
 * **Memory only:** if the process stops, the payloads in the queue are lost. There is no acknowledgement or retry.
-* **Closing:** stop the consumer first (cancel its task), then call `close()`. A `get()` that is already waiting is not woken up by `close()`, and a new `get()` raises an error. `task_done()` does not check if the connector is closed, so that a payload taken before the `close()` can still be marked as done.
+* **Closing:** stop the consumer first (cancel its task), then call `close()`. `close()` wakes up a `get()` that is waiting, which raises a `RuntimeError` (so a consumer never waits forever), and a new `get()` raises the same error; the payloads still in the queue are not delivered any more. `task_done()` does not check if the connector is closed, so that a payload taken before the `close()` can still be marked as done.
 
 ---
 

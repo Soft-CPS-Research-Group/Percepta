@@ -1,6 +1,4 @@
 # --- Standard Library Imports ---
-import copy
-import importlib
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
@@ -15,7 +13,8 @@ from app.core.output_handlers.output_handler_base import OutputHandlerBase
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.core.data_processing.data_processing_service import DataProcessingService
 from app.core.utils.async_periodic_scheduler import AsyncPeriodicScheduler
-from app.core.utils.environment_placeholder import replace_environment
+from app.core.utils.environment_placeholder import replace_environment_in
+from app.core.utils.class_loader import load_class
 from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.labels import InputHandlerLabel, OutputHandlerLabel
 from app.core.utils.logger import LoggingUtils
@@ -129,14 +128,16 @@ class DataProcessingLauncher:
         # They are loaded once, here, and not for every environment. What is done for every environment is to create
         # an instance (see `launch_environment`): it cannot be a copy of one instance made here, because each logic
         # receives the environment in its constructor and keeps its own state, which is not shared between environments.
-        self._combination_logic_class: type = self._load_logic_class(
-            integrated_logic["combination_logic"], CombinationLogicBase, "combination_logic"
+        self._combination_logic_class: type = load_class(
+            integrated_logic["combination_logic"], "combination_logic",
+            f"{self._LOG_PREFIX} Initialization error:", CombinationLogicBase
         )
         derivation_logic_path = integrated_logic.get("data_derivation_logic")
         self._derivation_logic_class: Optional[type] = None
         if derivation_logic_path is not None:
-            self._derivation_logic_class = self._load_logic_class(
-                derivation_logic_path, DataDerivationLogicBase, "data_derivation_logic"
+            self._derivation_logic_class = load_class(
+                derivation_logic_path, "data_derivation_logic",
+                f"{self._LOG_PREFIX} Initialization error:", DataDerivationLogicBase
             )
 
         self._approach_ids: List[str] = instance_configuration.data_issue_handling_approaches
@@ -178,6 +179,8 @@ class DataProcessingLauncher:
             "entities": {"EVC01": {"entity_type_id": "ev_charger", "parameters": {}}},
             ...                                     # The rest is given as it is to the approaches and to the logic
         }
+        The environment must have already been validated (see `EnvironmentsConfiguration`), so its format is not
+        checked here.
 
         Args:
             environment_name (str): Name of the environment.
@@ -202,18 +205,12 @@ class DataProcessingLauncher:
             Example: `input_handler, data_processing_receiver = await launcher.launch_environment(...)`
 
         Raises:
-            ValueError: If the environment is invalid, the link to Inference is "AsyncLocal" and there is no
-                'next_container_receiver', an id of an approach is not registered, or the constructor of an approach or of
-                a logic rejects the environment.
+            ValueError: If the environment name is invalid, the link to Inference is "AsyncLocal" and there is no
+                'next_container_receiver', an id of an approach is not registered, or the constructor of an approach or
+                of a logic rejects the environment.
         """
         if not isinstance(environment_name, str) or not environment_name.strip():
             raise ValueError(f"{self._LOG_PREFIX} Launch error: the environment name must be a non-empty string.")
-
-        if not isinstance(environment, dict) or not isinstance(environment.get("entities"), dict):
-            raise ValueError(
-                f"{self._LOG_PREFIX} Launch error: environment '{environment_name}' must be a dictionary with "
-                f"'entities'."
-            )
 
         # --- Guard Clause: a local link to Inference needs the method to call ---
         # It cannot be in the configuration, so the launcher that starts the containers has to give it.
@@ -372,7 +369,7 @@ class DataProcessingLauncher:
             return output_handler
 
         connection_info = self._output_config.get("connection_info", {})
-        topology = self._replace_topology(connection_info.get("topology", {}), environment_name)
+        topology = replace_environment_in(connection_info.get("topology", {}), environment_name)
 
         # --- Guard Clause 1: RPC is not used between containers ---
         # With RPC, the Output Handler would also need a listener for the replies, and the service sends the message
@@ -453,74 +450,11 @@ class DataProcessingLauncher:
         connection_info = self._input_config.get("connection_info", {})
         return await self._input_launcher.build_input_handler(
             handler_type=self._input_config["protocol_id"],
-            topology_setup=self._replace_topology(connection_info.get("topology", {}), environment_name),
+            topology_setup=replace_environment_in(connection_info.get("topology", {}), environment_name),
             callback=callback,
             server_configurations=connection_info.get("connection", {}),
             logger=logger
         )
-
-    @staticmethod
-    def _replace_topology(topology: Dict[str, Any], environment_name: str) -> Dict[str, Any]:
-        """Gives the exchanges and queues of a topology the name of the environment.
-
-        The names that are replaced are the 'exchange_name' of each exchange and the 'queue_name' and 'routing_key' of
-        each queue. The topology of the configuration is not changed; a copy is returned.
-
-        Example (environment "R-H-01"):
-        -------------------------------
-        {"exchanges": [{"exchange_name": "percepta.{environment}", "queues": [{"queue_name": "q.{environment}"}]}]}
-        -> {"exchanges": [{"exchange_name": "percepta.R-H-01", "queues": [{"queue_name": "q.R-H-01"}]}]}
-
-        Args:
-            topology (Dict[str, Any]): The 'topology' of the 'connection_info' of a link.
-            environment_name (str): Name of the environment.
-
-        Returns:
-            Dict[str, Any]: The topology of the environment.
-        """
-        topology = copy.deepcopy(topology)
-        for exchange in topology.get("exchanges", []):
-            if "exchange_name" in exchange:
-                exchange["exchange_name"] = replace_environment(exchange["exchange_name"], environment_name)
-            for queue in exchange.get("queues", []):
-                for key in ("queue_name", "routing_key"):
-                    if key in queue:
-                        queue[key] = replace_environment(queue[key], environment_name)
-        return topology
-
-    def _load_logic_class(self, path: str, base_class: type, name: str) -> type:
-        """Loads the class of an integrated logic from its path.
-
-        Args:
-            path (str): Module path and class name, separated by a dot or by a colon (e.g.,
-                "app.extension.integrated_logic.combination_logic.energaize_combination_logic.EnergAIzeCombinationLogic").
-            base_class (type): The class that the logic must extend (CombinationLogicBase or
-                DataDerivationLogicBase).
-            name (str): Name of the type of logic, for error messages (e.g., "combination_logic").
-
-        Returns:
-            type: The class. To use it, create an instance for each environment: `logic_class(environment, logger)`.
-
-        Raises:
-            ValueError: If the path is not valid, the class cannot be loaded or it does not extend the base class.
-        """
-        module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
-        if not module_path or not class_name:
-            raise ValueError(f"{self._LOG_PREFIX} Initialization error: invalid path '{path}' for '{name}'.")
-
-        try:
-            logic_class = getattr(importlib.import_module(module_path), class_name)
-        except (ImportError, AttributeError) as err:
-            raise ValueError(
-                f"{self._LOG_PREFIX} Initialization error: could not load '{name}' '{path}': {err}"
-            ) from err
-
-        if not (isinstance(logic_class, type) and issubclass(logic_class, base_class)):
-            raise ValueError(
-                f"{self._LOG_PREFIX} Initialization error: '{name}' '{path}' must extend {base_class.__name__}."
-            )
-
-        return logic_class
 
     async def _stop_environment(
             self,

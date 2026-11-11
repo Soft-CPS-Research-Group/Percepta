@@ -1,6 +1,7 @@
 # --- Standard Library Imports ---
 import datetime
 import json
+import threading
 from typing import Any, Dict, List, Optional
 
 # --- Internal Framework Imports ---
@@ -172,6 +173,10 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
         #     "32df": {"value": 4961.5, "ts": datetime(...)}
         # }
         self._last_parameter_values: Dict[str, dict] = {}
+        # Protects '_last_parameter_values'. 'adapt' runs in another thread (see TelemetryPipelineService), so
+        # several messages can be translated at the same time. Reading and writing that data are done holding
+        # this lock.
+        self._last_values_lock = threading.Lock()
 
         # Reverse lookup: remote exchange name -> entity_id
         # Expected `_source_to_entity` Data Structure:
@@ -493,10 +498,12 @@ class CW2TelemetryAdapter(TelemetryAdapterBase):
                 continue
 
             if rule.get("shelly_accumulation") == "lifetime":
-                last_entry = self._last_parameter_values.get(param_id)
-
-                # Store the current value as the new baseline either way
-                self._last_parameter_values[param_id] = {"value": raw_value, "ts": now_dt}
+                # Reads the previous reading and stores the current one as the new baseline (either way), in one go
+                # with the lock: two messages at the same time could otherwise read the same previous reading, and the
+                # same energy would be counted twice.
+                with self._last_values_lock:
+                    last_entry = self._last_parameter_values.get(param_id)
+                    self._last_parameter_values[param_id] = {"value": raw_value, "ts": now_dt}
 
                 if last_entry is None:
                     self._logger.debug(

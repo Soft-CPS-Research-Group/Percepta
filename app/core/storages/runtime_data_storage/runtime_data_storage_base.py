@@ -73,9 +73,11 @@ class RuntimeDataStorageBase(ABC):
         -------------------------
         data = {
             "model_inputs": {},                 # The input of the ML Model, in the format it expects
-            "decisions": {},                    # The decisions of the ML Model, in the format it produces
+            "decisions": {},                    # The decisions of the ML Model, in the format it produces.
+                                                # None if the inference failed (the period is stored anyway)
             "corrected_decisions": {},          # The decisions after the correction, in the format of the ML Model.
-                                                # None if the ML Model has no Decision Validation and Correction Logic
+                                                # None if the ML Model has no Decision Validation and Correction Logic,
+                                                # or if the inference failed
             "timestamp": "2026-08-19 11:00:00 +0000"
         }
 

@@ -75,7 +75,7 @@ class SoftCPSEndpointBuilder(EndpointBuilderBase):
             base_topology_template (dict): Base topology blueprint dictionary containing the 'endpoints' dictionary, keyed by endpoint id.
             environment_name (str): Unique identifier of the target environment.
             environment_specs (dict): Specification dictionary describing environment entities.
-            source_mapping_rules (dict): For each parameter id, its keys, or None if the parameter is derived.
+            source_mapping_rules (dict): For each parameter id that SoftCPS provides, its keys.
             logger (LoggingUtils): Structured telemetry logging interface.
             time_interval_seconds (int): Polling frequency interval in seconds, which is also the
                 window of observations requested.
@@ -125,9 +125,9 @@ class SoftCPSEndpointBuilder(EndpointBuilderBase):
             entity_endpoints: List[Dict[str, Any]] = []
 
             for param_id in entity_data["parameters"]:
-                rule = self._source_mapping_rules[param_id]
-
-                # A derived parameter is not requested, as the Adapter builds it from the others
+                # A parameter that is not in the source mapping (a derived one) is not requested, as the Adapter builds
+                # it from the others
+                rule = self._source_mapping_rules.get(param_id)
                 if rule is None:
                     continue
 

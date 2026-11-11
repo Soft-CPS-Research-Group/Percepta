@@ -61,7 +61,7 @@ class PCEndpointBuilder(EndpointBuilderBase):
             base_topology_template (dict): Base topology blueprint dictionary containing the 'exchanges' list.
             environment_name (str): Unique identifier of the target environment (e.g., "R-H-03").
             environment_specs (dict): Specification dictionary describing environment entities.
-            source_mapping_rules (dict): For each parameter id, its keys, or None if the parameter is derived.
+            source_mapping_rules (dict): For each parameter id that PulseCharge provides, its keys.
             logger (LoggingUtils): Structured telemetry logging interface.
             timezone (str): Target execution timezone (e.g., "UTC").
 

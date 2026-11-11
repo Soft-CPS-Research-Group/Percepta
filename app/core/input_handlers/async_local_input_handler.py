@@ -121,6 +121,10 @@ class AsyncLocalInputHandler(InputHandlerBase):
                 payload = await self._connector.get()
             except asyncio.CancelledError:
                 break
+            except RuntimeError:
+                # 'get()' raises it when the connector was closed (even while this loop was waiting), so there is
+                # nothing more to consume: the loop ends instead of dying with an error nobody reads.
+                break
 
             try:
                 envelope = await PayloadNormalizer.from_local(

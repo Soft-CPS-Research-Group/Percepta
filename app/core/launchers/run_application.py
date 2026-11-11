@@ -8,10 +8,10 @@ Run with: python -m app.core.launchers.run_application
 """
 # --- Standard Library Imports ---
 import asyncio
-import importlib
 import sys
 
 # --- Internal Framework Imports ---
+from app.core.utils.class_loader import load_class
 from app.core.launchers.application_launchers.single_process_application_launcher import ApplicationLaunchError
 from app.core.utils.instance_configuration import InstanceConfiguration
 
@@ -32,15 +32,7 @@ def _load_application_launcher_class(instance_configuration_path: str) -> type:
         ValueError: If the configuration is not valid, or the class cannot be loaded.
     """
     path = InstanceConfiguration(instance_configuration_path).application_launcher_path
-    # The path is a text like "a.b.c.ClassName" (or "a.b.c:ClassName"). It is split at the last "." (or at the ":")
-    # into the module ("a.b.c") and the name of the class ("ClassName"), which is what is needed to import it:
-    # 'rpartition' returns (before, separator, after), and the separator is not needed, so it goes to '_'.
-    # 'import_module' imports the module from the text, and 'getattr' gets the class from it by its name.
-    module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
-    try:
-        return getattr(importlib.import_module(module_path), class_name)
-    except (ImportError, AttributeError) as err:
-        raise ValueError(f"Application Launcher | Could not load 'application_launcher.path' '{path}': {err}") from err
+    return load_class(path, "application_launcher.path", "Application Launcher |")
 
 
 def main() -> None:

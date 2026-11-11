@@ -1,6 +1,4 @@
 # --- Standard Library Imports ---
-import copy
-import importlib
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 # --- Internal Framework Imports ---
@@ -15,7 +13,8 @@ from app.core.output_handlers.output_handler_base import OutputHandlerBase
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.core.decision_dispatching.decision_dispatching_service import DecisionDispatchingService
 from app.core.decision_dispatching.target_system_resolver import TargetSystemResolver
-from app.core.utils.environment_placeholder import replace_environment
+from app.core.utils.environment_placeholder import replace_environment_in
+from app.core.utils.class_loader import load_class
 from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.labels import InputHandlerLabel, OutputHandlerLabel
 from app.core.utils.logger import LoggingUtils
@@ -116,8 +115,9 @@ class DecisionDispatchingLauncher:
         self._target_systems: Dict[str, TargetSystemLauncherBase] = {}
         self._target_system_configurations: Dict[str, dict] = {}
         for target_system_id, target_system in target_systems.items():
-            launcher_class = self._load_class(
-                target_system["path"], f"target_systems.{target_system_id}.path", TargetSystemLauncherBase
+            launcher_class = load_class(
+                target_system["path"], f"target_systems.{target_system_id}.path",
+                f"{self._LOG_PREFIX} Initialization error:", TargetSystemLauncherBase
             )
             self._target_systems[target_system_id] = launcher_class(output_launcher, logger)
             self._target_system_configurations[target_system_id] = target_system
@@ -141,10 +141,13 @@ class DecisionDispatchingLauncher:
         {
             "entities": {"B01": {"entity_type_id": "battery", "actuators": {...}}},
             "target_systems": {                                         # The Target Systems of the environment
-                "cleanwatts": {"actuator_mapping": {"act_power_1": "35445"}}
+                "cleanwatts": {"actuator_mapping": {"act_power_1": {"destination": "35445",
+                                                                    "destination_measurement_unit": "kW"}}}
             },
             ...
         }
+        The environment must have already been validated (see `EnvironmentsConfiguration`): its format, and that its
+        Target Systems are configured in the instance. Only what Decision Dispatching needs for itself is checked here.
 
         Args:
             environment_name (str): Name of the environment.
@@ -164,37 +167,19 @@ class DecisionDispatchingLauncher:
             Example: `input_handler, dispatching_receiver = await launcher.launch_environment(...)`
 
         Raises:
-            ValueError: If the environment is invalid or one of its Target Systems is not configured in
-                the instance.
+            ValueError: If the environment name is invalid, or a component rejects the environment.
         """
         if not isinstance(environment_name, str) or not environment_name.strip():
             raise ValueError(f"{self._LOG_PREFIX} Launch error: the environment name must be a non-empty string.")
 
-        if not isinstance(environment, dict) or not isinstance(environment.get("entities"), dict):
-            raise ValueError(
-                f"{self._LOG_PREFIX} Launch error: environment '{environment_name}' must be a dictionary with "
-                f"'entities'."
-            )
-
-        # --- The Target Systems are optional: without them the decisions are only logged, not sent anywhere ---
+        # --- The Target Systems are optional: without them the decisions are only logged, not sent anywhere. That
+        # the ones that are given are a dictionary, and are configured in the instance, was already checked when the
+        # application started. ---
         environment_target_systems = environment.get("target_systems") or {}
-        if not isinstance(environment_target_systems, dict):
-            raise ValueError(
-                f"{self._LOG_PREFIX} Launch error: 'target_systems' of environment '{environment_name}' must be a "
-                f"dictionary."
-            )
         if not environment_target_systems:
             (logger or self._logger).warning(
                 f"{self._LOG_PREFIX} Environment '{environment_name}' has no 'target_systems': its decisions will "
                 f"only be logged, not dispatched."
-            )
-
-        # --- Guard Clause 2: every Target System of the environment must be configured in the instance ---
-        unknown = sorted(set(environment_target_systems) - set(self._target_systems))
-        if unknown:
-            raise ValueError(
-                f"{self._LOG_PREFIX} Launch error: environment '{environment_name}' uses the Target Systems "
-                f"{unknown}, which are not configured in the instance {sorted(self._target_systems)}."
             )
 
         # The logger of the environment is used for everything built here; the launcher's own is the fallback
@@ -319,73 +304,11 @@ class DecisionDispatchingLauncher:
         connection_info = self._input_config.get("connection_info", {})
         return await self._input_launcher.build_input_handler(
             handler_type=self._input_config["protocol_id"],
-            topology_setup=self._replace_topology(connection_info.get("topology", {}), environment_name),
+            topology_setup=replace_environment_in(connection_info.get("topology", {}), environment_name),
             callback=callback,
             server_configurations=connection_info.get("connection", {}),
             logger=logger
         )
-
-    @staticmethod
-    def _replace_topology(topology: Dict[str, Any], environment_name: str) -> Dict[str, Any]:
-        """Gives the exchanges and queues of a topology the name of the environment.
-
-        The names that are replaced are the 'exchange_name' of each exchange and the 'queue_name' and 'routing_key' of
-        each queue. The topology of the configuration is not changed; a copy is returned.
-
-        Example (environment "R-H-01"):
-        -------------------------------
-        {"exchanges": [{"exchange_name": "percepta.{environment}", "queues": [{"queue_name": "q.{environment}"}]}]}
-        -> {"exchanges": [{"exchange_name": "percepta.R-H-01", "queues": [{"queue_name": "q.R-H-01"}]}]}
-
-        Args:
-            topology (Dict[str, Any]): The 'topology' of the 'connection_info' of a link.
-            environment_name (str): Name of the environment.
-
-        Returns:
-            Dict[str, Any]: The topology of the environment.
-        """
-        topology = copy.deepcopy(topology)
-        for exchange in topology.get("exchanges", []):
-            if "exchange_name" in exchange:
-                exchange["exchange_name"] = replace_environment(exchange["exchange_name"], environment_name)
-            for queue in exchange.get("queues", []):
-                for key in ("queue_name", "routing_key"):
-                    if key in queue:
-                        queue[key] = replace_environment(queue[key], environment_name)
-        return topology
-
-    def _load_class(self, path: str, name: str, base_class: type) -> type:
-        """Loads the launcher class of a Target System from its path.
-
-        Args:
-            path (str): Module path and class name, separated by a dot or by a colon (e.g.,
-                "app.extension.target_systems.softcps.softcps_target_launcher.SoftCPSTargetLauncher").
-            name (str): Name of the value, for error messages.
-            base_class (type): The class that it must extend.
-
-        Returns:
-            type: The class.
-
-        Raises:
-            ValueError: If the path is not valid, the class cannot be loaded or it does not extend the base class.
-        """
-        module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
-        if not module_path or not class_name:
-            raise ValueError(f"{self._LOG_PREFIX} Initialization error: invalid path '{path}' for '{name}'.")
-
-        try:
-            loaded_class = getattr(importlib.import_module(module_path), class_name)
-        except (ImportError, AttributeError) as err:
-            raise ValueError(
-                f"{self._LOG_PREFIX} Initialization error: could not load '{name}' '{path}': {err}"
-            ) from err
-
-        if not (isinstance(loaded_class, type) and issubclass(loaded_class, base_class)):
-            raise ValueError(
-                f"{self._LOG_PREFIX} Initialization error: '{name}' '{path}' must extend {base_class.__name__}."
-            )
-
-        return loaded_class
 
     async def _stop_environment(
             self,

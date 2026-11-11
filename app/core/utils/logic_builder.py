@@ -1,8 +1,8 @@
 # --- Standard Library Imports ---
-import importlib
 from typing import Any, Dict, Optional
 
 # --- Internal Framework Imports ---
+from app.core.utils.class_loader import load_class
 from app.core.utils.logger import LoggingUtils
 
 
@@ -51,12 +51,6 @@ def build_logic(
         raise ValueError(f"{log_prefix} '{logic_key}' must be a dictionary with a 'path'.")
 
     # Guard Clause 3: Checks that the path leads to a class that extends the base class.
-    module_path, _, class_name = path.rpartition(":") if ":" in path else path.rpartition(".")
-    try:
-        logic_class = getattr(importlib.import_module(module_path), class_name)
-    except (ImportError, AttributeError, ValueError) as err:
-        raise ValueError(f"{log_prefix} Could not load '{logic_key}' '{path}': {err}") from err
-    if not (isinstance(logic_class, type) and issubclass(logic_class, base_class)):
-        raise ValueError(f"{log_prefix} '{logic_key}' '{path}' must extend {base_class.__name__}.")
+    logic_class = load_class(path, logic_key, log_prefix, base_class)
 
     return logic_class(environment, logger)

@@ -2,6 +2,7 @@
 import datetime
 import json
 import re
+import threading
 from typing import Any, Dict, List, Optional, Tuple
 
 # --- Internal Framework Imports ---
@@ -101,9 +102,11 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         ------------------------------------------------
         {
             "37507": {"fetch_key": "37507", "match_key": "37507", "source_measurement_unit": "Status"},
-            "41836": {"fetch_key": "41836", "match_key": "41836", "source_measurement_unit": "kW"},
-            "connected_vehicle": None                # Derived by this adapter, so it has no keys
+            "41836": {"fetch_key": "41836", "match_key": "41836", "source_measurement_unit": "kW"}
         }
+
+        The 'connected_vehicle' parameter is not listed: it is derived from the '37507' (the session status), as the
+        schema says with 'derived_from', and this adapter builds it. It is in the schema (`environment_specs`).
 
         The 'source_measurement_unit' is mandatory for a parameter that has a 'measurement_unit' in the schema. It is the
         unit in which the source gives the readings. They are converted to the 'measurement_unit' of the schema (e.g.,
@@ -116,7 +119,7 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         Args:
             environment (str): Name of the target environment (e.g., "R-H-01").
             environment_specs (dict): Entity schema for the environment.
-            source_mapping_rules (dict): For each parameter id, its keys, or None if the parameter is derived.
+            source_mapping_rules (dict): For each parameter id that Cleanwatts provides, its keys.
             logger (LoggingUtils): Logging interface.
             timezone (str): Timezone used to timestamp readings. Defaults to "UTC".
 
@@ -167,6 +170,10 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         #     "EVC01": datetime(...)
         # }
         self._last_session_status: Dict[str, datetime.datetime] = {}
+        # Protects '_last_session_status'. 'adapt' runs in another thread (see TelemetryPipelineService), so
+        # several messages can be translated at the same time. Reading and writing that data are done holding
+        # this lock.
+        self._session_status_lock = threading.Lock()
 
         # Reverse lookup: Cleanwatts tag id -> (entity_id, param_id)
         # Expected `_tag_to_param` Data Structure:
@@ -177,10 +184,6 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
         # }
         self._tag_to_param: Dict[str, Tuple[str, str]] = {}
         for param_id, rule in source_mapping_rules.items():
-            # A derived parameter has no tag to be matched with
-            if rule is None:
-                continue
-
             str_tag = str(rule["match_key"])
             # Find which entity this parameter belongs to
             for ent_id, ent_info in self._entities.items():
@@ -635,22 +638,26 @@ class CWTelemetryAdapter(TelemetryAdapterBase):
             )
             return {}
 
-        if read_status == 1:
-            # Active session reported: record when this happened (timezone-aware).
-            self._last_session_status[entity_id] = parsed_dt
+        # Updates the session state of the entity. It reads the last time a session was active, decides, and writes
+        # (or deletes) it, so it is done with the lock: two messages of the same entity at the same time could
+        # otherwise both read the same old value and overwrite each other's change.
+        with self._session_status_lock:
+            if read_status == 1:
+                # Active session reported: record when this happened (timezone-aware).
+                self._last_session_status[entity_id] = parsed_dt
 
-        elif read_status == 0:
-            # Explicitly inactive: forget any previous active session
-            self._last_session_status.pop(entity_id, None)
-
-        elif read_status is None:
-            # No reading this time: if a session was recently active, assume it still is
-            last_status_dt = self._last_session_status.get(entity_id)
-            if last_status_dt and (now_dt - last_status_dt) <= SESSION_GRACE_PERIOD:
-                read_status = 1
-            else:
-                read_status = 0
+            elif read_status == 0:
+                # Explicitly inactive: forget any previous active session
                 self._last_session_status.pop(entity_id, None)
+
+            elif read_status is None:
+                # No reading this time: if a session was recently active, assume it still is
+                last_status_dt = self._last_session_status.get(entity_id)
+                if last_status_dt and (now_dt - last_status_dt) <= SESSION_GRACE_PERIOD:
+                    read_status = 1
+                else:
+                    read_status = 0
+                    self._last_session_status.pop(entity_id, None)
 
         # Find the parameter that reports the connected vehicle, and the vehicle's id
         ev_param_id = next(

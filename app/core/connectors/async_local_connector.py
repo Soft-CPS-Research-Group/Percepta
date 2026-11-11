@@ -125,13 +125,17 @@ class AsyncLocalConnector:
     - Memory only: nothing is stored on disk and there is no acknowledgement or retry. If the process stops, the
       payloads that were in the queue are lost, and a payload that was delivered ('push()' returned) is not known to
       have been processed.
-    - Closing: call 'close()' when the handler stops. After it, 'push()' and 'dispatch()' raise an error. The payloads
-      still in the queue stay there and a 'get()' that is waiting keeps waiting (a new 'get()' raises an error), so
-      stop the consumer first, by
-      cancelling its task.
+    - Closing: call 'close()' when the handler stops. After it, 'push()', 'get()' and 'dispatch()' raise an error. A
+      'get()' that is waiting is woken up and raises the error too, so the consumer does not wait forever. The
+      payloads still in the queue are not delivered any more. The usual way is still to stop the consumer first, by
+      cancelling its task, and then to close.
     """
 
     _LOG_PREFIX: str = "Async Local Connector |"
+
+    # Marker that 'close()' puts in the queue to wake up a 'get()' that is waiting (see 'close()' and 'get()'). It is
+    # a unique object, so it can never be equal to a real payload (not even to None or an empty dict).
+    _CLOSED_MARKER: object = object()
 
     def __init__(self, server_configurations: dict) -> None:
         """Initializes the unified in-memory connector.
@@ -153,8 +157,9 @@ class AsyncLocalConnector:
             server_configurations (dict): Configuration mapping for callable sinks or queue limits.
 
         Raises:
-            ValueError: If 'target_callable' is not callable or 'max_queue_size' is negative.
-            TypeError: If 'server_configurations' is not a dictionary or 'max_queue_size' is not an integer.
+            ValueError: If 'max_queue_size' is negative.
+            TypeError: If 'server_configurations' is not a dictionary, 'target_callable' is not callable or
+                'max_queue_size' is not an integer.
         """
         # --- Guard Clause 1: Validate server_configurations ---
         if not isinstance(server_configurations, dict):
@@ -169,7 +174,7 @@ class AsyncLocalConnector:
         target = server_configurations.get("target_callable")
         if target is not None:
             if not callable(target):
-                raise ValueError(
+                raise TypeError(
                     f"{self._LOG_PREFIX} Initialization error: 'target_callable' must be an executable "
                     f"function or coroutine, got {type(target).__name__}."
                 )
@@ -244,13 +249,13 @@ class AsyncLocalConnector:
             Any: The dequeued payload object, e.g., {"pt_spot_price": {"2026-10-15T13:30:00+00:00": 84.0}}.
 
         Raises:
-            RuntimeError: If the connector is closed when it is called. A 'get()' that was already waiting when the
-                connector was closed is not woken up (see 'close()').
+            RuntimeError: If the connector is closed when it is called, or if it is closed while this 'get()' is
+                waiting (see 'close()', which wakes it up).
         """
         # --- Guard Clause 1: Checks that the connector is open, like 'push()' and 'dispatch()'. Without it, a 'get()'
         # called after the close would return a payload that was left in the queue or, with the queue empty, would wait
-        # forever, because nobody is going to push anything any more. It only checks when it is called: it does not
-        # wake up a 'get()' that was already waiting.
+        # forever, because nobody is going to push anything any more. It only checks when it is called: a 'get()' that
+        # was already waiting is woken up by the marker that 'close()' puts in the queue (see below).
         if not self._is_connected:
             raise RuntimeError(f"{self._LOG_PREFIX} Cannot get payload: connector is closed.")
 
@@ -258,8 +263,25 @@ class AsyncLocalConnector:
         # leave) and removes it from the queue. If the queue is empty, the 'await' suspends this method, without
         # blocking the event loop (the other tasks keep running), until a 'push()' puts a payload in the queue. Then
         # it wakes up and returns that payload. It has no time limit: with nothing arriving, it waits forever, which
-        # is why the consumer stops by cancelling the task that is waiting here (see the 'stop()' of the Input Handler).
-        return await self._queue.get()
+        # is why the consumer normally stops by cancelling the task that is waiting here (see the 'stop()' of the
+        # Input Handler).
+        payload = await self._queue.get()
+
+        # If what came out is the marker of 'close()', it is not a payload: the connector was closed while this
+        # 'get()' was waiting, and it must not wait any more.
+        if payload is self._CLOSED_MARKER:
+            # The marker is put back so that another 'get()' that is also waiting (a second consumer, which is not
+            # the normal use) is woken up too. The queue has room, since this 'get()' just took one item out; if
+            # another task filled it meanwhile, nobody can be waiting, so there is nothing to wake up.
+            try:
+                self._queue.put_nowait(self._CLOSED_MARKER)
+            except asyncio.QueueFull:
+                pass
+            # The marker was counted by the queue like any item, so it is marked as done, to keep the count right.
+            self._queue.task_done()
+            raise RuntimeError(f"{self._LOG_PREFIX} Cannot get payload: connector was closed while waiting.")
+
+        return payload
 
     def task_done(self) -> None:
         """Signals to the underlying queue that a previously enqueued task is complete.
@@ -326,17 +348,29 @@ class AsyncLocalConnector:
         """Releases internal resources and closes the connector.
 
         After it, 'is_connected()' is False, and 'push()', 'get()' and 'dispatch()' raise a 'RuntimeError'. It can be
-        called more than once: the next calls do nothing new. The payloads that are still in the queue are not
-        removed, and a 'get()' that is already waiting is not woken up (the consumer is stopped by cancelling its
-        task, see the 'stop()' of the Input Handler).
+        called more than once: the next calls do nothing new. A 'get()' that is already waiting is woken up and raises
+        a 'RuntimeError' (so a consumer does not wait forever). The payloads that are still in the queue are not
+        removed, but they are not delivered any more. The usual way to stop is still to cancel the consumer task
+        first (see the 'stop()' of the Input Handler) and then close.
         """
         # There is nothing to close on a network, so there is nothing to await here. It is a coroutine function only
         # to have the same methods as the other connectors, so that the handlers close any connector in the same way.
 
         # Marks the connector as closed. It is what 'push()', 'get()', 'dispatch()' and 'is_connected()' look at, so
-        # from now on a 'push()', a 'get()' or a 'dispatch()' raises an error and 'is_connected()' says False. The
-        # queue itself is not touched: its payloads stay there, and whoever is already waiting in 'get()' keeps waiting.
+        # from now on a 'push()', a 'get()' or a 'dispatch()' raises an error and 'is_connected()' says False.
+        already_closed = not self._is_connected
         self._is_connected = False
+
+        # Wakes up a 'get()' that is waiting. A 'get()' only waits when the queue is empty, and an 'await' on the
+        # queue is only woken up by an item, so the marker is put in the queue as if it were a payload: the waiting
+        # 'get()' takes it, sees that it is the marker and raises an error (see 'get()'). Nothing is put on a second
+        # 'close()' (the marker is already there or was already used). If the queue is full, nobody is waiting (a
+        # 'get()' does not wait when there are items), so there is nobody to wake up and the marker is not needed.
+        if not already_closed:
+            try:
+                self._queue.put_nowait(self._CLOSED_MARKER)
+            except asyncio.QueueFull:
+                pass
 
         # Drops the reference to the function of the other container. The connector does not need it any more (a
         # 'dispatch()' after the close raises an error), and keeping it would keep that function (and what it

@@ -10,7 +10,7 @@ from app.core.input_handlers.input_handlers_launcher import InputHandlersLaunche
 from app.core.output_handlers.output_handler_base import OutputHandlerBase
 from app.core.output_handlers.output_handlers_launcher import OutputHandlersLauncher
 from app.extension.rec_bridge.rec_bridge_service import RECBridgeService
-from app.core.utils.environment_placeholder import replace_environment
+from app.core.utils.environment_placeholder import replace_environment_in
 from app.core.utils.instance_configuration import InstanceConfiguration
 from app.core.utils.logger import LoggingUtils
 
@@ -125,7 +125,8 @@ class RECBridgeLauncher(ABC):
 
         Args:
             environment_name (str): Name of the environment.
-            environment (dict): The environment, as returned by the Schema Storage. Its 'rec' is optional.
+            environment (dict): The environment, as returned by the Schema Storage. Its 'rec' is optional. It must have
+                already been validated (see `EnvironmentsConfiguration`), including its 'rec'.
             next_container_receiver (Any, optional): Not used. The links are over the network, so no container needs
                 a method of the next one. It is only here so that all the container launchers have the same
                 signature.
@@ -136,13 +137,11 @@ class RECBridgeLauncher(ABC):
             InputHandlerBase: The Input Handler of Data Processing, already started. The launcher keeps it too.
 
         Raises:
-            ValueError: If the environment is not valid, its 'rec' is not well formed, a link between containers is
-                "AsyncLocal", or a component rejects the configuration.
+            ValueError: If the environment name is invalid, a link between containers is "AsyncLocal", or a component
+                rejects the configuration.
         """
         if not isinstance(environment_name, str) or not environment_name.strip():
             raise ValueError(f"{self._LOG_PREFIX} Launch error: the environment name must be a non-empty string.")
-        if not isinstance(environment, dict):
-            raise ValueError(f"{self._LOG_PREFIX} Launch error: environment '{environment_name}' must be a dictionary.")
 
         logger = logger or self._logger
         rec = self._read_rec(environment_name, environment)
@@ -212,22 +211,25 @@ class RECBridgeLauncher(ABC):
         return input_handler
 
     def _read_rec(self, environment_name: str, environment: dict) -> Optional[Dict[str, Any]]:
-        """Checks the 'rec' of the environment and returns it, or None if the environment has none."""
+        """Returns the 'rec' of the environment, or None if the environment has none.
+
+        The 'rec' was already validated when the application started (see `EnvironmentsConfiguration`): that it has
+        the ids of the community and of the installation, and that its peers are a list of other installations, with
+        none repeated. So it is not checked again here. The only thing done is to give the peers an empty list when
+        the 'rec' does not have any, so that the rest of the launcher can always use `rec['peers']`.
+
+        Args:
+            environment_name (str): Name of the environment. Not used now, but kept as the other methods of the launcher
+                give it to what they call.
+            environment (dict): The environment.
+
+        Returns:
+            Optional[Dict[str, Any]]: A copy of the 'rec', with 'peers' always there, or None if there is no 'rec'.
+        """
         rec = environment.get("rec")
         if rec is None:
             return None
-        where = f"{self._LOG_PREFIX} Launch error: the 'rec' of environment '{environment_name}'"
-        if not isinstance(rec, dict):
-            raise ValueError(f"{where} must be a dictionary.")
-        for key in ("community_id", "installation_id"):
-            if not isinstance(rec.get(key), str) or not rec[key].strip():
-                raise ValueError(f"{where} needs a non-empty string '{key}'.")
-        peers = rec.get("peers", [])
-        if not isinstance(peers, list) or any(not isinstance(peer, str) or not peer.strip() for peer in peers):
-            raise ValueError(f"{where} needs 'peers' to be a list of installation ids.")
-        if len(set(peers)) != len(peers) or rec["installation_id"] in peers:
-            raise ValueError(f"{where} has repeated peers, or has itself as a peer.")
-        return {**rec, "peers": peers}
+        return {**rec, "peers": rec.get("peers", [])}
 
     @staticmethod
     def _fill(topology: Any, values: Dict[str, str]) -> Any:
@@ -288,7 +290,7 @@ class RECBridgeLauncher(ABC):
         """Builds the Output Handler of a link between containers (the '{environment}' placeholder is replaced)."""
         self._refuse_local(link_config, "rec_bridge_to_inference")
         connection_info = link_config.get("connection_info", {})
-        topology = self._replace_topology(connection_info.get("topology", {}), environment_name)
+        topology = replace_environment_in(connection_info.get("topology", {}), environment_name)
         output_handler, _ = await self._output_launcher.build_output_handler(
             handler_type=link_config["protocol_id"],
             topology_setup=topology,
@@ -303,7 +305,7 @@ class RECBridgeLauncher(ABC):
         connection_info = self._input_config.get("connection_info", {})
         return await self._input_launcher.build_input_handler(
             handler_type=self._input_config["protocol_id"],
-            topology_setup=self._replace_topology(connection_info.get("topology", {}), environment_name),
+            topology_setup=replace_environment_in(connection_info.get("topology", {}), environment_name),
             callback=callback,
             server_configurations=connection_info.get("connection", {}),
             logger=logger
@@ -317,20 +319,6 @@ class RECBridgeLauncher(ABC):
                 f"Use a network protocol (e.g., 'AsyncRabbitMQ')."
             )
 
-    @staticmethod
-    def _replace_topology(topology: Dict[str, Any], environment_name: str) -> Dict[str, Any]:
-        """Gives the exchanges and queues of a topology the name of the environment (a copy is returned)."""
-        topology = copy.deepcopy(topology)
-        for exchange in topology.get("exchanges", []):
-            if "exchange_name" in exchange:
-                exchange["exchange_name"] = replace_environment(exchange["exchange_name"], environment_name)
-            for queue in exchange.get("queues", []):
-                for key in ("queue_name", "routing_key"):
-                    if key in queue:
-                        queue[key] = replace_environment(queue[key], environment_name)
-        return topology
-
-    @abstractmethod
     def _get_adapter_class(self) -> type:
         """Gives the class of the Adapter of the REC Bridge (it must extend RECBridgeAdapterBase).
 

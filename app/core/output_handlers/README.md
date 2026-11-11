@@ -391,6 +391,22 @@ server_configurations = {
   }
 }
 ```
+### 3.4. Log Output Handler (no protocol)
+**Not a protocol:** it has no `protocol_id`, no connector and no configuration, so a configuration cannot ask for it and it is not registered in the `OutputHandlersLauncher`.
+
+#### Execution Variants
+* **`LogOutputHandler`**: does not send the messages anywhere: it writes each one in the log (level `INFO`) and returns. It is used when a container has nowhere to send its messages. Today, Data Ingestion creates it for an environment when `inter_container_communication.data_ingestion_to_data_processing` is not in the Instance Configuration, so that Data Ingestion can run (receive, adapt and show the messages) without Data Processing. A warning says so when the handler is built.
+
+```python
+from app.core.output_handlers.log_output_handler import LogOutputHandler
+
+output_handler = LogOutputHandler(logger=environment_logger)   # 'logger' is mandatory (ValueError if missing)
+await output_handler.send(canonical_message)                   # Logs it. An empty message is skipped.
+await output_handler.stop()                                    # Nothing to release
+```
+
+Nothing is stored or retried: a message that is logged is gone once the log is rotated.
+
 ---
 
 ## 4. Adding a New Protocol Egress Adapter

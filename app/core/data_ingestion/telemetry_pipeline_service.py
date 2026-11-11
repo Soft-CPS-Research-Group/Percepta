@@ -43,33 +43,19 @@ class TelemetryPipelineService:
 
         # --- Guard Clause 2: Validate adapter dependency ---
         if not adapter:
-            error_msg = f"{self._LOG_PREFIX} Initialization error: 'adapter' dependency is missing."
-            self._logger.error(error_msg)
-            raise ValueError(error_msg)
+            raise ValueError(f"{self._LOG_PREFIX} Initialization error: 'adapter' dependency is missing.")
 
         if not isinstance(adapter, TelemetryAdapterBase) or not hasattr(adapter, "adapt"):
-            error_msg = (
-                f"{self._LOG_PREFIX} Initialization error: 'adapter' must inherit from AdapterBase "
-                f"and implement the 'adapt' method, got {type(adapter).__name__}."
-            )
-            self._logger.error(error_msg)
-            raise TypeError(error_msg)
+            raise TypeError(f"{self._LOG_PREFIX} Initialization error: 'adapter' must inherit from AdapterBase and implement the 'adapt' method, got {type(adapter).__name__}.")
 
         self._adapter = adapter
 
         # --- Guard Clause 3: Validate output_handler dependency ---
         if not output_handler:
-            error_msg = f"{self._LOG_PREFIX} Initialization error: 'output_handler' dependency is missing."
-            self._logger.error(error_msg)
-            raise ValueError(error_msg)
+            raise ValueError(f"{self._LOG_PREFIX} Initialization error: 'output_handler' dependency is missing.")
 
         if not isinstance(output_handler, OutputHandlerBase) or not hasattr(output_handler, "send"):
-            error_msg = (
-                f"{self._LOG_PREFIX} Initialization error: 'output_handler' must inherit from OutputHandlerBase "
-                f"and implement the 'send' method, got {type(output_handler).__name__}."
-            )
-            self._logger.error(error_msg)
-            raise TypeError(error_msg)
+            raise TypeError(f"{self._LOG_PREFIX} Initialization error: 'output_handler' must inherit from OutputHandlerBase and implement the 'send' method, got {type(output_handler).__name__}.")
 
         self._output_handler = output_handler
 
@@ -77,30 +63,47 @@ class TelemetryPipelineService:
         self._is_async_adapt: bool = inspect.iscoroutinefunction(self._adapter.adapt)
 
     async def process_message(self, message: Union[List[dict], dict, bytes, str]) -> None:
-        """Entrypoint callback executed synchronously or asynchronously by the InputHandler.
+        """Runs the pipeline for one message: the Adapter translates it and the Output Handler sends the result.
 
-        Schedules the async execution of the adaptation and outbound dispatch pipeline
-        within the active event loop.
+        This is the callback that the Input Handlers call for each message that arrives.
+
+        It does not catch errors. If the Adapter or the Output Handler fail, the exception goes up to the Input
+        Handler, which is the one that knows what to do with a message that failed (for example, the RabbitMQ one
+        rejects it, which applies the 'acknowledgement_properties' of the queue) and which logs the error. If it
+        were caught here, the Input Handler would think that the message was processed and would acknowledge it,
+        losing the message.
 
         Args:
             message (Union[List[dict], dict, bytes, str]): Raw inbound payload from transport ingress.
+
+        Raises:
+            Exception: Any error raised by the Adapter or by the Output Handler.
         """
+        # --- Guard Clause: an empty message has nothing to translate. It is not an error, so it is skipped and the
+        # Input Handler considers it processed. ---
         if not message:
             self._logger.debug(f"{self._LOG_PREFIX} Skipping empty message payload.")
             return
-        try:
-            if self._is_async_adapt:
-                canonical_messages = await self._adapter.adapt(message)
-            else:
-                canonical_messages = self._adapter.adapt(message)
 
-            if canonical_messages:
-                self._logger.debug(
-                    f"{self._LOG_PREFIX} Dispatching {len(canonical_messages)} canonical messages to OutputHandler."
-                )
-                await self._output_handler.send(canonical_messages)
-            else:
-                self._logger.debug(f"{self._LOG_PREFIX} No canonical messages produced by adapter for current payload.")
-        except Exception as err:
-            self._logger.error(f"{self._LOG_PREFIX} Unhandled exception during pipeline execution: {err}")
+        # Translates the message into canonical messages. Several messages can be translated at the same time, so an
+        # Adapter that keeps data between messages has to protect it itself, with the locks that it needs (for
+        # example, a `threading.Lock` for each piece of data).
+        if self._is_async_adapt:
+            # An 'async' Adapter (found once, in the constructor) is awaited in the event loop, like the Output
+            # Handlers. Today none of the Adapters is 'async'.
+            canonical_messages = await self._adapter.adapt(message)
+        else:
+            # A normal Adapter is run in another thread, so that the event loop is not blocked while it works (it
+            # would be, if the Adapter did something slow). 'asyncio.to_thread' waits for the result without
+            # blocking. This is the same as the Input Handlers and the Output Handlers do with normal functions.
+            canonical_messages = await asyncio.to_thread(self._adapter.adapt, message)
 
+        # --- Guard Clause: the Adapter may produce nothing for a message (for example, it has no parameter of this
+        # environment). It is not an error, so there is nothing to send and the message is considered processed. ---
+        if not canonical_messages:
+            self._logger.debug(f"{self._LOG_PREFIX} No canonical messages produced by adapter for current payload.")
+            return
+
+        # Sends the canonical messages to the next container (or to the log, if there is no link configured)
+        self._logger.debug(f"{self._LOG_PREFIX} Dispatching {len(canonical_messages)} canonical messages to OutputHandler.")
+        await self._output_handler.send(canonical_messages)

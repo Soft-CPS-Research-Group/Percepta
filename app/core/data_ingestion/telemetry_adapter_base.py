@@ -48,29 +48,71 @@ class TelemetryAdapterBase(ABC):
         self._unit_errors_logged: set = set()
 
     @abstractmethod
-    def adapt(self, data: Any) -> None:
-        """
-           Translate incoming device messages into a standardized format.
+    def adapt(self, message: Union[dict, bytes, str]) -> Dict[str, Dict[str, Any]]:
+        """Translates a message of the Telemetry System into canonical messages.
 
-           Args:
-               data (Any): Raw data from the source system.
-                   Each subclass is responsible for handling its expected type:
-                   - bytes (JSON encoded string with "observation")
-                   - dict with "messages", "label", "entity_id"
-           """
+        This is what each Telemetry System has to write. It is called by the Telemetry Pipeline Service for each
+        message that an Input Handler receives, and its result is what the Output Handler sends to the next container.
+
+        Expected Input Format (`message`):
+        ----------------------------------
+        The Canonical Integration Envelope that the Input Handler builds around what the Telemetry System sent. The
+        keys that every Input Handler gives are the ones below (the HTTP one adds others, such as "status"). What is
+        inside "payload" is different for each Telemetry System, and it is the Adapter that knows how to read it.
+        {
+            "protocol": "HTTP",
+            "source": "softcps/batteries/battery_id_1",
+            "metadata": {},
+            "payload": {...}
+        }
+
+        Expected Output Structure:
+        --------------------------
+        One entry per entity that has data in the message, with the entity id as the key.
+        {
+            "B01": {
+                "entity_type_id": "battery",
+                "parameters": {
+                    "b01_soc": {
+                        "parameter_type_id": "state_of_charge",
+                        "values": [{"timestamp": "2026-08-19 10:00:00 +0000", "value": 0.85}]
+                    }
+                },
+                "timestamp": "2026-08-19 10:00:03 +0000"
+            }
+        }
+
+        What an Adapter should do:
+        - A message that cannot be used (empty, from an unknown source, with no valid parameters) is logged and
+          answered with an empty dictionary, which is not an error: there is just nothing to send.
+        - An error that is not expected is not caught: it goes up to the Input Handler, which knows what to do with a
+          message that failed (see `TelemetryPipelineService.process_message`).
+        - It runs in another thread, and several messages can be translated at the same time. An Adapter that keeps
+          data between messages (for example, the last value received) has to protect it with its own lock, held
+          during the whole "read, decide, write" sequence. The data that is only filled when the Adapter starts and is
+          never changed afterwards does not need it.
+
+        Args:
+            message (Union[dict, bytes, str]): The envelope of the message that arrived.
+
+        Returns:
+            Dict[str, Dict[str, Any]]: The canonical messages, by entity id, or an empty dictionary if there is
+                nothing to send.
+        """
         raise NotImplementedError()
 
     def _prepare_unit_conversion(self, entities: dict, source_mapping_rules: dict) -> None:
         """Reads the units of the parameters, to convert their readings to the unit of the schema.
 
-        Every parameter that has a rule in the source mapping and a 'measurement_unit' in the schema must say, in its
+        Every parameter that has a rule in the source mapping and a 'measurement_unit' in the schema says, in its
         rule, the unit in which the source gives its readings: 'source_measurement_unit'. The adapter converts the
         readings from that unit to the 'measurement_unit' of the schema (see `convert_to_schema_units`).
 
-        This method only checks that the 'source_measurement_unit' is there. It does NOT check that the two units can be
-        converted into each other: that is only checked when a reading is converted. This way, a parameter with units of
-        another kind (e.g., "A" and "kW"), which an adapter translates in its own way, does not stop the adapter from
-        starting.
+        This method does not validate anything. That every such parameter has its 'source_measurement_unit' was already
+        checked when the application started (see `EnvironmentsConfiguration`). It also does NOT check that the two
+        units can be converted into each other: that is only checked when a reading is converted. This way, a parameter
+        with units of another kind (e.g., "A" and "kW"), which an adapter translates in its own way, does not stop the
+        adapter from starting.
 
         Expected Input Structure (`entities`):
         --------------------------------------
@@ -85,19 +127,17 @@ class TelemetryAdapterBase(ABC):
         Expected Input Structure (`source_mapping_rules`):
         --------------------------------------------------
         {
-            "energy_in_l1": {"match_key": "a_total_act_energy", "source_measurement_unit": "Wh"},
-            "connected_vehicle": None
+            "energy_in_l1": {"match_key": "a_total_act_energy", "source_measurement_unit": "Wh"}
         }
 
-        A rule that is None, a parameter with no rule, and a parameter with no 'measurement_unit' in the schema (e.g., a
-        flag) are not converted and need no 'source_measurement_unit'.
+        A parameter with no rule (e.g., a derived parameter, which is built from another and is not in the source
+        mapping) and a parameter with no 'measurement_unit' in the schema (e.g., a flag) are not converted and need no
+        'source_measurement_unit'.
 
         Args:
             entities (dict): The entities of the environment, with their parameters (the schema).
             source_mapping_rules (dict): The rules of the parameters of this Telemetry System, by parameter id.
 
-        Raises:
-            ValueError: If a parameter has a unit in the schema but no 'source_measurement_unit' in its rule.
         """
         # For each parameter that is converted: (unit of the source, unit of the schema).
         # Example: {"energy_in_l1": ("Wh", "kWh")}
@@ -105,7 +145,7 @@ class TelemetryAdapterBase(ABC):
         self._unit_converters = {}
         self._unit_errors_logged: set = set()
 
-        for entity_id, entity in entities.items():
+        for entity in entities.values():
             for parameter_id, parameter in (entity.get("parameters") or {}).items():
                 schema_unit = parameter.get("measurement_unit")
                 rule = source_mapping_rules.get(parameter_id)
@@ -114,17 +154,9 @@ class TelemetryAdapterBase(ABC):
                 if not isinstance(rule, dict) or not schema_unit:
                     continue
 
-                # --- Guard Clause: the unit of the source is mandatory ---
-                source_unit = rule.get("source_measurement_unit")
-                if not isinstance(source_unit, str) or not source_unit.strip():
-                    error_msg = (
-                        f"{self._LOG_PREFIX} Initialization error: parameter '{parameter_id}' of entity "
-                        f"'{entity_id}' has no 'source_measurement_unit' in its source mapping."
-                    )
-                    self._logger.error(error_msg)
-                    raise ValueError(error_msg)
-
-                self._parameter_units[parameter_id] = (source_unit, schema_unit)
+                # The unit of the source is mandatory when the schema has a unit, and that was checked when the
+                # application started, so it is in the rule
+                self._parameter_units[parameter_id] = (rule["source_measurement_unit"], schema_unit)
 
     def convert_to_schema_units(self, parameters: dict, skip: Iterable[str] = ()) -> dict:
         """Converts the readings of the parameters from the unit of the source to the unit of the schema.

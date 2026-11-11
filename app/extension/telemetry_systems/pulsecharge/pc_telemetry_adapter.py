@@ -1,6 +1,7 @@
 # --- Standard Library Imports ---
 import datetime
 import json
+import threading
 from typing import Any, Dict, List, Optional, Union
 
 # --- Internal Framework Imports ---
@@ -136,6 +137,10 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
         #     "EV01": {"value": 72.5, "ts": datetime(...)}
         # }
         self._soc_cache: Dict[str, Dict[str, Any]] = {}
+        # Protects '_soc_cache'. 'adapt' runs in another thread (see TelemetryPipelineService), so
+        # several messages can be translated at the same time. Reading and writing that data are done holding
+        # this lock.
+        self._soc_cache_lock = threading.Lock()
 
         # Reverse lookup: PulseCharge user id -> entity_id
         # Expected `_user_to_entity` Data Structure:
@@ -436,26 +441,30 @@ class PCTelemetryAdapter(TelemetryAdapterBase):
         Returns:
             Any: The state of charge to report, or None if there is none.
         """
-        if current_soc is not None:
-            self._soc_cache[entity_id] = {"value": current_soc, "ts": now_dt}
-            return current_soc
+        # Reads and changes the cache of the last state of charge (stores, drops it if it is too old), so it is done
+        # with the lock: two messages of the same entity at the same time could otherwise overwrite each other's
+        # change, or one could drop an entry that the other is just about to use.
+        with self._soc_cache_lock:
+            if current_soc is not None:
+                self._soc_cache[entity_id] = {"value": current_soc, "ts": now_dt}
+                return current_soc
 
-        cached = self._soc_cache.get(entity_id)
-        if cached is None:
-            self._logger.debug(f"{self._LOG_PREFIX} No 'current_soc' for entity '{entity_id}' and none cached.")
-            return None
+            cached = self._soc_cache.get(entity_id)
+            if cached is None:
+                self._logger.debug(f"{self._LOG_PREFIX} No 'current_soc' for entity '{entity_id}' and none cached.")
+                return None
 
-        if now_dt - cached["ts"] > SOC_CACHE_MAX_AGE:
+            if now_dt - cached["ts"] > SOC_CACHE_MAX_AGE:
+                self._logger.debug(
+                    f"{self._LOG_PREFIX} Cached 'current_soc' for entity '{entity_id}' is too old. Dropping it."
+                )
+                del self._soc_cache[entity_id]
+                return None
+
             self._logger.debug(
-                f"{self._LOG_PREFIX} Cached 'current_soc' for entity '{entity_id}' is too old. Dropping it."
+                f"{self._LOG_PREFIX} Missing 'current_soc'. Using cached value for entity '{entity_id}': {cached['value']}"
             )
-            del self._soc_cache[entity_id]
-            return None
-
-        self._logger.debug(
-            f"{self._LOG_PREFIX} Missing 'current_soc'. Using cached value for entity '{entity_id}': {cached['value']}"
-        )
-        return cached["value"]
+            return cached["value"]
 
     @staticmethod
     def _soc_to_fraction(soc: Any) -> Any:

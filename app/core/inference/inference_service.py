@@ -25,11 +25,13 @@ class InferenceService:
         1. The Adapter maps the message into the format that the ML Model requires.
         2. The Output Handler (ML Model) sends it to the model and receives its decisions in return. If an error
            occurs, the Model Execution Error Handling Logic says if the inference is tried again or if the process
-           ends. When it ends, nothing else is done for the period: the decisions are not validated, mapped or sent.
+           ends. When it ends, the input of the model is still stored (without decisions), but the decisions are not
+           validated, mapped or sent.
         3. The Decision Validation and Correction Logic, if there is one, validates the decisions and corrects them.
         4. The Runtime Data Storage, if there is one, stores the input of the model, its decisions and the corrected
-           decisions (all in the format of the ML Model). If the storage fails, the error is logged and the service
-           carries on, because the decisions must be dispatched anyway.
+           decisions (all in the format of the ML Model). If the inference failed, the decisions and the corrected
+           decisions are None. If the storage fails, the error is logged and the service carries on, because the
+           decisions must be dispatched anyway.
         5. The Adapter maps the decisions into the normalised format.
         6. The decisions in the normalised format are sent to the next container through the Output Handler.
 
@@ -146,9 +148,12 @@ class InferenceService:
             f"\n{json.dumps(decisions, default=str, indent=2)}"
         )
 
-        # Guard Clause 1: When the Model Execution Error Handling Logic ends the process, nothing else is done.
+        # Guard Clause 1: When the Model Execution Error Handling Logic ends the process, there is nothing to validate
+        # or send, but the period is still stored (with the input of the model and without decisions), so that the
+        # failure is not lost.
         if decisions is None:
             self._logger.error(f"{self._LOG_PREFIX} No decisions for the period '{period_id}'.")
+            await self._store(message, model_input, None, None, period_id)
             return
 
         # The logic receives a copy, because it may change the decisions it is given, and the storage keeps both the
@@ -192,9 +197,9 @@ class InferenceService:
         Args:
             message (Dict[str, Any]): The unified message, whose 'period_end' is the 'timestamp' of the record.
             model_input (Any): The input of the ML Model.
-            decisions (Any): The decisions of the ML Model, before any correction.
+            decisions (Any): The decisions of the ML Model, before any correction. None if the inference failed.
             corrected_decisions (Optional[Any]): The decisions after the correction, or None if there is no
-                Decision Validation and Correction Logic.
+                Decision Validation and Correction Logic or the inference failed.
             period_id (str): Identifies the period (only used in the logs).
         """
         # Guard Clause 1: Without a storage there is nothing to store.
